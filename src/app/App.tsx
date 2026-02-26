@@ -1,10 +1,9 @@
 import { useEffect } from "react"
-import { useDispatch } from "react-redux"
-import { checkAuth } from "../features/auth/userSlice";
-import type { AppDispatch } from "../store/store";
+import { checkAuth } from "../features/profile/userSlice";
+import { useAppDispatch } from "../shared/hooks/redux";
 
 function App() {
-  const dispatch:AppDispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(()=>{
     dispatch(checkAuth());
