@@ -6,7 +6,7 @@ import axios from "axios";
 import { useAppDispatch } from "../../shared/hooks/redux";
 import { checkAuth } from "../profile/userSlice";
 import ButtonSpinner from "../../shared/components/ButtonSpinner";
-import type {ErrorType,InputType} from './types/authTypes'
+import type {RegisterError,RegisterInput} from './types/authTypes'
 
 export default function Register() {
 
@@ -15,14 +15,14 @@ export default function Register() {
     password: "",
     confPassword: "",
   });
-  const [error, setError] = useState<ErrorType>({});
+  const [error, setError] = useState<RegisterError>({});
   const [loading,setLoading] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const validate = () => {
-    const errorObj: ErrorType = {};
+    const errorObj: RegisterError = {};
     const { email, password, confPassword } = form;
 
     if (!email) {
@@ -62,7 +62,7 @@ export default function Register() {
       navigate('/login');
     }catch(error){
       if(axios.isAxiosError(error)){
-        const errorObj:ErrorType = {}
+        const errorObj:RegisterError = {}
         switch(error.response?.status){
           case 400 : 
            errorObj.email = "Required!"
@@ -79,7 +79,7 @@ export default function Register() {
     }
   }
 
-  const inputArray: InputType[] = [
+  const inputArray: RegisterInput[] = [
     { name: "email", label: "Email Address", type: "email" },
     { name: "password", label: "Password", type: "password" },
     { name: "confPassword", label: "Confirm Password", type: "text" },
@@ -105,7 +105,7 @@ export default function Register() {
 
         <div className="flex w-full flex-col justify-center p-8 md:w-1/2 lg:p-12">
           <div className="mb-6 md:hidden">
-            <h1 className="text-3xl font-bold text-gray-800">Create Account</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Create Account</h1>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
