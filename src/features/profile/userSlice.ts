@@ -8,6 +8,9 @@ const userSlice = createSlice({
   initialState : {
     login : false,
     role : "",
+    avatarUrl:"",
+    studentProfile:null,
+    tutorProfile:null,
     loading : false,
     error : null
   },
@@ -16,9 +19,13 @@ const userSlice = createSlice({
       state.loading = true
     },
     fetchSuccess(state,action){
+      const {role,avatarUrl,studentProfile,tutorProfile} = action.payload
       state.loading = false
       state.login = true;
-      state.role = action.payload.role
+      state.role = role
+      state.avatarUrl = avatarUrl;
+      state.studentProfile = studentProfile;
+      state.tutorProfile = tutorProfile
     },
     fetchFail(state,action){
       state.error = action.payload;
@@ -35,6 +42,7 @@ export const checkAuth = () => async(dispatch:AppDispatch)=>{
   try{
     dispatch(fetchStart());
     const {data} = await api.get("/users/profile");
+    console.log(data);
     dispatch(fetchSuccess(data));
   }catch(error){
     dispatch(fetchFail(handleError(error)));
