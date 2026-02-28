@@ -11,9 +11,10 @@ import type {RegisterError,RegisterInput} from './types/authTypes'
 export default function Register() {
 
   const [form, setForm] = useState({
+    name : "",
     email: "",
     password: "",
-    confPassword: "",
+    confirmPassword: "",
   });
   const [error, setError] = useState<RegisterError>({});
   const [loading,setLoading] = useState(false);
@@ -23,7 +24,12 @@ export default function Register() {
 
   const validate = () => {
     const errorObj: RegisterError = {};
-    const { email, password, confPassword } = form;
+    const { email, password, confirmPassword , name } = form;
+    if(!name){
+      errorObj.name = "Name Required!";
+    }else if(name.trim().length < 4){
+      errorObj.name = "Name is too short!"
+    }
 
     if (!email) {
       errorObj.email = "Email is required.";
@@ -37,10 +43,10 @@ export default function Register() {
       errorObj.password = "At least 8 characters.";
     }
 
-    if (!confPassword) {
-      errorObj.confPassword = "Confirm your password.";
-    } else if (confPassword !== password) {
-      errorObj.confPassword = "Passwords do not match.";
+    if (!confirmPassword) {
+      errorObj.confirmPassword = "Confirm your password.";
+    } else if (confirmPassword !== password) {
+      errorObj.confirmPassword = "Passwords do not match.";
     }
 
     setError(errorObj);
@@ -80,9 +86,10 @@ export default function Register() {
   }
 
   const inputArray: RegisterInput[] = [
+    { name: "name", label: "Full Name", type: "text" },
     { name: "email", label: "Email Address", type: "email" },
     { name: "password", label: "Password", type: "password" },
-    { name: "confPassword", label: "Confirm Password", type: "text" },
+    { name: "confirmPassword", label: "Confirm Password", type: "text" },
   ];
 
   return (

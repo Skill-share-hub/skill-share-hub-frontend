@@ -8,6 +8,7 @@ type Props = {
 };
 
 export default function Input({ onChange, label, error, name, type, value }: Props) {
+
   return (
     <div className="relative w-full">
       <input

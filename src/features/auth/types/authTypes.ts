@@ -1,8 +1,9 @@
 
 export type RegisterError = {
+  name?:string;
   email?: string;
   password?: string;
-  confPassword?: string;
+  confirmPassword?: string;
 };
 
 type RegisterKeys = keyof RegisterError;
