@@ -1,22 +1,28 @@
-import type { User } from "../../shared/types/user.Type";
 import StudentDashboard from "./StudentDashboard";
 import TutorDashboard from "./TutorDashboard";
 import AdminDashboard from "./AdminDashboard";
+import { useAppSelector } from "../../shared/hooks/redux";
 
-type Props = {
-  user: User;
-};
 
-const Dashboard = ({ user }: Props) => {
-  if (user.role === "student") {
-    return <StudentDashboard />;
+const Dashboard = () => {
+  const user = useAppSelector((state) => state.user.user);
+
+  if (!user) return null; 
+
+  switch (user.role) {
+    case "student":
+      return <StudentDashboard />;
+
+    case "admin":
+      return <AdminDashboard />;
+
+    case "tutor":
+    case "premiumTutor":
+      return <TutorDashboard />;
+
+    default:
+      return null;
   }
-
-  if (user.role === "admin") {
-    return <AdminDashboard />;
-  }
-
-  return <TutorDashboard role={user.role} />;
 };
 
 export default Dashboard;
