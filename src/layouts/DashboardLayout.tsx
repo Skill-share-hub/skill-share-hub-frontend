@@ -44,7 +44,6 @@ const DashboardLayout = ({ children, role }: Props) => {
             </button>
 
             <div className="w-9 h-9 bg-green-500 text-white rounded-full flex items-center justify-center">
-              S
             </div>
 
           </div>
