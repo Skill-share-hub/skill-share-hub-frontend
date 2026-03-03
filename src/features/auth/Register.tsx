@@ -9,6 +9,7 @@ import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
 import { handleOauth } from "./service";
 import OtpForm from "./components/OtpForm";
+import Template from "./components/Template";
 
 export default function Register() {
 
@@ -79,20 +80,13 @@ export default function Register() {
   return (
     <div className="flex h-[520px] w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl">
         
-        <div className="hidden w-1/2 flex-col justify-center bg-[#145537] p-12 text-white md:flex">
-          <div className="mb-8 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-xl font-bold text-[#145537]">
-              S
-            </div>
-            <div className="text-2xl font-bold">SkillShare Hub</div>
-          </div>
-          <h1 className="mb-4 text-4xl font-extrabold leading-tight">
-            Create Account
-          </h1>
-          <p className="text-lg text-blue-100">
-            Start your learning journey today with our global community.
-          </p>
-        </div>
+        {
+          open ? (
+            <Template h1="SkillShare Hub" h2="Verify Account" p="Start your learning journey today with our global community." />
+          ) : (
+            <Template h1="SkillShare Hub" h2="Create Account" p="Start your learning journey today with our global community." />
+          )
+        }
 
         {
           open ? (
@@ -142,6 +136,6 @@ export default function Register() {
             </div>
           )
         }
-      </div>
+    </div>
   );
 }

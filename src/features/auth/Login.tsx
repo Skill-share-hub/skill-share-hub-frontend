@@ -12,6 +12,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { handleOauth } from "./service";
 import {z} from 'zod'
 import Forgot from "./components/Forget";
+import Template from "./components/Template";
 
 export default function Login() {
 
@@ -71,10 +72,10 @@ export default function Login() {
       return;
     }
     try{
-      // const {data} = await api.post("auth/forgot-otp",form);
-      // if(data.success){
-      //   setOpen(true);
-      // }
+      const {data} = await api.post("/auth/forgot-password",form);
+      if(data.success){
+        setOpen(true);
+      }
     }catch(error){
       if(axios.isAxiosError(error)){
         switch(error.response?.status){
@@ -82,7 +83,6 @@ export default function Login() {
         }
       }
     }
-    setOpen(true);
   }
 
   const inputArray: LoginInput[] = [
@@ -94,7 +94,7 @@ export default function Login() {
     <div className="flex h-[520px] w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl">
 
         {
-          open ? (<Forgot sendOtp={handleForget} form={form}/>) :
+          open ? (<Forgot setOpen={setOpen} sendOtp={handleForget} form={form}/>) :
           (
             <div className="flex w-full flex-col justify-center p-8 md:w-1/2 lg:p-12">
               <div className="mb-6 md:hidden">
@@ -156,20 +156,13 @@ export default function Login() {
           )
         }
 
-        <div className="hidden w-1/2 flex-col justify-center bg-[#145537] p-12 text-white md:flex">
-          <div className="mb-8 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-xl font-bold text-[#145537]">
-              S
-            </div>
-            <div className="text-2xl font-bold">SkillShare Hub</div>
-          </div>
-          <h1 className="mb-4 text-4xl font-extrabold leading-tight">
-            Welcome Back
-          </h1>
-          <p className="text-lg text-blue-100">
-            Sign in to continue your learning journey.
-          </p>
-        </div>
+        {
+          open ? (
+            <Template h1="SkillShare Hub" h2="Reset Password" p="Reset Password and continue your learning journey." />
+          ) : (
+            <Template h1="SkillShare Hub" h2="Welcome Back" p="Sign in to continue your learning journey." />
+          )
+        }
 
       </div>
   );

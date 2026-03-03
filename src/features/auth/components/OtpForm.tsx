@@ -78,7 +78,7 @@ export default function OtpForm(
       </div>
 
       <div className="px-10 py-12 flex flex-col items-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Verify Account</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Verify Email</h1>
         <p className="text-gray-500 text-center text-sm mb-8">
           We've sent a 6-digit code to <span className="font-semibold text-gray-700">{form.email}</span>. 
           Enter it below to complete your registration.
@@ -100,7 +100,7 @@ export default function OtpForm(
             disabled={loading || otp.includes("")}
             className="w-full py-3 cursor-pointer bg-[#134e4a] hover:bg-[#0f3d3a] text-white rounded-lg font-bold text-lg transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center shadow-md"
           >
-            {loading ? <ButtonSpinner /> : "Verify & Continue"}
+            {loading ? <ButtonSpinner /> : "Create Account"}
           </button>
 
           <div className="text-center">
@@ -108,7 +108,7 @@ export default function OtpForm(
             <button
               type="button"
               onClick={()=>{
-                handleOtp();
+                handleOtp()
                 setTime(30);
               }}
               disabled={time > 0}
