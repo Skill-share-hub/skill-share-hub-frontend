@@ -2,20 +2,28 @@ import { createSlice } from "@reduxjs/toolkit";
 import api from "../../shared/services/axios";
 import type { AppDispatch } from "../../store/store";
 import handleError from "../../shared/services/handleError";
+import type { UserRole } from "../../shared/types/user.Type";
 
+interface UserState {
+  login: boolean;
+  role: UserRole | null;
+  loading: boolean;
+  error: string | null;
+}
+const initialState: UserState = {
+  login: false,
+  role: null,
+  loading: true,
+  error: null,
+};
 const userSlice = createSlice({
   name : "user",
-  initialState : {
-    login : false,
-    role : "",
-    loading : false,
-    error : null
-  },
+  initialState ,
   reducers : {
     fetchStart(state){
       state.loading = true
     },
-    fetchSuccess(state,action){
+    fetchSuccess(state, action: { payload: { role: UserRole } }){
       state.loading = false
       state.login = true;
       state.role = action.payload.role
@@ -26,7 +34,7 @@ const userSlice = createSlice({
     },
     setUserLogout(state){
       state.login = false;
-      state.role = "";
+      state.role = null;
     }
   }
 });

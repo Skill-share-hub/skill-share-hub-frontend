@@ -1,21 +1,24 @@
 import DashboardLayout from "../../layouts/DashboardLayout";
+import { useAppSelector } from "../../shared/hooks/redux";
 
-type props={
-role: "tutor" | "premiumTutor";
-}
-const TutorDashboard = ({role}:props) => {
-  return (
-    <DashboardLayout role={role}>
-      <h1>Tutor Dashboard</h1>
-      <div>My Courses</div>
-      <div>Create Course</div>
-      {role === "premiumTutor" && (
-        <div>
-          <h2>Premium Insights</h2>
-          <p>Advanced Analytics</p>
-          <p>Revenue Breakdown</p>
-        </div>      )}
-    </DashboardLayout>
+
+const TutorDashboard = () => {
+  const role = useAppSelector(state => state.user.role);
+   if (!role) return null;
+   return(
+  <DashboardLayout role={role}>
+    <h1>Tutor Dashboard</h1>
+    <div>My Courses</div>
+    <div>Create Course</div>
+
+    {role === "premiumTutor" && (
+      <div>
+        <h2>Premium Insights</h2>
+        <p>Advanced Analytics</p>
+        <p>Revenue Breakdown</p>
+      </div>
+    )}
+  </DashboardLayout>
   );
 };
 

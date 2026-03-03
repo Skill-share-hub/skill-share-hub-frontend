@@ -53,8 +53,8 @@ export default function Login() {
     try{
       setLoading(true);
       await api.post("/auth/login",form);
-      dispatch(checkAuth());
-      navigate('/');
+      await dispatch(checkAuth());
+      navigate('/profile');
     }catch(error){
       if(axios.isAxiosError(error)){  
         if(error.response?.status === 401)setError({email:"User Blocked!"});
