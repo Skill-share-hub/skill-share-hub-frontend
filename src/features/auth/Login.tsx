@@ -51,7 +51,8 @@ export default function Login() {
     try{
       setLoading(true);
       await api.post("/auth/login",form);
-      await dispatch(checkAuth(()=>navigate('/')));
+      dispatch(checkAuth());
+      navigate('/profile');
       
     }catch(error){
       if(axios.isAxiosError(error)){  

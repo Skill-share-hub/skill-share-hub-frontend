@@ -41,6 +41,7 @@ export const checkAuth = (navigate:()=>void) => async (dispatch: AppDispatch) =>
   try {
     dispatch(fetchStart());
     const { data } = await api.get("/users/profile");
+
     if(data.success && navigate){
       navigate();
     }
