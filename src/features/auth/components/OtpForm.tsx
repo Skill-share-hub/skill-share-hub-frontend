@@ -34,8 +34,7 @@ export default function OtpForm(
     try {
       setLoading(true);
       await api.post("/auth/register", { ...form, otp: otp.join("") });
-      dispatch(checkAuth());
-      navigate('/profile');
+      dispatch(checkAuth(()=>{navigate('/profile')}));
     } catch (error) {
       if(axios.isAxiosError(error)){
         switch(error.response?.status){

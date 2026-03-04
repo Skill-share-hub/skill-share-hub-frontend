@@ -37,10 +37,14 @@ const userSlice = createSlice({
   },
 });
 
-export const checkAuth = () => async (dispatch: AppDispatch) => {
+export const checkAuth = (navigate:()=>void) => async (dispatch: AppDispatch) => {
   try {
     dispatch(fetchStart());
     const { data } = await api.get("/users/profile");
+
+    if(data.success && navigate){
+      navigate();
+    }
     dispatch(fetchSuccess(data.data));
   } catch (error) {
     dispatch(fetchFail(handleError(error)));

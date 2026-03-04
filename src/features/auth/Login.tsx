@@ -6,9 +6,9 @@ import axios from "axios";
 import { useAppDispatch } from "../../shared/hooks/redux";
 import { checkAuth } from "../profile/userSlice";
 import ButtonSpinner from "../../shared/components/ButtonSpinner";
-import type {LoginInput} from './authTypes'
+import type {LoginInput} from './types'
 import { type LogFormData, logSchema } from "./validations";
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import { handleOauth } from "./service";
 import {z} from 'zod'
 import Forgot from "./components/Forget";
@@ -53,6 +53,7 @@ export default function Login() {
       await api.post("/auth/login",form);
       dispatch(checkAuth());
       navigate('/profile');
+      
     }catch(error){
       if(axios.isAxiosError(error)){  
         if(error.response?.status === 401){
@@ -90,6 +91,10 @@ export default function Login() {
         }
       }
     }
+  }
+
+  const onSuccess = (credentialResponse:CredentialResponse) => {
+    handleOauth(credentialResponse,dispatch,navigate);
   }
 
   const inputArray: LoginInput[] = [
@@ -153,7 +158,7 @@ export default function Login() {
                 </span>
               </div>
 
-              <GoogleLogin shape="pill" onSuccess={handleOauth} onError={()=>console.log("Login failed")} />
+              <GoogleLogin shape="pill" onSuccess={onSuccess} onError={()=>console.log("Login failed")} />
 
               <div className="mt-6 text-sm text-gray-500 flex justify-center items-center gap-1">
                 <div>Don't have an account?</div>

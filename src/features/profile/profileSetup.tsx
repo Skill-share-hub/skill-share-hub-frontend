@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../../shared/services/axios";
 import { useAppSelector, useAppDispatch } from "../../shared/hooks/redux";
 import { checkAuth } from "../profile/userSlice";
@@ -19,8 +19,6 @@ export default function ProfileSetup() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  if (!user) return <Navigate to="/login" replace />;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -68,6 +66,11 @@ export default function ProfileSetup() {
       setLoading(false);
     }
   };
+
+  if(!user){
+    navigate('/login');
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
