@@ -4,7 +4,7 @@ import './index.css'
 import App from './app/App.tsx'
 import store from './store/store.ts'
 import {Provider} from 'react-redux'
-import { BrowserRouter } from 'react-router'
+import { BrowserRouter } from 'react-router-dom'
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 createRoot(document.getElementById('root')!).render(
