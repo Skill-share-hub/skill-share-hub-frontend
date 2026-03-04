@@ -7,6 +7,7 @@ import Register from "../features/auth/Register";
 import Login from "../features/auth/Login";
 import ProfileSetup from "../features/profile/profileSetup";
 import Dashboard from "../features/dashboard/Dashboard";
+import PublicRoute from "../routes/PublicRoute";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -16,9 +17,11 @@ function App() {
   
   return (
     <Routes>
-      <Route element={<AuthLayout/>}>
-       <Route path="/login" element={<Login/>} />
-       <Route path="/register" element={<Register/>} />
+      <Route element={<PublicRoute />}>
+       <Route element={<AuthLayout/>}>
+        <Route path="/login" element={<Login/>} />
+        <Route path="/register" element={<Register/>} />
+       </Route>
       </Route>
       <Route path="/profile" element={<ProfileSetup /> }/>
       <Route path="/dashboard" element={<Dashboard/> }/>
