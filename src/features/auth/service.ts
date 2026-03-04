@@ -1,8 +1,15 @@
 import api from "../../shared/services/axios";
 import type { CredentialResponse } from "@react-oauth/google";
+import { checkAuth } from "../profile/userSlice";
+import type { AppDispatch } from "../../store/store";
+import type { NavigateFunction } from "react-router-dom";
 
-export const handleOauth = async(credentialResponse:CredentialResponse) =>{
+export const handleOauth = async(
+  credentialResponse:CredentialResponse,
+  dispatch:AppDispatch,
+  navigate:NavigateFunction
+) =>{
   const credential = credentialResponse.credential;
-  const {data} = await api.post("/auth/google",{credential});
-  console.log(data)
+  await api.post("/auth/google",{credential});
+  await dispatch(checkAuth(()=>navigate('/profile')));
 }

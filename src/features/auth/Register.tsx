@@ -2,14 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import ButtonSpinner from "../../shared/components/ButtonSpinner";
 import Input from "../../shared/components/Input";
-import type {RegisterInput} from './authTypes'
+import type {RegisterInput} from './types'
 import { regSchema, type RegFormData } from "./validations";
 import api from "../../shared/services/axios";
 import axios from "axios";
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import { handleOauth } from "./service";
 import OtpForm from "./components/OtpForm";
 import Template from "./components/Template";
+import { useAppDispatch } from "../../shared/hooks/redux";
 
 export default function Register() {
 
@@ -24,6 +25,7 @@ export default function Register() {
   const [open,setOpen] = useState(false);
 
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((pre) => ({ ...pre, [e.target.name]: e.target.value }));
@@ -68,6 +70,10 @@ export default function Register() {
     }finally{
       setLoading(false);
     }
+  }
+
+  const onSuccess = (credentialResponse:CredentialResponse) => {
+    handleOauth(credentialResponse,dispatch,navigate);
   }
 
   const inputArray: RegisterInput[] = [
@@ -127,7 +133,7 @@ export default function Register() {
                 </span>
               </div>
 
-              <GoogleLogin shape="pill" onSuccess={handleOauth} onError={()=>console.log("Login failed!")}/>
+              <GoogleLogin shape="pill" onSuccess={onSuccess} onError={()=>console.log("Login failed!")}/>
 
               <div className="mt-6 text-sm text-gray-500 flex justify-center items-center gap-1">
                 <div>Already have an account?</div>

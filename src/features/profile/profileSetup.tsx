@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../../shared/services/axios";
 import { useAppSelector } from "../../shared/hooks/redux";
 import { useAppDispatch } from "../../shared/hooks/redux";
@@ -18,8 +18,6 @@ export default function ProfileSetup() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!user) return <Navigate to="/login" replace />;
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -33,14 +31,18 @@ export default function ProfileSetup() {
 
     try {
       await api.post("/users/profile", form);
-      await dispatch(checkAuth());
-      navigate("/dashboard");
+      await dispatch(checkAuth(()=>navigate("/dashboard")));
     } catch {
       setError("Profile update failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
+  if(!user){
+    navigate('/login');
+    return null
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">

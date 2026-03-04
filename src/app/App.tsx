@@ -11,8 +11,9 @@ import Dashboard from "../features/dashboard/Dashboard";
 function App() {
   const dispatch = useAppDispatch();
   useEffect(()=>{
-    dispatch(checkAuth());
-  },[dispatch])
+    dispatch(checkAuth(()=>{}));
+  },[dispatch]);
+  
   return (
     <Routes>
       <Route element={<AuthLayout/>}>
