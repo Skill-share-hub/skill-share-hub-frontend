@@ -22,37 +22,58 @@ const DashboardLayout = ({ children }: Props) => {
 
   return (
     <div className="h-screen flex bg-gray-100">
+
+      {/* Sidebar */}
       <aside className="w-64 bg-white border-r flex-shrink-0">
         <Sidebar />
       </aside>
 
+      {/* Main Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
+
+        {/* Top Navbar */}
         <header className="h-16 bg-white border-b flex items-center justify-between px-6">
-          <h1 className="text-lg font-semibold capitalize">
-            {user.role} Dashboard
-          </h1>
 
+
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center gap-8 text-sm text-gray-600">
+            <button className="hover:text-green-700">Home</button>
+            <button className="hover:text-green-700">Courses</button>
+            <button className="hover:text-green-700">My Activity</button>
+          </nav>
+
+          {/* Right Section */}
           <div className="flex items-center gap-6">
-            <span className="text-sm text-gray-600">
-              Welcome {user.name}
-            </span>
 
+            {/* Credits */}
+            <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+              💰 1000
+            </div>
+
+            {/* Notifications */}
+            <span className="text-xl cursor-pointer">🔔</span>
+
+            {/* User Avatar */}
+            <div className="w-9 h-9 bg-green-500 text-white rounded-full flex items-center justify-center">
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+
+            {/* Logout */}
             <button
               onClick={handleLogout}
-              className="text-sm font-medium text-red-500 hover:underline"
+              className="text-sm text-red-500 hover:underline"
             >
               Logout
             </button>
 
-            <div className="w-9 h-9 bg-green-500 text-white rounded-full flex items-center justify-center">
-              {user.name.charAt(0).toUpperCase()}
-            </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6">
+        {/* Page Content */}
+        <main className="flex-1 overflow-y-auto p-8">
           {children}
         </main>
+
       </div>
     </div>
   );

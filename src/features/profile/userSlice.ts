@@ -41,7 +41,7 @@ export const checkAuth = () => async (dispatch: AppDispatch) => {
   try {
     dispatch(fetchStart());
     const { data } = await api.get("/users/profile");
-    dispatch(fetchSuccess(data));
+    dispatch(fetchSuccess(data.data));
   } catch (error) {
     dispatch(fetchFail(handleError(error)));
   }
