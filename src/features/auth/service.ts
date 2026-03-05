@@ -1,6 +1,6 @@
 import api from "../../shared/services/axios";
 import type { CredentialResponse } from "@react-oauth/google";
-import { checkAuth } from "../profile/userSlice";
+import { checkAuth } from "./authSlice";
 import type { AppDispatch } from "../../store/store";
 import type { NavigateFunction } from "react-router-dom";
 
