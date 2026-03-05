@@ -1,11 +1,11 @@
 import { useEffect } from "react"
-import { checkAuth } from "../features/profile/userSlice";
+import { checkAuth } from "../features/auth/authSlice";
 import { useAppDispatch } from "../shared/hooks/redux";
 import { Route, Routes } from "react-router";
 import AuthLayout from "../layouts/AuthLayout";
 import Register from "../features/auth/pages/Register";
 import Login from "../features/auth/pages/Login";
-import ProfileSetup from "../features/profile/tutor/profileSetup";
+import ProfileSetup from "../features/profile/profileSetup";
 import Dashboard from "../features/dashboard/Dashboard";
 import PublicRoute from "../routes/PublicRoute";
 
