@@ -8,6 +8,7 @@ import Login from "../features/auth/pages/Login";
 // import ProfileSetup from "../features/profile/profileSetup";
 import Dashboard from "../features/dashboard/Dashboard";
 import PublicRoute from "../routes/PublicRoute";
+import Home from "../features/home/Home";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -17,6 +18,7 @@ function App() {
 
   return (
     <Routes>
+      <Route path="/" element={<Home />} />
       <Route element={<PublicRoute />}>
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
