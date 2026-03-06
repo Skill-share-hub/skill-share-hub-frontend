@@ -7,6 +7,7 @@ import type { RootState, AppDispatch } from "../../../store/store"
 import { updateFields, prevStep, resetCourse } from "../slice/courseCreationSlice"
 import { submitCourse } from "../thunk/course.thunk"
 import { useNavigate } from "react-router-dom"
+import { toast } from "react-hot-toast"
 
 const publishSchema = z.object({
     thumbnailUrl: z.string().optional(),
@@ -50,12 +51,11 @@ export default function CoursePublishStep() {
 
             await dispatch(submitCourse({ statusOverride: "pending", thumbnailFile: selectedFile })).unwrap()
 
-            alert("Course submitted for review!")
+            toast.success("Course submitted for review!")
             navigate("/tutor/courses")
             dispatch(resetCourse())
         } catch (error) {
             console.error("Course publish failed", error)
-            alert("Failed to publish course. Please try again.")
         } finally {
             setIsPublishing(false)
         }
@@ -75,12 +75,11 @@ export default function CoursePublishStep() {
 
             await dispatch(submitCourse({ statusOverride: "draft", thumbnailFile: selectedFile })).unwrap()
 
-            alert("Course saved as draft!")
+            toast.success("Course saved as draft!")
             navigate("/tutor/courses")
             dispatch(resetCourse())
         } catch (error) {
             console.error("Save draft failed", error)
-            alert("Failed to save draft. Please try again.")
         } finally {
             setIsSavingDraft(false)
         }
