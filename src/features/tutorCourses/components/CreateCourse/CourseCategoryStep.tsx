@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { updateFields, nextStep, prevStep } from "../slice/courseCreationSlice"
-import type { RootState } from "../../../store/store"
+import { updateFields, nextStep, prevStep } from "../../slice/courseCreationSlice"
+import type { RootState } from "../../../../store/store"
 
 const categorySchema = z.object({
     category: z.string().min(1, "Please select a category"),
@@ -20,7 +20,6 @@ export default function CourseCategoryStep() {
     const isPremiumTutor = user?.role === "premiumTutor"
 
     const {
-        register,
         handleSubmit,
         setValue,
         watch,
@@ -65,35 +64,6 @@ export default function CourseCategoryStep() {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                {/* Course Category */}
-                {/* <div className="mb-8">
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                        Course Category
-                    </label>
-                    <p className="text-sm text-gray-500 mb-3">
-                        Select the primary industry or field your course belongs to.
-                    </p>
-                    <div className="relative">
-                        <select
-                            {...register("category")}
-                            className={`w-full appearance-none border ${errors.category ? "border-red-500" : "border-gray-200"} rounded-lg px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent bg-white cursor-pointer`}
-                        >
-                            <option value="" disabled>Select a category (e.g. Design, Business, Technology)</option>
-                            <option value="Design">Design</option>
-                            <option value="Technology">Technology</option>
-                            <option value="Business">Business</option>
-                            <option value="Marketing">Marketing</option>
-                            <option value="Development">Development</option>
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                            </svg>
-                        </div>
-                    </div>
-                    {errors.category && <p className="mt-1 text-sm text-red-500">{errors.category.message}</p>}
-                </div> */}
-
                 {/* Course Type */}
                 <div className="mb-10">
                     <label className="block text-sm font-semibold text-gray-900 mb-2">

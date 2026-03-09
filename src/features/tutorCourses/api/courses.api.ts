@@ -18,6 +18,11 @@ export const updateCourse = async (id: string, courseData: FormData) => {
     return response.data
 }
 
+export const getTutorCourses = async () => {
+    const response = await api.get("/courses")
+    return response.data.data
+}
+
 export const getCourseById = async (id: string) => {
     const response = await api.get(`/courses/${id}`)
     return response.data

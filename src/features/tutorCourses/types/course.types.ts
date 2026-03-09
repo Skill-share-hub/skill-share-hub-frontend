@@ -1,22 +1,25 @@
 export interface CourseBuilderState {
-    step: number
+  id?: string
+  step: number
 
-    title: string
-    description: string
+  title: string
+  description: string
 
-    category: string
-    courseLevel: "Beginner" | "Intermediate" | "Expert" | ""
+  category: string
+  courseLevel: "beginner" | "intermediate" | "expert" | ""
 
-    courseType: "paid" | "credit"
+  courseType: "paid" | "credit"
 
-    price: number
-    creditCost: number
+  price: number
+  creditCost: number
 
-    thumbnailUrl: string
+  thumbnailUrl: string
 
-    status: "draft" | "pending" | "published"
+  courseSkills: string[]
 
-    isSubmitting?: boolean
+  status: "draft" | "pending" | "published"
+
+  isSubmitting?: boolean
 }
 
 export interface Course {

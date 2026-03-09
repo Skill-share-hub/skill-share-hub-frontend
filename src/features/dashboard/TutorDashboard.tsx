@@ -7,7 +7,9 @@ const TutorDashboard = () => {
   if (!user) return null;
 
   return (
-    <DashboardLayout>
+    <div>
+
+ 
 
       {/* Welcome Section */}
       <div className="flex justify-between items-center mb-8">
@@ -97,7 +99,7 @@ const TutorDashboard = () => {
         </div>
       )}
 
-    </DashboardLayout>
+       </div>
   );
 };
 

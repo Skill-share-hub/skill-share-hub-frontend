@@ -7,12 +7,13 @@ import Register from "../features/auth/pages/Register";
 import Login from "../features/auth/pages/Login";
 import Dashboard from "../features/dashboard/Dashboard";
 import PublicRoute from "../routes/PublicRoute";
-import CreateCoursePage from "../features/courses/pages/CreateCoursePage";
+import CreateCoursePage from "../features/tutorCourses/pages/CreateCoursePage";
 import Home from "../features/home/Home"; // added
 import { Toaster } from "react-hot-toast";
 import MyCoursesPage from "../features/tutorCourses/pages/MyCoursesPage";
 
-import EditCoursePage from "../features/courses/pages/EditCoursePage";
+import EditCoursePage from "../features/tutorCourses/pages/EditCoursePage";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -38,10 +39,12 @@ function App() {
         </Route>
 
         {/* Protected / App Routes */}
+        <Route path="/" element={<DashboardLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/create-course" element={<CreateCoursePage />} />
         <Route path="/my-courses" element={<MyCoursesPage />} />
         <Route path="/edit-course/:id" element={<EditCoursePage />} />
+        </Route>
       </Routes>
     </>
   );

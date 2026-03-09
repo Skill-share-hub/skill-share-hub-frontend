@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import type { RootState } from "../../../store/store"
-import { updateFields, nextStep, prevStep } from "../slice/courseCreationSlice"
+import type { RootState } from "../../../../store/store"
+import { updateFields, nextStep, prevStep } from "../../slice/courseCreationSlice"
 
 const pricingSchema = z.object({
     price: z.number().min(0, "Price cannot be negative"),

@@ -1,11 +1,11 @@
 import { useSelector } from "react-redux"
 import type { RootState } from "../../../store/store"
 
-import CourseStepper from "../components/CourseStepper"
-import CourseBasicInfoStep from "../components/CourseBasicInfoStep"
-import CourseCategoryStep from "../components/CourseCategoryStep"
-import CoursePricingStep from "../components/CoursePricingStep"
-import CoursePublishStep from "../components/CoursePublishStep"
+import CourseStepper from "../components/CreateCourse/CourseStepper"
+import CourseBasicInfoStep from "../components/CreateCourse/CourseBasicInfoStep"
+import CourseCategoryStep from "../components/CreateCourse/CourseCategoryStep"
+import CoursePricingStep from "../components/CreateCourse/CoursePricingStep"
+import CoursePublishStep from "../components/CreateCourse/CoursePublishStep"
 
 export default function CreateCoursePage() {
 

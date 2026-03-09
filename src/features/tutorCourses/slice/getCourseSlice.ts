@@ -12,8 +12,8 @@ const initialState:CourseState = {
     error:null
 }
 
-const getCourseSlice = createSlice({
-    name:"getCourse",
+const courseSlice = createSlice({
+    name:"courses",
     initialState,
     reducers:{},
     extraReducers:(builder)=>{
@@ -32,4 +32,4 @@ const getCourseSlice = createSlice({
     }
 })
 
-export default getCourseSlice.reducer
+export default courseSlice.reducer

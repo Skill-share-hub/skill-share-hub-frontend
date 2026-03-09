@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { RootState } from "../../../store/store";
-import { createCourse, getTutorCourses } from "../courses.api";
+import { createCourse, updateCourse, getTutorCourses } from "../api/courses.api";
 
 export const submitCourse = createAsyncThunk(
     "course/submit",
@@ -20,13 +20,23 @@ export const submitCourse = createAsyncThunk(
         formData.append("courseLevel", course.courseLevel);
         formData.append("price", String(course.price));
         formData.append("creditCost", String(course.creditCost));
+
+        // Append skills array
+        course.courseSkills.forEach((skill) => {
+            formData.append("courseSkills[]", skill);
+        });
+
         // Append the actual file if it exists
         if (thumbnailFile) {
             formData.append("thumbnailUrl", thumbnailFile);
         }
 
-
-        const data = await createCourse(formData);
+        let data;
+        if (course.id) {
+            data = await updateCourse(course.id, formData);
+        } else {
+            data = await createCourse(formData);
+        }
         return data;
     }
 );

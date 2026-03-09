@@ -1,31 +1,39 @@
 import { useAppSelector } from "../../shared/hooks/redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import type { UserRole } from "../../shared/types/user.Type";
+import { LayoutGrid, BookOpen, DollarSign, Settings, PieChart, Users, FileText, CheckCircle2 } from "lucide-react";
 
-const navConfig: Record<UserRole, { label: string; path: string }[]> = {
+interface NavItem {
+  label: string;
+  path: string;
+  icon: any;
+}
+
+const navConfig: Record<UserRole, NavItem[]> = {
   student: [
-    { label: "Dashboard", path: "/dashboard" },
-    { label: "My Learning", path: "/courses" },
-    { label: "Progress", path: "/progress" },
+    { label: "Dashboard", path: "/dashboard", icon: LayoutGrid },
+    { label: "My Learning", path: "/courses", icon: BookOpen },
+    { label: "Progress", path: "/progress", icon: PieChart },
   ],
   tutor: [
-    { label: "Dashboard", path: "/dashboard" },
-    { label: "My Courses", path: "/my-courses" },
-    { label: "Create Course", path: "/create-course" },
+    { label: "Dashboard", path: "/dashboard", icon: LayoutGrid },
+    { label: "My Courses", path: "/my-courses", icon: BookOpen },
+    { label: "Revenue", path: "/revenue", icon: DollarSign },
+    { label: "Settings", path: "/settings", icon: Settings },
   ],
   premiumTutor: [
-    { label: "Dashboard", path: "/dashboard" },
-    { label: "My Courses", path: "/my-courses" },
-    { label: "Create Course", path: "/create-course" },
-    { label: "Analytics", path: "/analytics" },
-    { label: "Revenue", path: "/revenue" },
+    { label: "Dashboard", path: "/dashboard", icon: LayoutGrid },
+    { label: "My Courses", path: "/my-courses", icon: BookOpen },
+    { label: "Analytics", path: "/analytics", icon: PieChart },
+    { label: "Revenue", path: "/revenue", icon: DollarSign },
+    { label: "Settings", path: "/settings", icon: Settings },
   ],
   admin: [
-    { label: "Dashboard", path: "/dashboard" },
-    { label: "Users", path: "/users" },
-    { label: "Approvals", path: "/approvals" },
-    { label: "Reports", path: "/reports" },
-    { label: "Settings", path: "/settings" },
+    { label: "Dashboard", path: "/dashboard", icon: LayoutGrid },
+    { label: "Users", path: "/users", icon: Users },
+    { label: "Approvals", path: "/approvals", icon: CheckCircle2 },
+    { label: "Reports", path: "/reports", icon: FileText },
+    { label: "Settings", path: "/settings", icon: Settings },
   ],
 };
 
@@ -42,12 +50,17 @@ const Sidebar = () => {
 
       {/* Logo */}
       <div className="h-16 flex items-center gap-3 px-5 flex-shrink-0">
-        <div className="w-8 h-8 rounded-lg bg-green-800 flex items-center justify-center text-base flex-shrink-0">
-          📚
+        <div className="w-8 h-8 rounded-lg bg-green-700 flex items-center justify-center text-white flex-shrink-0 shadow-sm">
+          <BookOpen size={18} />
         </div>
-        <span className="text-[15px] font-bold text-gray-900 tracking-tight">
-          Skill<span className="text-green-800">Share</span> Hub
-        </span>
+        <div className="flex flex-col">
+          <span className="text-[15px] font-bold text-gray-900 tracking-tight leading-none">
+            Skill<span className="text-green-700">Share</span>
+          </span>
+          <span className="text-[10px] font-bold text-gray-400 tracking-[0.2em] uppercase mt-0.5">
+            Tutor Hub
+          </span>
+        </div>
       </div>
 
       {/* Nav */}
@@ -58,16 +71,17 @@ const Sidebar = () => {
 
         {items.map((item) => {
           const active = location.pathname === item.path;
+          const Icon = item.icon;
           return (
             <button
               key={item.label}
               onClick={() => navigate(item.path)}
-              className={`w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-md text-[13.5px] transition-all duration-100 border-l-[3px] ${
-                active
-                  ? "bg-green-50 border-green-800 text-green-800 font-semibold"
-                  : "border-transparent text-gray-500 font-normal hover:bg-gray-50 hover:text-gray-900"
-              }`}
+              className={`w-full text-left flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13.5px] transition-all duration-200 ${active
+                ? "bg-green-50 text-green-700 font-bold shadow-sm border-r-4 border-green-700 rounded-r-none"
+                : "text-gray-500 font-medium hover:bg-gray-50 hover:text-gray-900"
+                }`}
             >
+              <Icon size={18} className={active ? "text-green-700" : "text-gray-400"} />
               {item.label}
             </button>
           );

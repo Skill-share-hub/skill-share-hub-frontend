@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from "react-redux"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import type { RootState, AppDispatch } from "../../../store/store"
-import { updateFields, prevStep, resetCourse } from "../slice/courseCreationSlice"
-import { submitCourse } from "../thunk/course.thunk"
+import type { RootState, AppDispatch } from "../../../../store/store"
+import { updateFields, prevStep, resetCourse } from "../../slice/courseCreationSlice"
+import { submitCourse } from "../../thunk/course.thunk"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-hot-toast"
 
@@ -51,8 +51,8 @@ export default function CoursePublishStep() {
 
             await dispatch(submitCourse({ statusOverride: "pending", thumbnailFile: selectedFile })).unwrap()
 
-            toast.success("Course submitted for review!")
-            navigate("/tutor/courses")
+            toast.success(course.id ? "Course updated successfully!" : "Course submitted for review!")
+            navigate("/my-courses")
             dispatch(resetCourse())
         } catch (error) {
             console.error("Course publish failed", error)
@@ -75,7 +75,7 @@ export default function CoursePublishStep() {
 
             await dispatch(submitCourse({ statusOverride: "draft", thumbnailFile: selectedFile })).unwrap()
 
-            toast.success("Course saved as draft!")
+            toast.success(course.id ? "Course update saved as draft!" : "Course saved as draft!")
             navigate("/tutor/courses")
             dispatch(resetCourse())
         } catch (error) {
@@ -197,7 +197,7 @@ export default function CoursePublishStep() {
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                                 </svg>
                             )}
-                            {isPublishing ? "Publishing..." : "Publish Course"}
+                            {isPublishing ? (course.id ? "Updating..." : "Publishing...") : (course.id ? "Update Course" : "Publish Course")}
                             {!isPublishing && (
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />

@@ -17,6 +17,7 @@ const initialState: CourseBuilderState = {
     creditCost: 0,
 
     thumbnailUrl: "",
+    courseSkills: [],
 
     status: "draft",
 
@@ -50,6 +51,10 @@ const courseBuilderSlice = createSlice({
             state.step -= 1
         },
 
+        setCourse(_state, action: PayloadAction<CourseBuilderState>) {
+            return { ...action.payload }
+        },
+
         resetCourse() {
             return initialState
         },
@@ -68,7 +73,7 @@ const courseBuilderSlice = createSlice({
     }
 })
 
-export const { updateField, updateFields, nextStep, prevStep, resetCourse } =
+export const { updateField, updateFields, nextStep, prevStep, resetCourse, setCourse } =
     courseBuilderSlice.actions
 
 export default courseBuilderSlice.reducer

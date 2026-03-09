@@ -2,14 +2,14 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 import type { RootState } from "../../../store/store"
-import { setCourse } from "../slice/courseCreationSlice"
+import { resetCourse, setCourse } from "../slice/courseCreationSlice"
 import { getCourseById } from "../api/courses.api"
 
-import CourseStepper from "../components/CourseStepper"
-import CourseBasicInfoStep from "../components/CourseBasicInfoStep"
-import CourseCategoryStep from "../components/CourseCategoryStep"
-import CoursePricingStep from "../components/CoursePricingStep"
-import CoursePublishStep from "../components/CoursePublishStep"
+import CourseStepper from "../components/CreateCourse/CourseStepper"
+import CourseBasicInfoStep from "../components/CreateCourse/CourseBasicInfoStep"
+import CourseCategoryStep from "../components/CreateCourse/CourseCategoryStep"
+import CoursePricingStep from "../components/CreateCourse/CoursePricingStep"
+import CoursePublishStep from "../components/CreateCourse/CoursePublishStep"
 import { toast } from "react-hot-toast"
 
 export default function EditCoursePage() {
@@ -29,10 +29,10 @@ export default function EditCoursePage() {
                 const response = await getCourseById(id)
                 if (response.success) {
                     const courseData = response.data
-                    // Map backend data to frontend state
+        
                     dispatch(setCourse({
                         id: courseData._id,
-                        step: 1, // Start at step 1 for editing
+                        step: 1,
                         title: courseData.title,
                         description: courseData.description,
                         category: courseData.category,
@@ -56,10 +56,9 @@ export default function EditCoursePage() {
 
         fetchCourse()
 
-        // Clean up on unmount? Maybe not, usually course state is global
-        // but it's good to reset if we leave the edit flow
+       
         return () => {
-            // dispatch(resetCourse()) // optionally reset
+            dispatch(resetCourse())
         }
     }, [id, dispatch])
 
