@@ -1,19 +1,38 @@
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import type { Course } from "../types/course.types"
-import { Users, Clock, MoreVertical, Edit2, BarChart2 } from "lucide-react"
-
+import { Users, Clock, MoreVertical, Edit2, BarChart2, CloudUpload, Loader2 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { useDispatch } from "react-redux"
+import type { AppDispatch } from "../../../store/store"
+import toast from "react-hot-toast"
+import { publishCourse } from "../thunk/course.thunk"
 interface Props {
   course: Course
 }
 
 const CourseCard = ({ course }: Props) => {
   const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>()
+  const [isPublishing, setIsPublishing] = useState(false)
 
   const statusStyles = {
     published: "bg-green-100 text-green-700",
     draft: "bg-gray-100 text-gray-700",
     pending: "bg-yellow-100 text-yellow-700",
   }
+  const handlePublishCourse = async (courseId: string) => {
+    setIsPublishing(true)
+    try {
+      await dispatch(publishCourse(courseId)).unwrap();
+      toast.success("Course published successfully!");
+    } catch (error) {
+      console.error("Course publishing failed", error);
+      toast.error("Course publishing failed");
+    } finally {
+      setIsPublishing(false)
+    }
+  };
 
   // Format creation date
   const createdDate = course.createdAt ? new Date(course.createdAt) : new Date()
@@ -24,7 +43,10 @@ const CourseCard = ({ course }: Props) => {
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col h-full group">
       {/* Thumbnail with Status Badge */}
-      <div className="relative aspect-video overflow-hidden">
+      <div
+        onClick={() => navigate(`/course-overview/${course._id}`)}
+        className="relative aspect-video overflow-hidden cursor-pointer"
+      >
         <img
           src={course.thumbnailUrl || "/api/placeholder/400/225"}
           alt={course.title}
@@ -43,7 +65,10 @@ const CourseCard = ({ course }: Props) => {
       {/* Content */}
       <div className="p-5 flex flex-col flex-1">
         <div className="flex justify-between items-start mb-2 gap-2">
-          <h3 className="font-bold text-gray-900 text-lg leading-tight line-clamp-2 min-h-[2.5rem]">
+          <h3
+            onClick={() => navigate(`/course-overview/${course._id}`)}
+            className="font-bold text-gray-900 text-lg leading-tight line-clamp-2 min-h-[2.5rem] cursor-pointer hover:text-secondary transition-colors"
+          >
             {course.title}
           </h3>
           <button className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-50 transition-colors">
@@ -70,16 +95,58 @@ const CourseCard = ({ course }: Props) => {
 
         {/* Footer Actions */}
         <div className="mt-auto flex gap-3 pt-4 border-t border-gray-50">
-          <button
-            onClick={() => navigate(`/edit-course/${course._id}`)}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-95"
-          >
-            <Edit2 size={16} />
-            Edit Course
-          </button>
-          <button className="flex items-center justify-center w-11 h-11 rounded-xl bg-gray-50 text-gray-500 hover:bg-green-50 hover:text-green-700 transition-all border border-transparent hover:border-green-100 active:scale-95">
-            <BarChart2 size={18} />
-          </button>
+          {course.status == "draft" ? (
+            <button
+              onClick={() => handlePublishCourse(course._id)}
+              disabled={isPublishing}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-gray-200 text-sm font-semibold text-white bg-secondary hover:bg-secondary/90 transition-all ${isPublishing ? 'opacity-80 cursor-not-allowed' : 'active:scale-95'}`}
+            >
+              <AnimatePresence mode="wait">
+                {isPublishing ? (
+                  <motion.div
+                    key="publishing"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="flex items-center gap-2"
+                  >
+                    <Loader2 size={16} className="animate-spin" />
+                    <span>Publishing...</span>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="publish"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="flex items-center gap-2"
+                  >
+                    <CloudUpload size={16} />
+                    <span>Publish Course</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate(`/edit-course/${course._id}`)}
+              disabled={isPublishing}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-gray-200 text-sm font-semibold text-white bg-secondary hover:bg-secondary transition-all ${isPublishing ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}`}
+            >
+              <Edit2 size={16} />
+              Edit Course
+            </button>
+          )}
+
+          {course.status == "draft" && (
+            <button
+              disabled={isPublishing}
+              className={`flex items-center justify-center w-11 h-11 rounded-xl bg-gray-50 text-gray-500 hover:bg-secondary hover:text-white transition-all border border-transparent active:scale-95 ${isPublishing ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={() => navigate(`/edit-course/${course._id}`)}
+            >
+              <Edit2 size={16} />
+            </button>
+          )}
         </div>
       </div>
     </div>

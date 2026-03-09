@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 import type { RootState } from "../../../store/store"
 import { resetCourse, setCourse } from "../slice/courseCreationSlice"
-import { getCourseById } from "../api/courses.api"
+import { getCourseByIdApi } from "../api/courses.api"
 
 import CourseStepper from "../components/CreateCourse/CourseStepper"
 import CourseBasicInfoStep from "../components/CreateCourse/CourseBasicInfoStep"
@@ -26,7 +26,7 @@ export default function EditCoursePage() {
             if (!id) return
             try {
                 setIsLoading(true)
-                const response = await getCourseById(id)
+                const response = await getCourseByIdApi(id)
                 if (response.success) {
                     const courseData = response.data
         

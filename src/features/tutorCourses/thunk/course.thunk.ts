@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { RootState } from "../../../store/store";
-import { createCourse, updateCourse, getTutorCourses } from "../api/courses.api";
+import { createCourseApi, updateCourseApi, getTutorCoursesApi, publishCourseApi } from "../api/courses.api";
 
 export const submitCourse = createAsyncThunk(
     "course/submit",
@@ -23,7 +23,7 @@ export const submitCourse = createAsyncThunk(
 
         // Append skills array
         course.courseSkills.forEach((skill) => {
-            formData.append("courseSkills[]", skill);
+            formData.append("courseSkills", skill);
         });
 
         // Append the actual file if it exists
@@ -33,9 +33,9 @@ export const submitCourse = createAsyncThunk(
 
         let data;
         if (course.id) {
-            data = await updateCourse(course.id, formData);
+            data = await updateCourseApi(course.id, formData);
         } else {
-            data = await createCourse(formData);
+            data = await createCourseApi(formData);
         }
         return data;
     }
@@ -43,8 +43,16 @@ export const submitCourse = createAsyncThunk(
 
 export const fetchTutorCourses = createAsyncThunk(
     "course/fetch",
-    async () => {
-        const data = await getTutorCourses();
+    async ({ page, limit }: { page?: number, limit?: number } = {}) => {
+        const data = await getTutorCoursesApi(page, limit);
+        return data;
+    }
+)
+
+export const publishCourse = createAsyncThunk(
+    "course/publish",
+    async (courseId: string) => {
+        const data = await publishCourseApi(courseId);
         return data;
     }
 )

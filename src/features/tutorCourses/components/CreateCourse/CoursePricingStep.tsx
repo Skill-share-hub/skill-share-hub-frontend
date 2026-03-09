@@ -33,6 +33,11 @@ export default function CoursePricingStep() {
         },
     })
 
+    // To help debug why the form might not be submitting
+    if (Object.keys(errors).length > 0) {
+        console.log("Pricing Form Errors:", errors)
+    }
+
     useEffect(() => {
         setValue("price", course.price || (isPremiumTutor ? 49.99 : 0))
         setValue("creditCost", course.creditCost || (isPremiumTutor ? 12 : 0))
