@@ -34,11 +34,11 @@ export const fetchCourses = createAsyncThunk(
 
             const params: FetchCoursesParams = {
                 ...filters,
-                search,
                 page,
-                limit: 12
+                limit: 12,
+                ...(search ? { q: search } : {})
             };
-
+            
             const response = await courseService.fetchCourses(params);
             return response;
         } catch (error) {
@@ -77,8 +77,8 @@ const courseSlice = createSlice({
             .addCase(fetchCourses.fulfilled, (state, action) => {
                 state.loading = false;
                 state.list = action.payload.data;
-                state.totalPages = action.payload.pagination.totalPages;
-                state.page = action.payload.pagination.page;
+                state.totalPages = (action.payload as any)?.pagination?.totalPages || (action.payload as any)?.totalPages || 1;
+                state.page = (action.payload as any)?.pagination?.page || (action.payload as any)?.page || 1;
             })
             .addCase(fetchCourses.rejected, (state, action) => {
                 state.loading = false;

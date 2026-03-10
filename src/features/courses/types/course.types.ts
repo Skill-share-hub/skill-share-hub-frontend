@@ -3,20 +3,26 @@ export interface Course {
     title: string;
     description: string;
     category: string;
+
+    courseLevel?: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
+
     courseType: 'paid' | 'credit';
     price?: number;
     creditCost?: number;
+
     thumbnailUrl: string;
+
     ratingsAverage: number;
     totalEnrollments: number;
+
     status: 'draft' | 'published';
+
     tutor: {
         _id: string;
         name: string;
         avatarUrl?: string;
     };
 }
-
 export interface CourseFilters {
     category?: string;
     priceType?: 'paid' | 'credit' | '';
@@ -26,7 +32,7 @@ export interface CourseFilters {
 }
 
 export interface FetchCoursesParams extends CourseFilters {
-    search?: string;
+    q?: string;
     page?: number;
     limit?: number;
 }
