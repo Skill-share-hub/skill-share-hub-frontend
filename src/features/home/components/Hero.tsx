@@ -63,7 +63,7 @@ export default function Hero() {
               className="flex flex-col sm:flex-row gap-4"
             >
               <Link
-                to="/explore"
+                to="/courses"
                 className="px-6 py-3 bg-[#145537] text-white text-sm lg:text-base font-medium rounded-full shadow-[0_4px_14px_0_rgba(20,85,55,0.39)] hover:shadow-[0_6px_20px_rgba(20,85,55,0.23)] hover:-translate-y-0.5 transition-all duration-200 text-center"
               >
                 Explore Courses
