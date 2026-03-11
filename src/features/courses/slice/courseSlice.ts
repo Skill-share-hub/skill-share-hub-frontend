@@ -33,12 +33,24 @@ export const fetchCourses = createAsyncThunk(
             const { search, filters, page } = state.courses;
 
             const params: FetchCoursesParams = {
-                ...filters,
                 page,
                 limit: 12,
-                ...(search ? { q: search } : {})
+
+                ...(search && { q: search }),
+
+                ...(filters.category && { c: filters.category }),
+                ...(filters.type && { type: filters.type }),
+
+                ...(filters.minPrice !== undefined && { minPrice: filters.minPrice }),
+                ...(filters.maxPrice !== undefined && { maxPrice: filters.maxPrice }),
+
+                ...(filters.rating && { rating: filters.rating }),
+
+                ...(filters.sort && { sort: filters.sort }),
+
+                ...(filters.recommended && { recommended: filters.recommended }),
             };
-            
+
             const response = await courseService.fetchCourses(params);
             return response;
         } catch (error) {

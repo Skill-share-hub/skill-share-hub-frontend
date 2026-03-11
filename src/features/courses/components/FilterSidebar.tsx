@@ -48,7 +48,7 @@ export default function FilterSidebar() {
 
       <div className="space-y-6">
 
-        {/* Category */}
+        {/* CATEGORY */}
         <div>
           <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">
             Category
@@ -62,7 +62,7 @@ export default function FilterSidebar() {
                 name="category"
                 checked={!filters.category}
                 onChange={() => handleFilterChange('category', '')}
-                className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-600"
+                className="w-4 h-4 text-green-600 border-gray-300"
               />
               <span className="ml-2 text-gray-700">All Categories</span>
             </label>
@@ -74,8 +74,10 @@ export default function FilterSidebar() {
                   name="category"
                   value={cat}
                   checked={filters.category === cat}
-                  onChange={(e) => handleFilterChange('category', e.target.value)}
-                  className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-600"
+                  onChange={(e) =>
+                    handleFilterChange('category', e.target.value)
+                  }
+                  className="w-4 h-4 text-green-600 border-gray-300"
                 />
                 <span className="ml-2 text-gray-700">{cat}</span>
               </label>
@@ -84,7 +86,7 @@ export default function FilterSidebar() {
           </div>
         </div>
 
-        {/* Course Type */}
+        {/* COURSE TYPE */}
         <div>
           <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">
             Course Type
@@ -95,21 +97,21 @@ export default function FilterSidebar() {
             <label className="flex items-center cursor-pointer">
               <input
                 type="radio"
-                name="priceType"
-                checked={!filters.priceType}
-                onChange={() => handleFilterChange('priceType', '')}
+                name="type"
+                checked={!filters.type}
+                onChange={() => handleFilterChange('type', '')}
                 className="w-4 h-4 text-green-600 border-gray-300"
               />
-              <span className="ml-2 text-gray-700">Any Type</span>
+              <span className="ml-2 text-gray-700">All</span>
             </label>
 
             <label className="flex items-center cursor-pointer">
               <input
                 type="radio"
-                name="priceType"
+                name="type"
                 value="paid"
-                checked={filters.priceType === 'paid'}
-                onChange={(e) => handleFilterChange('priceType', e.target.value)}
+                checked={filters.type === 'paid'}
+                onChange={(e) => handleFilterChange('type', e.target.value)}
                 className="w-4 h-4 text-green-600 border-gray-300"
               />
               <span className="ml-2 text-gray-700">Paid</span>
@@ -118,10 +120,10 @@ export default function FilterSidebar() {
             <label className="flex items-center cursor-pointer">
               <input
                 type="radio"
-                name="priceType"
+                name="type"
                 value="credit"
-                checked={filters.priceType === 'credit'}
-                onChange={(e) => handleFilterChange('priceType', e.target.value)}
+                checked={filters.type === 'credit'}
+                onChange={(e) => handleFilterChange('type', e.target.value)}
                 className="w-4 h-4 text-purple-600 border-gray-300"
               />
               <span className="ml-2 text-gray-700">Credit Based</span>
@@ -130,67 +132,56 @@ export default function FilterSidebar() {
           </div>
         </div>
 
-        {/* Price Range */}
-        {filters.priceType === 'paid' && (
-          <div>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">
-              Price
-            </h3>
+        {/* PRICE RANGE */}
+        <div>
+          <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">
+            Price Range
+          </h3>
 
-            <select
-              value={filters.priceRange || ''}
-              onChange={(e) => handleFilterChange('priceRange', e.target.value)}
-              className="w-full text-sm rounded-md border-gray-300 focus:ring-green-500 focus:border-green-500"
-            >
-              <option value="">Any Price</option>
-              <option value="0-50">Under $50</option>
-              <option value="50-100">$50 - $100</option>
-              <option value="100-200">$100 - $200</option>
-              <option value="200+">Over $200</option>
-            </select>
-          </div>
-        )}
+          <select
+            value={`${filters.minPrice ?? ''}-${filters.maxPrice ?? ''}`}
+            onChange={(e) => {
+              const [min, max] = e.target.value.split('-');
 
-        {/* Credit Range */}
-        {filters.priceType === 'credit' && (
-          <div>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">
-              Credits
-            </h3>
+              handleFilterChange('minPrice', min ? Number(min) : undefined);
+              handleFilterChange('maxPrice', max ? Number(max) : undefined);
+            }}
+            className="w-full text-sm rounded-md border-gray-300"
+          >
+            <option value="">Any Price</option>
+            <option value="0-50">Under $50</option>
+            <option value="50-100">$50 - $100</option>
+            <option value="100-200">$100 - $200</option>
+            <option value="200-">Over $200</option>
+          </select>
+        </div>
 
-            <select
-              value={filters.creditRange || ''}
-              onChange={(e) => handleFilterChange('creditRange', e.target.value)}
-              className="w-full text-sm rounded-md border-gray-300 focus:ring-purple-500 focus:border-purple-500"
-            >
-              <option value="">Any Credits</option>
-              <option value="0-20">0 - 20 Credits</option>
-              <option value="20-50">20 - 50 Credits</option>
-              <option value="50+">50+ Credits</option>
-            </select>
-          </div>
-        )}
-
-        {/* Rating */}
+        {/* RATING */}
         <div>
           <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">
             Rating
           </h3>
 
           <div className="space-y-2 text-sm">
-            {[4.5, 4, 3.5, 3].map((rating) => (
+
+            {[5, 4, 3, 2].map((rating) => (
               <label key={rating} className="flex items-center cursor-pointer">
+
                 <input
                   type="radio"
                   name="rating"
-                  value={rating.toString()}
-                  checked={filters.rating === rating.toString()}
-                  onChange={(e) => handleFilterChange('rating', e.target.value)}
+                  checked={filters.rating === rating}
+                  onChange={() => handleFilterChange('rating', rating)}
                   className="w-4 h-4 text-green-600 border-gray-300"
                 />
-                <span className="ml-2 text-gray-700">{rating}+ stars</span>
+
+                <span className="ml-2 text-gray-700">
+                  {rating}+ stars
+                </span>
+
               </label>
             ))}
+
           </div>
         </div>
 
