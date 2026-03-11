@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { User, Settings, LogOut } from "lucide-react";
-import { useAppDispatch } from "../../../shared/hooks/redux";
-import { setUserLogout } from "../../auth/authSlice";
+import { useAppDispatch, useAppSelector } from "../../../shared/hooks/redux";
+import { setUserLogout, switchRole } from "../../auth/authSlice";
 
 export default function ProfileMenu() {
     const dispatch = useAppDispatch();
+    const user = useAppSelector((state) => state.user.user);
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -64,6 +65,30 @@ export default function ProfileMenu() {
                     >
                         <Settings className="w-4 h-4" /> Settings
                     </Link>
+                    {user?.role === 'student' && (
+                        <button
+                            onClick={() => {
+                                dispatch(switchRole('tutor'));
+                                setIsOpen(false);
+                            }}
+                            className="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition focus:outline-none focus:bg-gray-50 text-left"
+                            role="menuitem"
+                        >
+                            <User className="w-4 h-4" /> Switch to Tutor
+                        </button>
+                    )}
+                    {(user?.role === 'tutor' || user?.role === 'premiumTutor') && (
+                        <button
+                            onClick={() => {
+                                dispatch(switchRole('student'));
+                                setIsOpen(false);
+                            }}
+                            className="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition focus:outline-none focus:bg-gray-50 text-left"
+                            role="menuitem"
+                        >
+                            <User className="w-4 h-4" /> Switch to Student
+                        </button>
+                    )}
                     <div className="h-px bg-gray-100 my-1"></div>
                     <button
                         onClick={() => {

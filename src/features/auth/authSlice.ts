@@ -34,18 +34,24 @@ const authSlice = createSlice({
     setUserLogout(state) {
       state.user = null;
     },
+    switchRole(state, action: { payload: User['role'] }) {
+      if (state.user) {
+        state.user.role = action.payload;
+      }
+    },
   },
 });
 
-export const checkAuth = (navigate:()=>void) => async (dispatch: AppDispatch) => {
+export const checkAuth = (navigate?: (role: User['role']) => void) => async (dispatch: AppDispatch) => {
   try {
     dispatch(fetchStart());
     const { data } = await api.get("/users/profile");
 
-    if(data.success && navigate){
-      navigate();
-    }
     dispatch(fetchSuccess(data.data));
+
+    if (data.success && navigate) {
+      navigate(data.data.role);
+    }
   } catch (error) {
     dispatch(fetchFail(handleError(error)));
   }
@@ -56,6 +62,7 @@ export const {
   fetchFail,
   fetchSuccess,
   fetchStart,
+  switchRole,
 } = authSlice.actions;
 
 export default authSlice.reducer;

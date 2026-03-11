@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import type { User } from "../../../shared/types/user.Type";
 
 interface NavLinksProps {
@@ -24,26 +24,44 @@ export default function NavLinks({ user, isMobile = false, onMobileClick }: NavL
         }
     };
 
-    const linkBaseClass = isMobile
-        ? "text-gray-600 hover:text-green-600 font-medium z-10 cursor-pointer block py-2 focus:outline-none focus:ring-2 focus:ring-green-600 px-2 rounded"
-        : "hover:text-green-600 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-600 px-2 rounded";
+    const getLinkClass = ({ isActive }: { isActive: boolean }) => {
+        const baseClass = isMobile ? "block py-2 px-2 rounded focus:outline-none" : "px-2 pb-1 focus:outline-none transition-colors duration-200 mt-1";
+
+        if (isActive) {
+            return `${baseClass} text-green-600 font-medium ${!isMobile ? 'border-b-2 border-green-600' : ''}`;
+        }
+        return `${baseClass} text-gray-600 hover:text-green-500`;
+    };
 
     return (
         <>
             {!user ? (
                 <>
-                    <a href="#hero" onClick={scrollToSection} className={linkBaseClass}>Home</a>
-                    <Link onClick={onMobileClick} to="/explore" className={linkBaseClass}>Explore</Link>
-                    <a href="#about" onClick={scrollToSection} className={linkBaseClass}>About</a>
-                    <a href="#contact" onClick={scrollToSection} className={linkBaseClass}>Contact</a>
+                    <a href="#hero" onClick={scrollToSection} className={getLinkClass({ isActive: false })}>Home</a>
+                    <NavLink onClick={onMobileClick} to="/courses" className={getLinkClass}>Courses</NavLink>
+                    <a href="#about" onClick={scrollToSection} className={getLinkClass({ isActive: false })}>About</a>
+                    <a href="#contact" onClick={scrollToSection} className={getLinkClass({ isActive: false })}>Contact</a>
                 </>
-            ) : (
+            ) : user.role === 'student' ? (
                 <>
-                    <a href="#hero" onClick={scrollToSection} className={linkBaseClass}>Home</a>
-                    <Link onClick={onMobileClick} to="/dashboard" className={linkBaseClass}>Courses</Link>
-                    <Link onClick={onMobileClick} to="/activity" className={linkBaseClass}>My Activity</Link>
+                    <NavLink onClick={onMobileClick} to="/dashboard" className={getLinkClass}>Dashboard</NavLink>
+                    <NavLink onClick={onMobileClick} to="/courses" className={getLinkClass}>Courses</NavLink>
+                    <NavLink onClick={onMobileClick} to="/my-activity" className={getLinkClass}>My Activity</NavLink>
+                    <NavLink onClick={onMobileClick} to="/credit-management" className={getLinkClass}>Wallet</NavLink>
                 </>
-            )}
+            ) : (user.role === 'tutor' || user.role === 'premiumTutor') ? (
+                <>
+                    <NavLink onClick={onMobileClick} to="/dashboard" className={getLinkClass}>Dashboard</NavLink>
+                    <NavLink onClick={onMobileClick} to="/my-activity" className={getLinkClass}>My Activity</NavLink>
+                    <NavLink onClick={onMobileClick} to="/credit-management" className={getLinkClass}>Wallet</NavLink>
+                </>
+            ) : user.role === 'admin' ? (
+                <>
+                    <NavLink onClick={onMobileClick} to="/admin" className={getLinkClass}>Dashboard</NavLink>
+                    <NavLink onClick={onMobileClick} to="/users" className={getLinkClass}>Users</NavLink>
+                    <NavLink onClick={onMobileClick} to="/reports" className={getLinkClass}>Reports</NavLink>
+                </>
+            ) : null}
         </>
     );
 }

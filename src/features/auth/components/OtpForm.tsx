@@ -11,22 +11,22 @@ import OtpInput from "./OtpInput";
 import { useNavigate } from "react-router-dom";
 
 export default function OtpForm(
-  { setOpen, form , handleOtp }: 
-  { setOpen: (open: boolean) => void, form: RegFormData , handleOtp:()=>void }
+  { setOpen, form, handleOtp }:
+    { setOpen: (open: boolean) => void, form: RegFormData, handleOtp: () => void }
 ) {
   const [time, setTime] = useState(30);
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
   const [loading, setLoading] = useState(false);
-  const [error,setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
-  
+
   const dispatch = useAppDispatch();
 
   const handleRegister = async () => {
     const otpSchema = z.string().length(6).regex(/[0-9]/);
     const result = otpSchema.safeParse(otp.join(''));
-    if(!result.success){
+    if (!result.success) {
       setError("Enter a valid OTP!");
       return;
     }
@@ -34,23 +34,26 @@ export default function OtpForm(
     try {
       setLoading(true);
       await api.post("/auth/register", { ...form, otp: otp.join("") });
-      dispatch(checkAuth(()=>{navigate('/profile')}));
+      dispatch(checkAuth((role) => {
+        if (role === 'admin') navigate('/admin');
+        else navigate('/dashboard');
+      }));
     } catch (error) {
-      if(axios.isAxiosError(error)){
-        switch(error.response?.status){
-          case 401 :
+      if (axios.isAxiosError(error)) {
+        switch (error.response?.status) {
+          case 401:
             setError("Invalid OTP!");
             break;
-          case 404 :
+          case 404:
             setError("OTP Expired!");
             break;
-          case 409 :
+          case 409:
             setError("User Already Exist!");
             break;
-          case 400 :
+          case 400:
             setError("Wrong Inputs");
             break;
-          default :
+          default:
             setError("Something Went Wrong!");
         }
       }
@@ -69,9 +72,9 @@ export default function OtpForm(
 
   return (
     <div className="w-full max-w-lg md:max-w-1/2 bg-white rounded-xl shadow-xl flex flex-col overflow-hidden">
-      
+
       <div className="p-6 pb-0">
-        <button 
+        <button
           onClick={() => setOpen(false)}
           className="flex gap-1 cursor-pointer items-center text-gray-500 hover:text-[#134e4a]"
         >
@@ -83,7 +86,7 @@ export default function OtpForm(
       <div className="px-10 py-12 flex flex-col items-center">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Verify Email</h1>
         <p className="text-gray-500 text-center text-sm mb-8">
-          We've sent a 6-digit code to <span className="font-semibold text-gray-700">{form.email}</span>. 
+          We've sent a 6-digit code to <span className="font-semibold text-gray-700">{form.email}</span>.
           Enter it below to complete your registration.
         </p>
 
@@ -94,7 +97,7 @@ export default function OtpForm(
             <div className="flex mb-4 items-center gap-2 text-red-600 bg-red-50 px-4 py-2 rounded-md w-fit animate-in fade-in zoom-in duration-200">
               <span className="text-xs font-semibold">{error}</span>
             </div>
-          ):null
+          ) : null
         }
 
         <div className="w-full space-y-4">
@@ -110,23 +113,22 @@ export default function OtpForm(
             <span className="text-gray-500 text-sm">Didn't receive the code? </span>
             <button
               type="button"
-              onClick={()=>{
+              onClick={() => {
                 handleOtp()
                 setTime(30);
               }}
               disabled={time > 0}
-              className={`text-sm font-bold transition-colors cursor-pointer ${
-                  time > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-[#134e4a] hover:underline'
-              }`}
+              className={`text-sm font-bold transition-colors cursor-pointer ${time > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-[#134e4a] hover:underline'
+                }`}
             >
-              Resend Code 
+              Resend Code
             </button>
             {
               time ? (
-                  <div className={`text-gray-500 text-sm`}>
-                    (00:{time.toString().padStart(2, '0')})
-                  </div>
-               )  : null
+                <div className={`text-gray-500 text-sm`}>
+                  (00:{time.toString().padStart(2, '0')})
+                </div>
+              ) : null
             }
           </div>
         </div>

@@ -114,47 +114,59 @@ const MyCoursesPage = () => {
           </button>
         </div>
       ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
-            {filteredCourses.map((course: any) => (
-              <CourseCard key={course._id} course={course} />
-            ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
+          {filteredCourses.map((course) => (
+            <CourseCard key={course._id} course={course} />
+          ))}
+        </div>
+      )}
+
+      {/* Stats Summary Bar at bottom */}
+      {!loading && courses.length > 0 && (
+        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-5">
+            <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-700 flex-shrink-0">
+              <Users size={24} />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Total Enrollments</p>
+              <p className="text-2xl font-black text-gray-900">{totalEnrollments.toLocaleString()}</p>
+            </div>
           </div>
 
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="mt-12 flex items-center justify-center gap-2">
-              <button
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 1}
-                className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft size={20} />
-              </button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                <button
-                  key={pageNum}
-                  onClick={() => handlePageChange(pageNum)}
-                  className={`min-w-[40px] h-10 px-3 rounded-lg text-sm font-bold transition-all ${page === pageNum
-                      ? "bg-green-700 text-white shadow-md shadow-green-700/20"
-                      : "bg-white border border-gray-200 text-gray-600 hover:border-green-600 hover:text-green-700"
-                    }`}
-                >
-                  {pageNum}
-                </button>
-              ))}
-
-              <button
-                onClick={() => handlePageChange(page + 1)}
-                disabled={page === totalPages}
-                className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight size={20} />
-              </button>
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-5">
+            <div className="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center text-yellow-600 flex-shrink-0">
+              <Star size={24} />
             </div>
-          )}
-        </>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Average Rating</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-2xl font-black text-gray-900">{averageRating}</p>
+                <Star size={16} className="text-yellow-400 fill-yellow-400" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-5">
+            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
+              <TrendingUp size={24} />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Monthly Revenue</p>
+              <p className="text-2xl font-black text-gray-900">$2,450.00</p>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-5">
+            <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 flex-shrink-0">
+              <CheckCircle2 size={24} />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Active Courses</p>
+              <p className="text-2xl font-black text-gray-900">{activeCourses}</p>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

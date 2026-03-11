@@ -6,6 +6,14 @@ const api = axios.create({
   withCredentials: true
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => Promise.reject(error));
+
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
@@ -21,10 +29,19 @@ api.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
-        await api.post("/auth/refresh");
+        const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/refresh`, {}, { withCredentials: true });
+        if (data.accessToken) {
+          localStorage.setItem("token", data.accessToken);
+          originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+        }
         return api(originalRequest);
       } catch (refreshError) {
         console.log("Session expired");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        if (window.location.pathname !== "/login" && window.location.pathname !== "/register" && window.location.pathname !== "/") {
+          window.location.href = "/login";
+        }
         return Promise.reject(refreshError);
       }
     }
@@ -36,11 +53,13 @@ api.interceptors.response.use(
     if (statusCode !== 401) {
       toast.error(message);
     }
-    if(statusCode==401){
+    if (statusCode === 401 && !originalRequest.url?.includes("/users/profile")) {
       toast.error("Session expired");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      window.location.href = "/login";
+      if (window.location.pathname !== "/login" && window.location.pathname !== "/register" && window.location.pathname !== "/") {
+        window.location.href = "/login";
+      }
     }
 
     return Promise.reject(error);

@@ -50,8 +50,14 @@ export default function Login() {
 
     try {
       setLoading(true);
-      await api.post("/auth/login", form);
-      dispatch(checkAuth(()=>navigate('/profile')));
+      const { data } = await api.post("/auth/login", form);
+      if (data.accessToken) {
+        localStorage.setItem("token", data.accessToken);
+      }
+      dispatch(checkAuth((role) => {
+        if (role === "admin") navigate("/admin");
+        else navigate("/dashboard");
+      }));
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {

@@ -1,11 +1,9 @@
-import Navbar from "../navbar/Navbar";
 import Hero from "./components/Hero";
 import Features from "./components/Features";
 import About from "./components/About";
 import Contact from "./components/Contact";
 import HowItWorks from "./components/HowItWorks";
 import CTA from "./components/CTA";
-import Footer from "./components/Footer";
 
 export default function Home() {
     return (
@@ -29,7 +27,6 @@ export default function Home() {
             </div>
 
             <div className="relative z-10">
-                <Navbar />
                 <main>
                     <Hero />
                     <Features />
@@ -38,7 +35,6 @@ export default function Home() {
                     <Contact />
                     <CTA />
                 </main>
-                <Footer />
             </div>
         </div>
     );
