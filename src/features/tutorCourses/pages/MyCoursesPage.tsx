@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import { Search, Plus, Filter, LayoutGrid, CheckCircle2, Star, TrendingUp, Users } from "lucide-react"
+import { ChevronLeft, ChevronRight, Search, Plus, Filter, LayoutGrid } from "lucide-react"
 
 import CourseCard from "../components/CourseCard"
 import type { AppDispatch, RootState } from "../../../store/store"
@@ -10,28 +10,29 @@ import { fetchTutorCourses } from "../thunk/course.thunk"
 const MyCoursesPage = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
-  const { courses, loading } = useSelector((state: RootState) => state.tutorCourses)
+  const { courses, loading, page, totalPages } = useSelector((state: RootState) => state.tutorCourses)
 
   const [filter, setFilter] = useState<"all" | "published" | "draft" | "pending">("all")
   const [searchQuery, setSearchQuery] = useState("")
 
   useEffect(() => {
-    dispatch(fetchTutorCourses())
+    dispatch(fetchTutorCourses({ page: 1, limit: 8 }))
   }, [dispatch])
 
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      dispatch(fetchTutorCourses({ page: newPage, limit: 12 }))
+    }
+  }
+
   // Simple filtering logic
-  const filteredCourses = courses.filter((course) => {
+  const filteredCourses = courses.filter((course: any) => {
     const matchesFilter = filter === "all" || course.status === filter
     const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase())
     return matchesFilter && matchesSearch
   })
 
-  // Calculate quick stats
-  const totalEnrollments = courses.reduce((acc, curr) => acc + (curr.totalEnrollments || 0), 0)
-  const averageRating = courses.length > 0
-    ? (courses.reduce((acc, curr) => acc + (curr.ratingsAverage || 0), 0) / courses.length).toFixed(1)
-    : "0.0"
-  const activeCourses = courses.filter(c => c.status === 'published').length
+
 
   return (
     <div className="max-w-[1600px] mx-auto">

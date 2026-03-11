@@ -4,23 +4,16 @@ import { submitCourse } from "../thunk/course.thunk";
 
 const initialState: CourseBuilderState = {
     step: 1,
-
     title: "",
     description: "",
-
     category: "",
     courseLevel: "",
-
     courseType: "paid",
-
     price: 0,
     creditCost: 0,
-
     thumbnailUrl: "",
     courseSkills: [],
-
     status: "draft",
-
     isSubmitting: false
 }
 

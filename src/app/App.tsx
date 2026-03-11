@@ -12,6 +12,8 @@ import Home from "../features/home/Home";
 import { Toaster } from "react-hot-toast";
 import MyCoursesPage from "../features/tutorCourses/pages/MyCoursesPage";
 import EditCoursePage from "../features/tutorCourses/pages/EditCoursePage";
+import CourseOverviewPage from "../features/tutorCourses/pages/CourseOverviewPage";
+import DashboardLayout from "../layouts/DashboardLayout";
 import CoursesPage from "../features/courses/pages/CoursesPage";
 import MainLayout from "../layouts/MainLayout";
 
@@ -46,6 +48,15 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Route>
+        </Route>
+
+        {/* Protected / App Routes */}
+        <Route path="/" element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/create-course" element={<CreateCoursePage />} />
+          <Route path="/my-courses" element={<MyCoursesPage />} />
+          <Route path="/course-overview/:id" element={<CourseOverviewPage />} />
+          <Route path="/edit-course/:id" element={<EditCoursePage />} />
         </Route>
       </Routes>
     </>
