@@ -1,8 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { fetchTutorCourses, publishCourse } from "../thunk/course.thunk"
+import { fetchTutorCourses, publishCourse, fetchCourseById } from "../thunk/course.thunk"
 import type { Course } from "../types/course.types"
 interface CourseState {
     courses: Course[]
+    currentCourse: Course | null
     loading: boolean
     error: string | null
     totalCount: number
@@ -12,6 +13,7 @@ interface CourseState {
 }
 const initialState: CourseState = {
     courses: [],
+    currentCourse: null,
     loading: false,
     error: null,
     totalCount: 0,
@@ -23,7 +25,11 @@ const initialState: CourseState = {
 const courseSlice = createSlice({
     name: "courses",
     initialState,
-    reducers: {},
+    reducers: {
+        clearCurrentCourse: (state) => {
+            state.currentCourse = null;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchTutorCourses.pending, (state) => {
@@ -40,7 +46,19 @@ const courseSlice = createSlice({
             })
             .addCase(fetchTutorCourses.rejected, (state, action) => {
                 state.loading = false
-                state.error = action.error.message || "Failed to fetch courses"
+                state.error = (action.payload as string) || action.error.message || "Failed to fetch courses"
+            })
+            .addCase(fetchCourseById.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(fetchCourseById.fulfilled, (state, action) => {
+                state.loading = false
+                state.currentCourse = action.payload
+            })
+            .addCase(fetchCourseById.rejected, (state, action) => {
+                state.loading = false
+                state.error = (action.payload as string) || action.error.message || "Failed to fetch course"
             })
             .addCase(publishCourse.fulfilled, (state, action) => {
                 const { _id, status } = action.payload;
@@ -50,8 +68,13 @@ const courseSlice = createSlice({
                 if (course) {
                     course.status = status;
                 }
+
+                if (state.currentCourse && state.currentCourse._id === _id) {
+                    state.currentCourse.status = status;
+                }
             });
     }
 })
 
+export const { clearCurrentCourse } = courseSlice.actions
 export default courseSlice.reducer
