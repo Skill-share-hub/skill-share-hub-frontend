@@ -15,21 +15,21 @@ const OverviewStats = ({ course }: OverviewStatsProps) => {
     const stats = [
         {
             label: "Enrollments",
-            value: course.totalEnrollments?.toLocaleString() || "0",
+            value: course?.totalEnrollments?.toLocaleString() || "0",
             icon: Users,
             trend: "+12% this month",
             trendUp: true
         },
         {
             label: "Avg. Rating",
-            value: course.ratingsAverage?.toFixed(1) || "0.0",
+            value: course?.ratingsAverage?.toFixed(1) || "0.0",
             icon: Star,
             trend: "Based on 842 reviews",
             trendUp: null
         },
         {
             label: "Revenue",
-            value: course.courseType === 'paid' ?
+            value: course?.courseType === 'paid' ?
                 `$${((course.price || 0) * (course.totalEnrollments || 0) * 0.8).toLocaleString()}k` :
                 `${(course.creditCost || 0) * (course.totalEnrollments || 0)}`,
             icon: DollarSign,

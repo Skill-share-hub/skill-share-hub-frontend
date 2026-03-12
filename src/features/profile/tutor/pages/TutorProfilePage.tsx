@@ -20,11 +20,11 @@ export default function TutorProfilePage() {
         );
     }
 
-    // Fallback structure matching the backend snippet provided
+   
     const profile = user.tutorProfile || {
         createdCourses: [],
         bio: "Passionate educator dedicated to sharing knowledge and building skills.",
-        skills: ["Web Development", "React", "Node.js"],
+        skills: [],
         totalCreditsEarned: 0,
         monetizationEligible: false,
         ratingsAverage: 0.0,
