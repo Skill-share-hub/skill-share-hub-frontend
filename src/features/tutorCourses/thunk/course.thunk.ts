@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { RootState } from "../../../store/store";
-import { createCourseApi, updateCourseApi, getTutorCoursesApi, publishCourseApi, getCourseByIdApi } from "../api/courses.api";
+import { createCourseApi, updateCourseApi, getTutorCoursesApi, publishCourseApi, getCourseByIdApi, addCourseContentApi, updateCourseContentApi, deleteCourseContentApi, deleteCourseApi, updateCourseStatusApi } from "../api/courses.api";
 import toast from "react-hot-toast";
 
 export const submitCourse = createAsyncThunk(
@@ -95,6 +95,91 @@ export const fetchCourseById = createAsyncThunk(
             const error = err as Error & { response?: { data?: { message?: string } } };
             const errorMsg = error.response?.data?.message || error.message || "An unexpected error occurred";
             return rejectWithValue(errorMsg);
+        }
+    }
+)
+
+export const addCourseContent = createAsyncThunk(
+    "course/addContent",
+    async ({ id, formData }: { id: string, formData: FormData }, { rejectWithValue }) => {
+        try {
+            const response = await addCourseContentApi(id, formData);
+            if (response.success) {
+                toast.success("Content added successfully");
+                return response.data;
+            }
+            return rejectWithValue(response.message || "Failed to add content");
+        } catch (err: unknown) {
+            const error = err as Error & { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message || "Failed to add content");
+        }
+    }
+)
+
+export const updateCourseContent = createAsyncThunk(
+    "course/updateContent",
+    async ({ contentId, formData }: { contentId: string, formData: FormData }, { rejectWithValue }) => {
+        try {
+            const response = await updateCourseContentApi(contentId, formData);
+            if (response.success) {
+                toast.success("Content updated successfully");
+                return response.data;
+            }
+            return rejectWithValue(response.message || "Failed to update content");
+        } catch (err: unknown) {
+            const error = err as Error & { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message || "Failed to update content");
+        }
+    }
+)
+
+export const deleteCourseContent = createAsyncThunk(
+    "course/deleteContent",
+    async ({ courseId, contentId }: { courseId: string, contentId: string }, { rejectWithValue }) => {
+        try {
+            const response = await deleteCourseContentApi(courseId, contentId);
+            if (response.success) {
+                toast.success("Content deleted successfully");
+                return { courseId, contentId };
+            }
+            return rejectWithValue(response.message || "Failed to delete content");
+        } catch (err: unknown) {
+            const error = err as Error & { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message || "Failed to delete content");
+        }
+    }
+)
+
+export const deleteCourse = createAsyncThunk(
+    "course/delete",
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const response = await deleteCourseApi(id);
+            if (response.success) {
+                toast.success("Course deleted successfully");
+                return id;
+            }
+            return rejectWithValue(response.message || "Failed to delete course");
+        } catch (err: unknown) {
+            const error = err as Error & { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message || "Failed to delete course");
+        }
+    }
+)
+
+export const updateCourseStatus = createAsyncThunk(
+    "course/updateStatus",
+    async ({ id, status }: { id: string, status: string }, { rejectWithValue }) => {
+        try {
+            const response = await updateCourseStatusApi(id, status);
+            if (response.success) {
+                toast.success(`Course status updated to ${status}`);
+                return response.data;
+            }
+            return rejectWithValue(response.message || "Failed to update status");
+        } catch (err: unknown) {
+            const error = err as Error & { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message || "Failed to update status");
         }
     }
 )

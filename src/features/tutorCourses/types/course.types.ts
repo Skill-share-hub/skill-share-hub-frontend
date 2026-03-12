@@ -39,6 +39,7 @@ export interface Course {
   createdAt?: string
   updatedAt?: string
   contentModules?: {
+    _id: string
     title: string
     url: string
     duration: number

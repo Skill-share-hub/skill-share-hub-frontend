@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { fetchTutorCourses, publishCourse, fetchCourseById } from "../thunk/course.thunk"
+import { fetchTutorCourses, publishCourse, fetchCourseById, addCourseContent, updateCourseContent, deleteCourseContent, updateCourseStatus, deleteCourse } from "../thunk/course.thunk"
 import type { Course } from "../types/course.types"
 interface CourseState {
     courses: Course[]
@@ -69,6 +69,40 @@ const courseSlice = createSlice({
 
                 if (state.currentCourse && state.currentCourse._id === _id) {
                     state.currentCourse.status = status;
+                }
+            })
+            .addCase(updateCourseStatus.fulfilled, (state, action) => {
+                const { _id, status } = action.payload;
+                const course = state.courses.find(c => c._id === _id);
+                if (course) {
+                    course.status = status;
+                }
+                if (state.currentCourse && state.currentCourse._id === _id) {
+                    state.currentCourse.status = status;
+                }
+            })
+            .addCase(deleteCourse.fulfilled, (state, action) => {
+                state.courses = state.courses.filter(c => c._id !== action.payload);
+                if (state.currentCourse && state.currentCourse._id === action.payload) {
+                    state.currentCourse = null;
+                }
+            })
+            .addCase(addCourseContent.fulfilled, (state, action) => {
+                if (state.currentCourse) {
+                    // Assuming the payload is the updated course or just the new content item
+                    // If payload is the full course:
+                    state.currentCourse = action.payload;
+                }
+            })
+            .addCase(updateCourseContent.fulfilled, (state, action) => {
+                if (state.currentCourse) {
+                    state.currentCourse = action.payload;
+                }
+            })
+            .addCase(deleteCourseContent.fulfilled, (state, action) => {
+                const { contentId } = action.payload;
+                if (state.currentCourse && state.currentCourse.contentModules) {
+                    state.currentCourse.contentModules = state.currentCourse.contentModules.filter(m => m._id !== contentId);
                 }
             });
     }

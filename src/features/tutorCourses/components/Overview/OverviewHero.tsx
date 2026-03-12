@@ -1,8 +1,11 @@
-import { Edit3, Layout } from "lucide-react"
+import { Edit3, Layout, Trash2, CheckCircle, Power, Loader2 } from "lucide-react"
 import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import type { Course } from "../../types/course.types"
 import { useState } from "react"
+import { useAppDispatch } from "../../../../shared/hooks/redux"
+import { deleteCourse, updateCourseStatus } from "../../thunk/course.thunk"
+import toast from "react-hot-toast"
 
 interface OverviewHeroProps {
     course: Course
@@ -10,7 +13,35 @@ interface OverviewHeroProps {
 
 const OverviewHero = ({ course }: OverviewHeroProps) => {
     const navigate = useNavigate()
+    const dispatch = useAppDispatch()
     const [expanded, setExpanded] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isChangingStatus, setIsChangingStatus] = useState(false);
+
+    const handleDelete = async () => {
+        if (!window.confirm("Are you sure you want to delete this entire course? This action cannot be undone.")) return
+        setIsDeleting(true)
+        try {
+            await dispatch(deleteCourse(course._id)).unwrap()
+            navigate("/my-courses")
+        } catch (error: any) {
+            toast.error(error || "Failed to delete course")
+        } finally {
+            setIsDeleting(false)
+        }
+    }
+
+    const handleStatusToggle = async () => {
+        const nextStatus = course.status === "published" ? "draft" : "published"
+        setIsChangingStatus(true)
+        try {
+            await dispatch(updateCourseStatus({ id: course._id, status: nextStatus })).unwrap()
+        } catch (error: any) {
+            toast.error(error || "Failed to update status")
+        } finally {
+            setIsChangingStatus(false)
+        }
+    }
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -70,10 +101,36 @@ const OverviewHero = ({ course }: OverviewHeroProps) => {
                         <Edit3 size={18} />
                         Edit Course
                     </button>
-                    {/* <button className="flex items-center gap-2 bg-white text-gray-700 border border-gray-200 px-6 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all active:scale-95">
-                        <Eye size={18} />
-                        View as Student
-                    </button> */}
+                    <button
+                        onClick={handleStatusToggle}
+                        disabled={isChangingStatus}
+                        className={`flex items-center gap-2 border px-6 py-3 rounded-xl font-bold transition-all active:scale-95 disabled:opacity-50 ${course.status === "published"
+                            ? "border-amber-200 text-amber-700 hover:bg-amber-50"
+                            : "border-green-200 text-green-700 hover:bg-green-50"
+                            }`}
+                    >
+                        {isChangingStatus ? (
+                            <Loader2 size={18} className="animate-spin" />
+                        ) : course.status === "published" ? (
+                            <Power size={18} />
+                        ) : (
+                            <CheckCircle size={18} />
+                        )}
+                        {course.status === "published" ? "Unpublish" : "Publish"}
+                    </button>
+
+                    <button
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className="flex items-center gap-2 border border-red-200 text-red-600 px-6 py-3 rounded-xl font-bold hover:bg-red-50 transition-all active:scale-95 disabled:opacity-50"
+                    >
+                        {isDeleting ? (
+                            <Loader2 size={18} className="animate-spin" />
+                        ) : (
+                            <Trash2 size={18} />
+                        )}
+                        Delete
+                    </button>
                 </div>
             </div>
         </motion.div>
