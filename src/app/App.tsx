@@ -16,11 +16,7 @@ import CourseOverviewPage from "../features/tutorCourses/pages/CourseOverviewPag
 import CoursesPage from "../features/courses/pages/CoursesPage";
 import TutorProfilePage from "../features/profile/pages/TutorProfilePage";
 import MainLayout from "../layouts/MainLayout";
-import ProtectedRoute from "../routes/ProtectedRoute";
 import CourseDetailsPage from "../features/courses/pages/CourseDetailsPage";
-import TutorProfilePage from "../features/profile/tutor/pages/TutorProfilePage";
-import EditTutorProfilePage from "../features/profile/tutor/pages/EditTutorProfilePage";
-import MainLayout from "../layouts/MainLayout";
 import ProtectedRoute from "../routes/ProtectedRoute";
 import Wallet from "../features/wallet/Wallet";
 import MyActivity from "../features/courses/pages/MyActivity";
@@ -84,7 +80,6 @@ function App() {
           <Route path="/course-overview/:id" element={<CourseOverviewPage />} />
           <Route path="/edit-course/:id" element={<EditCoursePage />} />
           <Route path="/profile" element={<TutorProfilePage />} />
-          <Route path="/profile/edit" element={<EditTutorProfilePage />} />
         </Route>
       </Routes>
     </>
