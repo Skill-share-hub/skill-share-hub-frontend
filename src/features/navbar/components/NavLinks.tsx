@@ -47,13 +47,13 @@ export default function NavLinks({ user, isMobile = false, onMobileClick }: NavL
                     <NavLink onClick={onMobileClick} to="/dashboard" className={getLinkClass}>Dashboard</NavLink>
                     <NavLink onClick={onMobileClick} to="/courses" className={getLinkClass}>Courses</NavLink>
                     <NavLink onClick={onMobileClick} to="/my-activity" className={getLinkClass}>My Activity</NavLink>
-                    <NavLink onClick={onMobileClick} to="/credit-management" className={getLinkClass}>Wallet</NavLink>
+                    <NavLink onClick={onMobileClick} to="/wallet" className={getLinkClass}>Wallet</NavLink>
                 </>
             ) : (user.role === 'tutor' || user.role === 'premiumTutor') ? (
                 <>
                     <NavLink onClick={onMobileClick} to="/dashboard" className={getLinkClass}>Dashboard</NavLink>
                     <NavLink onClick={onMobileClick} to="/my-courses" className={getLinkClass}>My Courses</NavLink>
-                    <NavLink onClick={onMobileClick} to="/credit-management" className={getLinkClass}>Wallet</NavLink>
+                    <NavLink onClick={onMobileClick} to="/wallet" className={getLinkClass}>Wallet</NavLink>
                     <NavLink onClick={onMobileClick} to="/profile" className={getLinkClass}>Profile</NavLink>
                 </>
             ) : user.role === 'admin' ? (

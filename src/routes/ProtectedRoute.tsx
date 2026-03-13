@@ -1,11 +1,12 @@
 import { Outlet, Navigate } from "react-router-dom";
 import { useAppSelector } from "../shared/hooks/redux";
 import type { UserRole } from "../shared/types/user.Type";
+import FullScreenLoader from "../shared/components/FullScreenLoader";
 
 function ProtectedRoute({ allowedRole }: { allowedRole?: UserRole }) {
   const { user, loading } = useAppSelector((state) => state.user);
-
-  if (loading) return <h1>Loading...</h1>;
+  console.log(user);
+  if (loading) return <FullScreenLoader />
 
   // Not logged in
   if (!user) return <Navigate to="/login" replace />;

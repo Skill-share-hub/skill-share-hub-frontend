@@ -18,6 +18,8 @@ import CourseDetailsPage from "../features/courses/pages/CourseDetailsPage";
 import TutorProfilePage from "../features/profile/tutor/pages/TutorProfilePage";
 import EditTutorProfilePage from "../features/profile/tutor/pages/EditTutorProfilePage";
 import MainLayout from "../layouts/MainLayout";
+import ProtectedRoute from "../routes/ProtectedRoute";
+import Wallet from "../features/wallet/Wallet";
 import MyActivity from "../features/courses/pages/MyActivity";
 
 function App() {
@@ -52,6 +54,10 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Route>
+        </Route>
+
+        <Route element={<ProtectedRoute allowedRole="student" />}>
+          <Route path="/wallet" element={<Wallet />} />
         </Route>
 
         {/* Protected / App Routes */}
