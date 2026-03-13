@@ -14,6 +14,7 @@ import MyCoursesPage from "../features/tutorCourses/pages/MyCoursesPage";
 import EditCoursePage from "../features/tutorCourses/pages/EditCoursePage";
 import CourseOverviewPage from "../features/tutorCourses/pages/CourseOverviewPage";
 import CoursesPage from "../features/courses/pages/CoursesPage";
+import CourseDetailsPage from "../features/courses/pages/CourseDetailsPage";
 import TutorProfilePage from "../features/profile/tutor/pages/TutorProfilePage";
 import EditTutorProfilePage from "../features/profile/tutor/pages/EditTutorProfilePage";
 import MainLayout from "../layouts/MainLayout";
@@ -35,6 +36,7 @@ function App() {
           {/* Public App Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<CoursesPage />} />
+          <Route path="/courses/:id" element={<CourseDetailsPage />} />
 
           {/* Protected / App Routes */}
           <Route path="/dashboard" element={<Dashboard />} />

@@ -53,7 +53,7 @@ export default function CoursesPage() {
         <div className="lg:hidden flex justify-between items-center mb-6">
 
           <p className="text-sm text-gray-500">
-            {loading ? "Loading..." : `${courses.length} courses`}
+            {loading ? "Loading..." : `${courses?.length || 0} courses`}
           </p>
 
           <button
@@ -82,7 +82,7 @@ export default function CoursesPage() {
               <p className="text-gray-500 text-sm">
                 {loading
                   ? "Loading courses..."
-                  : `${courses.length} courses available`}
+                  : `${courses?.length || 0} courses available`}
               </p>
 
               <select className="text-sm bg-white border border-gray-200 px-3 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500">
@@ -108,8 +108,8 @@ export default function CoursesPage() {
                 Array.from({ length: 12 }).map((_, i) => (
                   <CourseSkeleton key={i} />
                 ))
-              ) : courses.length > 0 ? (
-                courses.map((course) => (
+              ) : (courses?.length || 0) > 0 ? (
+                (courses || []).map((course) => (
                   <CourseCard key={course._id} course={course} />
                 ))
               ) : (
@@ -133,7 +133,7 @@ export default function CoursesPage() {
             </div>
 
             {/* PAGINATION */}
-            {!loading && courses.length > 0 && (
+            {!loading && (courses?.length || 0) > 0 && (
               <div className="mt-14">
                 <Pagination
                   page={page}

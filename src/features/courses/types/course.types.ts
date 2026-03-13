@@ -20,11 +20,34 @@ export interface Course {
 
   status: 'draft' | 'published';
 
-  tutor: {
-    _id: string;
-    name: string;
-    avatarUrl?: string;
-  };
+  courseSkills?: string[];
+
+  tutorId:
+    | string
+    | {
+        _id?: string;
+        name: string;
+        avatarUrl?: string;
+        email?: string;
+        bio?: string;
+      };
+
+  contentModules?: CourseModule[];
+}
+
+export interface CourseModule {
+  _id: string;
+  title: string;
+  summary?: string;
+  duration?: string;
+  isLocked?: boolean;
+}
+
+export interface CourseReview {
+  _id: string;
+  studentName: string;
+  rating: number;
+  reviewText: string;
 }
 
 export interface CourseFilters {
