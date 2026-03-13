@@ -1,5 +1,5 @@
 import { ArrowUpRight, ArrowDownLeft, ShoppingBag, CreditCard, Calendar, ChevronDown } from "lucide-react";
-import type { Transaction as TransactionType } from "./wallet.types";
+import type { Transaction as TransactionType } from "../wallet.types";
 
 export function WalletTransaction() {
   const arr: TransactionType[] = [
@@ -15,7 +15,7 @@ export function WalletTransaction() {
         <button className="text-sm font-medium text-[#164e33] hover:underline">View All</button>
       </div>
       
-      <div className="space-y-4 max-h-lg overflow-auto">
+      <div className="space-y-4">
         {arr.map((v, index) => (
           <Transaction key={index} data={v} />
         ))}

@@ -1,41 +1,39 @@
-import { RefreshCcw, Wallet } from 'lucide-react';
+import { RefreshCcw, Wallet, TrendingUp } from 'lucide-react';
 
 export function WalletBalance() {
   return (
-    <div className="min-w-[400px] overflow-hidden bg-white border border-gray-100 rounded-2xl shadow-xl">
-
-      <div className="flex items-center justify-between p-5 bg-[#164e33]">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-white/10 rounded-lg">
-            <Wallet className="w-5 h-5 text-white" />
+    <div className="relative overflow-hidden bg-[#164e33] rounded-3xl p-8 shadow-2xl shadow-[#164e33]/20">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl" />
+      
+      <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8">
+        <div className="flex items-center gap-5">
+          <div className="p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10">
+            <Wallet className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-lg font-semibold text-white">Wallet Balance</h2>
-        </div>
-        <button className="p-2 transition-colors cursor-pointer rounded-full hover:bg-white/10">
-          <RefreshCcw className="w-4 h-4 text-white transition-transform animate-spin" />
-        </button>
-      </div>
-
-      <div className="p-5 space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-gray-50">
-          <div className="text-sm font-medium text-gray-500">Credits</div>
-          <div className="text-xl font-bold text-gray-900">120</div>
-        </div>
-
-        <div className="flex items-center justify-between pb-3 border-b border-gray-50">
-          <div className="text-sm font-medium text-gray-500">Value</div>
-          <div className="text-xl font-bold text-[#164e33]">₹1,200</div>
-        </div>
-
-        <div className="flex items-center justify-between pt-1">
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wider">Conversion Rate</div>
-          <div className="px-2 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50 rounded-md">
-            1 credit = ₹10
+          <div>
+            <p className="text-emerald-200/70 text-xs font-bold uppercase tracking-widest">Total Balance</p>
+            <div className="flex items-baseline gap-2">
+              <h2 className="text-4xl font-black text-white">120</h2>
+              <span className="text-emerald-300 font-bold text-lg">Credits</span>
+            </div>
           </div>
         </div>
-        
-        <button className="w-full py-2.5 mt-2 text-sm font-semibold text-white bg-[#164e33] rounded-xl hover:bg-[#1a5d3d] transition-all active:scale-[0.98]">
-          Add Credits
+
+        <div className="h-12 w-[1px] bg-white/10 hidden md:block" />
+
+        <div>
+          <p className="text-emerald-200/70 text-xs font-bold uppercase tracking-widest">Current Value</p>
+          <div className="flex items-center gap-3">
+            <h2 className="text-3xl font-black text-white">₹1,200.00</h2>
+            <div className="flex items-center gap-1 px-2 py-1 bg-emerald-400/20 rounded-lg text-emerald-300 text-[10px] font-bold">
+              <TrendingUp className="w-3 h-3" />
+              1:10
+            </div>
+          </div>
+        </div>
+
+        <button className="group p-3 bg-white/10 hover:bg-white/20 transition-all rounded-2xl border border-white/10 cursor-pointer">
+          <RefreshCcw className="w-5 h-5 text-white group-active:rotate-180 transition-transform duration-500" />
         </button>
       </div>
     </div>
