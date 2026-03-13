@@ -1,5 +1,4 @@
 import { BadgeCheck, Calendar, Mail, Award } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 interface TutorProfileHeaderProps {
     name: string;
@@ -8,6 +7,7 @@ interface TutorProfileHeaderProps {
     role: string;
     isVerified: boolean;
     createdAt: string;
+    setShowModal:(value: boolean) => void
 }
 
 export default function TutorProfileHeader({
@@ -17,8 +17,8 @@ export default function TutorProfileHeader({
     role,
     isVerified,
     createdAt,
+    setShowModal
 }: TutorProfileHeaderProps) {
-    const navigate = useNavigate();
 
     const joinDate = new Date(createdAt).toLocaleDateString("en-US", {
         month: "long",
@@ -71,7 +71,7 @@ export default function TutorProfileHeader({
 
                     <div className="mt-6 sm:mt-0">
                         <button
-                            onClick={() => navigate('/profile/edit')}
+                            onClick={() => setShowModal(true)}
                             className="w-full sm:w-auto px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-semibold transition-all shadow-md active:scale-95">
                             Edit Profile
                         </button>

@@ -3,7 +3,7 @@ import { useAppSelector } from "../shared/hooks/redux";
 import type { UserRole } from "../shared/types/user.Type";
 import FullScreenLoader from "../shared/components/FullScreenLoader";
 
-function ProtectedRoute({ allowedRole }: { allowedRole?: UserRole }) {
+function ProtectedRoute({ allowedRoles }: { allowedRoles?: UserRole[] }) {
   const { user, loading } = useAppSelector((state) => state.user);
   console.log(user);
   if (loading) return <FullScreenLoader />
@@ -12,8 +12,8 @@ function ProtectedRoute({ allowedRole }: { allowedRole?: UserRole }) {
   if (!user) return <Navigate to="/login" replace />;
 
   // Role restriction
-  if (allowedRole && user.role !== allowedRole) {
-    return <Navigate to="/dashboard" replace />;
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

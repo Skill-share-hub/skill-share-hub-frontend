@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { User, Settings, LogOut } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../../shared/hooks/redux";
 import { setUserLogout, switchRole } from "../../auth/authSlice";
 
 export default function ProfileMenu() {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const user = useAppSelector((state) => state.user.user);
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -69,6 +70,7 @@ export default function ProfileMenu() {
                         <button
                             onClick={() => {
                                 dispatch(switchRole('tutor'));
+                                navigate('/dashboard');
                                 setIsOpen(false);
                             }}
                             className="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition focus:outline-none focus:bg-gray-50 text-left"
@@ -81,6 +83,7 @@ export default function ProfileMenu() {
                         <button
                             onClick={() => {
                                 dispatch(switchRole('student'));
+                                navigate('/dashboard');
                                 setIsOpen(false);
                             }}
                             className="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition focus:outline-none focus:bg-gray-50 text-left"

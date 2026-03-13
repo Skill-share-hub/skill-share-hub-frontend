@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import type { Course } from "../types/course.types"
-import { Users, Clock, MoreVertical, Edit2, BarChart2, CloudUpload, Loader2 } from "lucide-react"
+import { Users, Clock, MoreVertical, Edit2, CloudUpload, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useDispatch } from "react-redux"
 import type { AppDispatch } from "../../../store/store"

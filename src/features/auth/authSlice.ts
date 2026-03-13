@@ -37,6 +37,17 @@ const authSlice = createSlice({
     switchRole(state, action: { payload: User['role'] }) {
       if (state.user) {
         state.user.role = action.payload;
+        
+        // If switching to tutor and no tutor profile exists, mark as incomplete
+        if ((action.payload === 'tutor' || action.payload === 'premiumTutor') && 
+            (!state.user.tutorProfile || !state.user.tutorProfile.bio)) {
+          state.user.isProfileCompleted = false;
+        }
+        
+        // If switching back to student and bio is missing, mark as incomplete
+        if (action.payload === 'student' && !state.user.studentProfile?.bio) {
+          state.user.isProfileCompleted = false;
+        }
       }
     },
   },

@@ -30,6 +30,7 @@ export type User = {
   email: string;
   role: UserRole;
   isVerified: boolean;
+  isProfileCompleted?: boolean;
   studentProfile?: StudentProfile;
   tutorProfile?: TutorProfile;
   createdAt?: string;

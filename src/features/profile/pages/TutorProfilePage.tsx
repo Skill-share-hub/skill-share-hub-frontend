@@ -1,14 +1,31 @@
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../../store/store";
-import TutorProfileHeader from "../components/TutorProfileHeader";
-import TutorProfileStats from "../components/TutorProfileStats";
-import TutorProfileAbout from "../components/TutorProfileAbout";
-import FullScreenLoader from "../../../../shared/components/FullScreenLoader";
+import { useAppDispatch, useAppSelector } from "../../../shared/hooks/redux";
+import TutorProfileHeader from "../components/tutor/TutorProfileHeader";
+import TutorProfileStats from "../components/tutor/TutorProfileStats";
+import TutorProfileAbout from "../components/tutor/TutorProfileAbout";
+import FullScreenLoader from "../../../shared/components/FullScreenLoader";
 import { BookOpen } from "lucide-react";
+import ProfileModal from "../components/profileModal/ProfileModal";
+import { useState } from "react";
+import type { UpdateProfilePayload } from "../types/ProfileModal.types";
+import { fetchSuccess } from "../../auth/authSlice";
+import { updateUserProfile } from "../thunk/profile.thunk";
 
 export default function TutorProfilePage() {
-    const { user, loading } = useSelector((state: RootState) => state.user);
-
+    const dispatch = useAppDispatch();
+    const { user, loading } = useAppSelector((state) => state.user);
+    const [showModal, setShowModal] = useState(false);
+ const handleSubmit = async (payload: UpdateProfilePayload) => {
+    const result = await dispatch(updateUserProfile(payload));
+    
+    if (updateUserProfile.fulfilled.match(result)) {
+      // Update the auth user state with the returned user (which has isProfileCompleted: true)
+      dispatch(fetchSuccess(result.payload));
+      setShowModal(false);
+    } else {
+      // Let the modal handle the error display
+      throw new Error(result.error?.message || "Failed to update profile");
+    }
+  };
     if (loading) return <FullScreenLoader />;
 
     if (!user || (!user.tutorProfile && user.role !== 'tutor' && user.role !== 'premiumTutor')) {
@@ -37,6 +54,22 @@ export default function TutorProfilePage() {
             {/* Page Heading */}
             <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight mb-8">My Profile</h1>
 
+<ProfileModal
+      isOpen={showModal}
+      onClose={() => setShowModal(false)}
+      role={user.role as "student" | "tutor" | "premiumTutor"}
+      defaultValues={{
+        name: user.name,
+        email: user.email,
+        avatarUrl: user.avatarUrl,
+        bio: user.tutorProfile?.bio,
+        skills: user.tutorProfile?.skills,
+        experience: user.tutorProfile?.experience,
+      }}
+      onSubmit={handleSubmit}
+      mode="edit"
+    />
+
             {/* Header Section */}
             <TutorProfileHeader
                 name={user.name}
@@ -45,6 +78,7 @@ export default function TutorProfilePage() {
                 role={user.role}
                 isVerified={user.isVerified}
                 createdAt={user.createdAt || new Date().toISOString()}
+                setShowModal={setShowModal}
             />
 
             {/* Stats Section */}
