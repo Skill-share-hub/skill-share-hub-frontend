@@ -14,7 +14,7 @@ export default function Navbar() {
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
     return (
-        <NavbarContainer>
+        <NavbarContainer >
             {/* Left: Logo */}
             <Logo />
 

@@ -17,6 +17,13 @@ import CoursesPage from "../features/courses/pages/CoursesPage";
 import TutorProfilePage from "../features/profile/pages/TutorProfilePage";
 import MainLayout from "../layouts/MainLayout";
 import ProtectedRoute from "../routes/ProtectedRoute";
+import CourseDetailsPage from "../features/courses/pages/CourseDetailsPage";
+import TutorProfilePage from "../features/profile/tutor/pages/TutorProfilePage";
+import EditTutorProfilePage from "../features/profile/tutor/pages/EditTutorProfilePage";
+import MainLayout from "../layouts/MainLayout";
+import ProtectedRoute from "../routes/ProtectedRoute";
+import Wallet from "../features/wallet/Wallet";
+import MyActivity from "../features/courses/pages/MyActivity";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -34,6 +41,7 @@ function App() {
           {/* Public App Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<CoursesPage />} />
+          <Route path="/courses/:id" element={<CourseDetailsPage />} />
 
           {/* Any Authenticated User */}
           <Route element={<ProtectedRoute />}>
@@ -61,6 +69,22 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Route>
+        </Route>
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/wallet" element={<Wallet />} />
+        </Route>
+
+        {/* Protected / App Routes */}
+        <Route path="/" element={<MainLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/my-activity" element={<MyActivity />} />
+          <Route path="/create-course" element={<CreateCoursePage />} />
+          <Route path="/my-courses" element={<MyCoursesPage />} />
+          <Route path="/course-overview/:id" element={<CourseOverviewPage />} />
+          <Route path="/edit-course/:id" element={<EditCoursePage />} />
+          <Route path="/profile" element={<TutorProfilePage />} />
+          <Route path="/profile/edit" element={<EditTutorProfilePage />} />
         </Route>
       </Routes>
     </>
