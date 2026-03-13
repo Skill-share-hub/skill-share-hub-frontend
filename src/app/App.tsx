@@ -17,6 +17,7 @@ import CoursesPage from "../features/courses/pages/CoursesPage";
 import TutorProfilePage from "../features/profile/tutor/pages/TutorProfilePage";
 import EditTutorProfilePage from "../features/profile/tutor/pages/EditTutorProfilePage";
 import MainLayout from "../layouts/MainLayout";
+import MyActivity from "../features/courses/pages/MyActivity";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -54,6 +55,7 @@ function App() {
         {/* Protected / App Routes */}
         <Route path="/" element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/my-activity" element={<MyActivity />} />
           <Route path="/create-course" element={<CreateCoursePage />} />
           <Route path="/my-courses" element={<MyCoursesPage />} />
           <Route path="/course-overview/:id" element={<CourseOverviewPage />} />
