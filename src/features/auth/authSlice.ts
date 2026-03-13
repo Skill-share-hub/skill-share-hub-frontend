@@ -8,11 +8,13 @@ interface UserState {
   user: User | null;
   loading: boolean;
   error: string | null;
+  login : boolean | null ;
 }
 
 const initialState: UserState = {
   user: null,
   loading: false,
+  login : null,
   error: null,
 };
 
@@ -26,6 +28,9 @@ const authSlice = createSlice({
     fetchSuccess(state, action: { payload: User }) {
       state.loading = false;
       state.user = action.payload;
+      if(action.payload){
+        state.login = true ;
+      }
     },
     fetchFail(state, action) {
       state.loading = false;
@@ -33,6 +38,7 @@ const authSlice = createSlice({
     },
     setUserLogout(state) {
       state.user = null;
+      state.login = null ;
     },
     switchRole(state, action: { payload: User['role'] }) {
       if (state.user) {
