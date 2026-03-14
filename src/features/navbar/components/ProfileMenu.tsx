@@ -8,6 +8,7 @@ export default function ProfileMenu() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const user = useAppSelector((state) => state.user.user);
+    console.log(user)
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -49,15 +50,25 @@ export default function ProfileMenu() {
                     className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 border border-gray-100 z-50 origin-top-right transition-all"
                     role="menu"
                     aria-label="Profile actions"
-                >
+                >{user?.role === 'student' && (
                     <Link
-                        to="/profile"
+                        to="/student-profile"
                         className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition focus:outline-none focus:bg-gray-50"
                         role="menuitem"
                         onClick={() => setIsOpen(false)}
                     >
                         <User className="w-4 h-4" /> Profile
-                    </Link>
+                    </Link>)}
+                    {user?.role === 'tutor' || user?.role === 'premiumTutor' && (
+                        <Link
+                            to="/profile"
+                            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition focus:outline-none focus:bg-gray-50"
+                            role="menuitem"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            <User className="w-4 h-4" /> Profile
+                        </Link>
+                    )}
                     <Link
                         to="/settings"
                         className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition focus:outline-none focus:bg-gray-50"

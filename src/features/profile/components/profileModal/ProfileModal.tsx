@@ -22,16 +22,16 @@ export interface ProfileModalProps {
 
 const roleMeta: Record<UserRole, { label: string; color: string; bg: string }> = {
   student:      { label: "Student",       color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
-  tutor:        { label: "Tutor",         color: "text-violet-700",  bg: "bg-violet-50  border-violet-200"  },
-  premiumTutor: { label: "Premium Tutor", color: "text-amber-700",   bg: "bg-amber-50   border-amber-200"   },
+  tutor:        { label: "Tutor",         color: "text-green-700",   bg: "bg-green-50 border-green-200" },
+  premiumTutor: { label: "Premium Tutor", color: "text-teal-700",    bg: "bg-teal-50 border-teal-200" },
 }
 
 /* ─── Shared field accent per role ─────────────────────────── */
 
 const accentMap: Record<UserRole, string> = {
   student:      "focus:border-emerald-400 focus:ring-emerald-100",
-  tutor:        "focus:border-violet-400  focus:ring-violet-100",
-  premiumTutor: "focus:border-violet-400  focus:ring-violet-100",
+  tutor:        "focus:border-green-400   focus:ring-green-100",
+  premiumTutor: "focus:border-teal-400    focus:ring-teal-100",
 }
 
 /* ─── Component ─────────────────────────────────────────── */
@@ -215,17 +215,9 @@ export default function ProfileModal({
               <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatarFile} className="hidden" />
             </div>
 
-            <div className="flex flex-col gap-1.5 flex-1">
-              <label className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-                Avatar URL
-              </label>
-              <input
-                {...register("avatarUrl")}
-                type="url"
-                placeholder="https://example.com/photo.jpg"
-                onChange={(e) => { setAvatarPreview(e.target.value); setValue("avatarUrl", e.target.value) }}
-                className={`bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-700 placeholder:text-slate-300 outline-none focus:ring-2 transition-all ${accent}`}
-              />
+            <div className="flex flex-col justify-center flex-1">
+              <p className="text-sm font-semibold text-slate-700">Profile Picture</p>
+              <p className="text-xs text-slate-400">Click the camera icon to upload a new photo.</p>
             </div>
           </div>
 
@@ -307,7 +299,7 @@ export default function ProfileModal({
             disabled={submitState === "loading" || submitState === "success"}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white shadow-sm transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed ${
               isTutor
-                ? "bg-violet-600 hover:bg-violet-700"
+                ? "bg-green-700 hover:bg-green-800"
                 : "bg-emerald-600 hover:bg-emerald-700"
             }`}
           >

@@ -44,20 +44,20 @@ function TagInput({
         {label}
       </label>
       <div
-        className={`min-h-[48px] flex flex-wrap gap-1.5 items-center bg-slate-50 border rounded-xl px-3 py-2 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-100 transition-all ${
+        className={`min-h-[48px] flex flex-wrap gap-1.5 items-center bg-slate-50 border rounded-xl px-3 py-2 focus-within:border-green-400 focus-within:ring-2 focus-within:ring-green-100 transition-all ${
           error ? "border-red-300" : "border-slate-200"
         }`}
       >
         {values.map((tag) => (
           <span
             key={tag}
-            className="flex items-center gap-1 bg-violet-50 text-violet-700 border border-violet-200 text-xs font-medium px-2.5 py-1 rounded-lg"
+            className="flex items-center gap-1 bg-green-50 text-green-700 border border-green-200 text-xs font-medium px-2.5 py-1 rounded-lg"
           >
             {tag}
             <button
               type="button"
               onClick={() => remove(tag)}
-              className="text-violet-400 hover:text-violet-700 transition-colors"
+              className="text-green-400 hover:text-green-700 transition-colors"
             >
               <X size={11} />
             </button>
@@ -71,7 +71,7 @@ function TagInput({
           className="flex-1 min-w-[120px] bg-transparent text-sm text-slate-700 placeholder:text-slate-300 outline-none"
         />
         {input.trim() && (
-          <button type="button" onClick={add} className="text-violet-500 hover:text-violet-700">
+          <button type="button" onClick={add} className="text-green-500 hover:text-green-700">
             <Plus size={16} />
           </button>
         )}
@@ -96,7 +96,7 @@ export default function TutorProfileForm({ register, errors, setValue, watch }: 
           {...register("bio", { required: "Bio is required for tutors" })}
           rows={3}
           placeholder="Describe your teaching style, background, and expertise..."
-          className={`resize-none bg-slate-50 border rounded-xl px-4 py-3 text-sm text-slate-700 placeholder:text-slate-300 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all ${
+          className={`resize-none bg-slate-50 border rounded-xl px-4 py-3 text-sm text-slate-700 placeholder:text-slate-300 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${
             errors.bio ? "border-red-300" : "border-slate-200"
           }`}
         />
@@ -126,7 +126,7 @@ export default function TutorProfileForm({ register, errors, setValue, watch }: 
             {...register("experience", { required: "Experience is required" })}
             type="text"
             placeholder="e.g. 5 years teaching web development at university..."
-            className={`w-full bg-slate-50 border rounded-xl pl-10 pr-4 py-3 text-sm text-slate-700 placeholder:text-slate-300 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all ${
+            className={`w-full bg-slate-50 border rounded-xl pl-10 pr-4 py-3 text-sm text-slate-700 placeholder:text-slate-300 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${
               errors.experience ? "border-red-300" : "border-slate-200"
             }`}
           />

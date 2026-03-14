@@ -38,7 +38,7 @@ export default function TutorProfileHeader({
                     style={{ backgroundImage: `url(${avatarUrl || "https://api.dicebear.com/7.x/initials/svg?seed=" + name})` }}>
                     {isVerified && (
                         <div className="absolute bottom-1 right-1 bg-white rounded-full p-0.5 shadow-sm">
-                            <BadgeCheck className="w-6 h-6 text-blue-500" />
+                            <BadgeCheck className="w-6 h-6 text-emerald-500" />
                         </div>
                     )}
                 </div>

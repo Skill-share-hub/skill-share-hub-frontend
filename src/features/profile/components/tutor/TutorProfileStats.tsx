@@ -38,8 +38,8 @@ export default function TutorProfileStats({
         {
             title: "Lifetime Earnings",
             value: `$${earningsTotal.toLocaleString()}`,
-            icon: <TrendingUp className="w-5 h-5 text-purple-500" />,
-            bgColor: "bg-purple-50",
+            icon: <TrendingUp className="w-5 h-5 text-emerald-500" />,
+            bgColor: "bg-emerald-50",
             description: "Total revenue from paid courses"
         }
     ];

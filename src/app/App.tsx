@@ -20,6 +20,7 @@ import CourseDetailsPage from "../features/courses/pages/CourseDetailsPage";
 import ProtectedRoute from "../routes/ProtectedRoute";
 import Wallet from "../features/wallet/Wallet";
 import MyActivity from "../features/courses/pages/MyActivity";
+import StudentProfilePage from "../features/profile/pages/studentProfilePage";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -43,6 +44,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<TutorProfilePage />} />
+            <Route path="/student-profile" element={<StudentProfilePage />} />
           </Route>
 
           {/* Tutor & Premium Tutor Only */}

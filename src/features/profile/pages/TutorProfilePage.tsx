@@ -93,23 +93,23 @@ export default function TutorProfilePage() {
             <TutorProfileAbout
                 bio={profile.bio}
                 skills={profile.skills}
+                experience={user.tutorProfile?.experience}
             />
 
             {/* Courses Section Placeholder */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
                 <div className="flex items-center justify-between mb-8">
                     <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        <BookOpen className="w-5 h-5 text-indigo-500" />
+                        <BookOpen className="w-5 h-5 text-green-600" />
                         Created Courses
                     </h3>
-                    <span className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg text-sm font-semibold">
+                    <span className="bg-green-50 text-green-700 px-3 py-1 rounded-lg text-sm font-semibold border border-green-100">
                         {profile.createdCourses?.length || 0} Total
                     </span>
                 </div>
 
-                {profile.createdCourses && profile.createdCourses.length > 0 ? (
+                {/* {profile.createdCourses && profile.createdCourses.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {/* Render courses here when populated */}
                         <div className="text-gray-500 italic">Courses mapping goes here...</div>
                     </div>
                 ) : (
@@ -118,7 +118,7 @@ export default function TutorProfilePage() {
                         <h4 className="text-lg font-bold text-gray-700 mb-1">No Courses Yet</h4>
                         <p className="text-sm text-gray-500 font-medium">You haven't published any courses on your profile.</p>
                     </div>
-                )}
+                )} */}
             </div>
 
         </div>
