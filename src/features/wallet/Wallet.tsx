@@ -1,10 +1,34 @@
+import { useEffect, useState } from "react";
 import Footer from "../../shared/components/Footer";
 import { useAppSelector } from "../../shared/hooks/redux";
+import handleError from "../../shared/services/handleError";
 import Navbar from "../navbar/Navbar";
 import { WalletBalance, WalletTransaction, BuyCredits, WithdrawCredits } from './components/index';
+import api from "../../shared/services/axios";
+import FullScreenLoader from "../../shared/components/FullScreenLoader";
+import type { Wallet } from "./wallet.types";
+
 
 export default function Wallet() {
   const { user } = useAppSelector(state => state.user);
+  const [data,setData] = useState<Wallet | null>(null);
+
+  const fetchWallet = async () => {
+    try{
+
+      const {data:walletData} = await api.get('/wallet');
+      setData(walletData.data);
+
+    }catch(error){
+      handleError(error)
+    }
+  }
+
+  useEffect(()=>{
+    fetchWallet()
+  },[])
+
+  if(!data)return <FullScreenLoader />
 
   return (
     <div className="bg-[#fcfdfd]">
@@ -31,7 +55,7 @@ export default function Wallet() {
           
           <div className="lg:col-span-8 space-y-10">
             <section>
-              <WalletBalance />
+              <WalletBalance data={data}  />
             </section>
             
             <section className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
@@ -41,7 +65,7 @@ export default function Wallet() {
 
           <div className="lg:col-span-4 space-y-8">
             <div className="sticky top-24 space-y-8">
-              <BuyCredits />
+              <BuyCredits fetchWallet={fetchWallet} creditConst={data.creditConst} />
               <WithdrawCredits />
             </div>
           </div>

@@ -1,87 +1,145 @@
 import { useState } from 'react';
-import { Plus, Sparkles, ArrowRight } from 'lucide-react';
+import { Plus, Sparkles, ArrowRight, AlertCircle, Coins } from 'lucide-react';
+import api from '../../../shared/services/axios';
 
-export function BuyCredits() {
-  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
-  const [customAmount, setCustomAmount] = useState<string>("");
+export function BuyCredits(
+  { creditConst , fetchWallet }:
+  { creditConst: number, fetchWallet : ()=>void }
+) {
+  const [amount, setAmount] = useState<number>(0);
 
   const presets = [
-    { credits: 100, price: 10 },
-    { credits: 200, price: 20 },
-    { credits: 300, price: 30 },
-    { credits: 400, price: 40 },
+    { credits: 10, price: 10 * creditConst },
+    { credits: 100, price: 100 * creditConst },
+    { credits: 500, price: 500 * creditConst },
+    { credits: 1000, price: 1000 * creditConst }
   ];
 
-  const handlePresetClick = (amount: number) => {
-    setSelectedAmount(amount);
-    setCustomAmount("");
+  const handlePayment = async () => {
+    if(!amount || amount < 0)return ;
+    try {
+      const {data:orderRes} = await api.post("/wallet/credits", {amount});
+
+      const order = orderRes.data;
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: "INR",
+        name: "Skill share hub",
+        description: "Buy Credits",
+        order_id: order.id,
+
+        handler: async function (response:any) {
+
+          const {data:verifyRes} = await api.post("/wallet/credits/verify", {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature
+          });
+
+          if (verifyRes.success) {
+            fetchWallet();
+          }
+
+        },
+
+        prefill: {
+          name: "User Name",
+          email: "user@email.com",
+          contact: "9999999999"
+        },
+
+        theme: {
+          color: "#3399cc"
+        }
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const customVal = Number(customAmount);
-  const hasValue = selectedAmount !== null || (customVal > 0);
-  const showConversion = customAmount !== "" && customVal > 0;
-
   return (
-    <div className="max-w-xl overflow-hidden bg-white border border-gray-100 rounded-2xl shadow-xl">
-      <div className="flex items-center justify-between px-5 py-5 bg-[#164e33]">
-        <div className="flex items-center gap-2">
-          <Plus className="w-4 h-4 text-white" />
-          <h2 className="text-lg font-semibold text-white uppercase tracking-wider">Buy Credits</h2>
+    <div className="max-w-xl overflow-hidden bg-white border border-gray-100 shadow-2xl rounded-2xl">
+      <div className="flex items-center justify-between px-6 py-5 bg-[#164e33]">
+        <div className="flex items-center gap-3">
+          <div className="p-1.5 bg-white/10 rounded-lg">
+            <Plus className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-white uppercase tracking-widest">Buy Credits</h2>
+            <p className="text-[10px] text-white/60 font-medium">Top up your wallet instantly</p>
+          </div>
         </div>
-        <Sparkles className="w-4 h-4 text-white/40" />
+        <Sparkles className="w-5 h-5 text-yellow-400/80 animate-pulse" />
       </div>
 
-      <div className="p-4">
-        <div className="flex gap-4">
+      <div className="p-6">
+        <div className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-4">
           {presets.map((pkg) => (
             <button
               key={pkg.credits}
-              onClick={() => handlePresetClick(pkg.credits)}
-              className={`flex flex-col items-center py-2 px-5 mb-4 transition-all border border-gray-300 cursor-pointer rounded-xl ${
-                selectedAmount === pkg.credits
-                  ? "border-[#164e33] bg-[#f0f7f4] ring-1 ring-[#164e33]"
+              onClick={() => setAmount(pkg.credits)}
+              className={`flex flex-col items-center justify-center py-4 px-2 transition-all border-2 rounded-2xl active:scale-95 ${
+                amount === pkg.credits
+                  ? "border-[#164e33] bg-[#f0f7f4] shadow-sm"
                   : "border-gray-100 hover:border-gray-200 bg-gray-50/50"
               }`}
             >
-              <span className={`text-[10px] font-bold uppercase ${selectedAmount === pkg.credits ? "text-[#164e33]" : "text-gray-500"}`}>
-                {pkg.credits}
-              </span>
-              <span className={`text-xs font-black ${selectedAmount === pkg.credits ? "text-[#164e33]" : "text-gray-900"}`}>
+              <span className={`text-[10px] font-bold uppercase mb-1 ${amount === pkg.credits ? "text-[#164e33]" : "text-gray-400"}`}>
                 ₹{pkg.price}
               </span>
+              <div className="flex items-center gap-1">
+                <span className={`text-lg font-black ${amount === pkg.credits ? "text-[#164e33]" : "text-gray-900"}`}>
+                  {pkg.credits}
+                </span>
+                <Coins className={`w-3 h-3 ${amount === pkg.credits ? "text-[#164e33]" : "text-gray-400"}`} />
+              </div>
             </button>
           ))}
         </div>
 
-        <div className="relative flex flex-col gap-2">
+        <div className="relative flex flex-col gap-4 pt-4 border-t border-gray-50">
           <div className="relative flex items-center">
             <input
               type="number"
-              value={customAmount}
-              onChange={(e) => {
-                setCustomAmount(e.target.value);
-                setSelectedAmount(null);
-              }}
-              placeholder="Custom amount..."
-              className="w-full pl-3 pr-20 py-2.5 text-sm border border-gray-100 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#164e33]/10 focus:border-[#164e33] transition-all"
+              value={amount || ''}
+              onChange={(e) => setAmount(Number(e.target.value))}
+              placeholder="Enter custom amount..."
+              className="w-full pl-4 pr-24 py-3 text-sm font-medium border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#164e33]/5 focus:border-[#164e33] transition-all"
             />
             
-            {showConversion && (
-              <div className="absolute right-2 flex items-center gap-1.5 px-2 py-1 bg-[#164e33] rounded-lg animate-in fade-in zoom-in duration-200">
-                <span className="text-[10px] font-bold text-white/80">Pay:</span>
-                <span className="text-xs font-bold text-white">₹{customVal / 10}</span>
+            {amount > 0 && (
+              <div className="absolute right-2.5 flex items-center gap-1.5 px-3 py-1.5 bg-[#164e33] rounded-lg shadow-lg shadow-[#164e33]/20 animate-in fade-in slide-in-from-right-2 duration-300">
+                <span className="text-[10px] font-bold text-white/70">Total:</span>
+                <span className="text-sm font-bold text-white">₹{amount * creditConst}</span>
               </div>
             )}
           </div>
 
-          <div className={`max-h-16 transition-all duration-300 overflow-hidden ${
-            hasValue ? "cursor-pointer" : "pointer-events-none opacity-70"
-          }`}>
-            <button className="w-full py-2.5 font-bold text-white bg-[#164e33] rounded-xl hover:bg-[#1a5d3d] transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-sm shadow-md shadow-[#164e33]/20">
-              Buy Now
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+          <button 
+            onClick={handlePayment}
+            disabled={amount <= 0}
+            className={`w-full py-3.5 font-bold text-white bg-[#164e33] rounded-xl transition-all flex items-center justify-center gap-2 text-sm shadow-xl shadow-[#164e33]/10 
+              ${amount > 0 
+                ? "hover:bg-[#1a5d3d] active:scale-[0.99] hover:shadow-[#164e33]/20" 
+                : "opacity-40 cursor-not-allowed grayscale"
+              }`}
+          >
+            Confirm Purchase
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="flex items-start gap-2 mt-6 p-3 bg-amber-50/50 rounded-xl border border-amber-100/50">
+          <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+          <p className="text-[11px] leading-relaxed text-amber-800 font-medium">
+            <span className="font-bold">Important:</span> Credits are non-refundable.
+          </p>
         </div>
       </div>
     </div>
