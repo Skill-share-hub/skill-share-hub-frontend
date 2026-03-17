@@ -36,10 +36,10 @@ export default function NavbarContainer({ children }: NavbarContainerProps) {
             }}
             animate={hidden ? "hidden" : "visible"}
             transition={{ duration: 0.35, ease: "easeInOut" }}
-            className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${scrolled
-                    ? "bg-white/90 backdrop-blur-md shadow-md py-3"
-                    : "bg-white py-4"
-                } px-6 lg:px-12`}
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+                    ? "bg-white/90 backdrop-blur-md shadow-sm py-2"
+                    : "bg-white py-3 md:py-4"
+                } px-4 md:px-8 lg:px-12`}
         >
             <div className="flex items-center justify-between max-w-7xl mx-auto">
                 {children}

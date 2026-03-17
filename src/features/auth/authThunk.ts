@@ -17,4 +17,17 @@ export const switchRole = createAsyncThunk(
             return rejectWithValue(error.response?.data?.message || "Failed to update status");
         }
     }
-)
+);
+
+export const logoutUser = createAsyncThunk(
+    "user/logout",
+    async (_, { rejectWithValue }) => {
+        try {
+            await api.post(`/auth/logout`);
+            return true;
+        } catch (err: unknown) {
+            const error = err as Error & { response?: { data?: { message?: string } } };
+            return rejectWithValue(error.response?.data?.message || "Logout failed");
+        }
+    }
+);

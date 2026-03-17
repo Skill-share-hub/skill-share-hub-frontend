@@ -3,7 +3,7 @@ import type { User } from "../../../shared/types/user.Type";
 import { fetchUserProfile, updateUserProfile } from "../thunk/profile.thunk";
 
 interface ProfileState {
-    user: User | null;
+    profile: User | null;
     loading: boolean;
     updating: boolean;      
     error: string | null;
@@ -11,7 +11,7 @@ interface ProfileState {
 }
 
 const initialState: ProfileState = {
-    user: null,
+    profile: null,
     loading: false,
     updating: false,
     error: null,
@@ -36,7 +36,7 @@ const profileSlice = createSlice({
             })
             .addCase(fetchUserProfile.fulfilled, (state, action) => {
                 state.loading = false;
-                state.user = action.payload;
+                state.profile = action.payload;
             })
             .addCase(fetchUserProfile.rejected, (state, action) => {
                 state.loading = false;
@@ -50,7 +50,7 @@ const profileSlice = createSlice({
             })
             .addCase(updateUserProfile.fulfilled, (state, action) => {
                 state.updating = false;
-                state.user = action.payload;
+                state.profile = action.payload;
             })
             .addCase(updateUserProfile.rejected, (state, action) => {
                 state.updating = false;

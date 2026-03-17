@@ -3,17 +3,19 @@ import api from "../../shared/services/axios";
 import type { AppDispatch } from "../../store/store";
 import handleError from "../../shared/services/handleError";
 import type { User } from "../../shared/types/user.Type";
-import { switchRole } from "./authThunk";
+import { switchRole, logoutUser } from "./authThunk";
 
 interface UserState {
   user: User | null;
   loading: boolean;
   error: string | null;
+  login : boolean | null ;
 }
 
 const initialState: UserState = {
   user: null,
   loading: false,
+  login : null,
   error: null,
 };
 
@@ -27,6 +29,9 @@ const authSlice = createSlice({
     fetchSuccess(state, action: { payload: User }) {
       state.loading = false;
       state.user = action.payload;
+      if(action.payload){
+        state.login = true ;
+      }
     },
     fetchFail(state, action) {
       state.loading = false;
@@ -34,6 +39,7 @@ const authSlice = createSlice({
     },
     setUserLogout(state) {
       state.user = null;
+      state.login = null ;
     },
   },
   extraReducers: (builder) => {
@@ -55,6 +61,15 @@ const authSlice = createSlice({
     .addCase(switchRole.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || "Role update failed";
+    })
+    
+    .addCase(logoutUser.fulfilled, (state) => {
+      state.user = null;
+      state.login = null;
+    })
+    .addCase(logoutUser.rejected, (state) => {
+      state.user = null;
+      state.login = null;
     });
 }
 });

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../shared/hooks/redux";
 import TutorProfileHeader from "../components/tutor/TutorProfileHeader";
 import TutorProfileStats from "../components/tutor/TutorProfileStats";
@@ -5,15 +6,18 @@ import TutorProfileAbout from "../components/tutor/TutorProfileAbout";
 import FullScreenLoader from "../../../shared/components/FullScreenLoader";
 import { BookOpen } from "lucide-react";
 import ProfileModal from "../components/profileModal/ProfileModal";
-import { useState } from "react";
 import type { UpdateProfilePayload } from "../types/ProfileModal.types";
 import { fetchSuccess } from "../../auth/authSlice";
-import { updateUserProfile } from "../thunk/profile.thunk";
+import { fetchUserProfile, updateUserProfile } from "../thunk/profile.thunk";
 
 export default function TutorProfilePage() {
     const dispatch = useAppDispatch();
-    const { user, loading } = useAppSelector((state) => state.user);
+    const { profile: user, loading } = useAppSelector((state) => state.profile);
     const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
+        dispatch(fetchUserProfile());
+    }, [dispatch]);
  const handleSubmit = async (payload: UpdateProfilePayload) => {
     const result = await dispatch(updateUserProfile(payload));
     
@@ -52,7 +56,7 @@ export default function TutorProfilePage() {
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full min-h-screen bg-gray-50">
             {/* Page Heading */}
-            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight mb-8">My Profile</h1>
+            <h1 className="text-3xl font-bold text-gray-900 tracking-tight mb-8">My Profile</h1>
 
 <ProfileModal
       isOpen={showModal}
