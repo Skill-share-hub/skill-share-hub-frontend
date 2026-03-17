@@ -12,7 +12,7 @@ import {
 } from "../redux/purchaseSlice";
 import { fetchWalletBalance } from "../../wallet/walletSlice";
 import { courseService } from "../../courses/services/courseService";
-import { getProfie } from "../../profile/api/profile.api";
+import { getProfile } from "../../profile/api/profile.api";
 import CourseSummaryCard from "../components/CourseSummaryCard";
 import PaymentMethodSelector from "../components/PaymentMethodSelector";
 import PurchaseSummaryPanel from "../components/PurchaseSummaryPanel";
@@ -44,7 +44,7 @@ const CoursePurchasePage: React.FC = () => {
         setInitialLoading(true);
         const [courseRes, profileRes] = await Promise.all([
           courseService.fetchCourseById(courseId),
-          getProfie()
+          getProfile()
         ]);
         setCurrentCourse(courseRes.data);
         setProfile(profileRes); // The API unwraps it returning user directly

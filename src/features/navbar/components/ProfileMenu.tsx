@@ -2,8 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, Settings, LogOut } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../../shared/hooks/redux";
-import { setUserLogout } from "../../auth/authSlice";
-import { switchRole } from "../../auth/authThunk";
+import { switchRole, logoutUser } from "../../auth/authThunk";
 import ConfirmDialog from "../../../shared/components/ConfirmDialog";
 import LogoutModal from "./LogoutModal";
 
@@ -158,7 +157,8 @@ export default function ProfileMenu() {
                 onConfirm={handleConfirmSwitch}
                 title="Switch Account Role?"
                 description={`Are you sure you want to switch to the ${confirmRoleSwitch.targetRole || 'selected'} dashboard? You can switch back at any time.`}
-                confirmText={`Switch to ${confrmRoleSwitch.targetRole === 'tutor' ? 'Tutor' : 'Student'}`}
+                confirmText={`Switch to ${confirmRoleSwitch.targetRole === 'tutor' ? 'Tutor' : 'Student'}`}
+            />
             <LogoutModal 
                 isOpen={showLogoutModal}
                 onClose={() => setShowLogoutModal(false)}
