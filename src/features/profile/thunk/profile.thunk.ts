@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { User } from "../../../shared/types/user.Type";
-import { getProfie, updateUserProfileApi } from "../api/profile.api";
+import { getProfile, updateUserProfileApi } from "../api/profile.api";
 import type { UpdateUserProfileDto } from "../api/profile.api";
 
 // ─── Fetch Profile ────────────────────────────────────────────────────────────
@@ -8,7 +8,8 @@ export const fetchUserProfile = createAsyncThunk<User, void, { rejectValue: stri
     "profile/fetchUserProfile",
     async (_, { rejectWithValue }) => {
         try {
-            const data = await getProfie();
+            const data = await getProfile();
+            
             return data as User;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Failed to fetch profile");
