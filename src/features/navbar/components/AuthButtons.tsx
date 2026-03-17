@@ -1,7 +1,10 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Bookmark, Bell, Plus } from "lucide-react";
+import { Bookmark, Bell, Plus, Coins } from "lucide-react";
 import type { User } from "../../../shared/types/user.Type";
 import ProfileMenu from "./ProfileMenu";
+import { useAppDispatch, useAppSelector } from "../../../shared/hooks/redux";
+import { fetchWalletBalance } from "../../wallet/walletSlice";
 
 interface AuthButtonsProps {
     user: User | null;
@@ -9,7 +12,14 @@ interface AuthButtonsProps {
 }
 
 export default function AuthButtons({ user, isMobile = false }: AuthButtonsProps) {
-    const currentCredits = (user as any)?.credits || 0;
+    const dispatch = useAppDispatch();
+    const { creditBalance } = useAppSelector(state => state.wallet);
+
+    useEffect(() => {
+        if (user && (user.role === 'student' || user.role === 'tutor' || user.role === 'premiumTutor')) {
+            dispatch(fetchWalletBalance());
+        }
+    }, [user, dispatch]);
 
     if (!user) {
         return (
@@ -45,7 +55,10 @@ export default function AuthButtons({ user, isMobile = false }: AuthButtonsProps
     return (
         <div className="flex items-center gap-2 lg:gap-4">
             {(user.role === 'student' || user.role === 'tutor' || user.role === 'premiumTutor') && (
-                <span className="text-gray-600 font-bold px-2 py-1 bg-green-50 rounded-lg whitespace-nowrap hidden lg:inline-block">Credits: {currentCredits}</span>
+                <Link to="/wallet" className="flex items-center gap-1.5 text-gray-700 font-bold px-3 py-1.5 bg-green-50/80 hover:bg-green-100 rounded-xl transition-colors hidden lg:flex">
+                    <Coins className="w-4 h-4 text-green-600" />
+                    <span>{creditBalance}</span>
+                </Link>
             )}
 
             {user.role === 'tutor' || user.role === 'premiumTutor' ? (

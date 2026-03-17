@@ -77,7 +77,7 @@ export default function StudentProfileHeader({
         {/* Name + Meta */}
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">{name}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{name}</h2>
             {isVerified && (
               <CheckCircle className="w-5 h-5 text-green-500 fill-green-100" />
             )}

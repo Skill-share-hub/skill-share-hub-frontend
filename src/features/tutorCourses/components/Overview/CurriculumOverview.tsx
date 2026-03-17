@@ -4,9 +4,8 @@ import {
     Clock,
     FileText,
     ChevronDown,
-    ChevronUp,
     HelpCircle,
-    Layout
+    Layers
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useNavigate } from "react-router-dom"
@@ -74,115 +73,158 @@ const CurriculumOverview = ({ course }: CurriculumOverviewProps) => {
         setIsModalOpen(true)
     }
 
+    const moduleCount = course.contentModules?.length || 0
+
     return (
         <div className="mb-12">
-            <div className="flex justify-between items-end mb-6">
-                <div className="flex items-center gap-3">
-                    <div className="bg-[#166534] text-white p-2 rounded-lg">
-                        <Layout size={20} />
+            {/* Section card — mirrors OverviewHero structure */}
+            <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+
+                {/* Top meta bar */}
+                <div className="flex items-center justify-between px-7 py-3 border-b border-gray-100 bg-gray-50/60">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.14em] uppercase text-gray-400">
+                        <Layers size={12} strokeWidth={2.5} />
+                        Curriculum
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900">Curriculum Overview</h2>
+                    <span className="text-[11px] font-semibold text-gray-400 tracking-wide">
+                        {moduleCount} {moduleCount === 1 ? "Module" : "Modules"}
+                    </span>
                 </div>
-                <div className="flex items-center gap-3">
+
+                {/* Header row */}
+                <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
+                    <h2 className="text-[1.25rem] font-extrabold text-gray-900 tracking-tight">
+                        Curriculum Overview
+                    </h2>
                     <button
-                        onClick={() => { setEditingContent(null); setIsModalOpen(true); }}
-                        className="flex items-center gap-2 bg-[#166534] text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#14532D] transition-all"
+                        onClick={() => { setEditingContent(null); setIsModalOpen(true) }}
+                        className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-[13px] font-semibold px-4 py-2.5 rounded-xl transition-colors duration-150 active:scale-[0.97]"
                     >
-                        <Plus size={16} />
-                        Add Content
+                        <Plus size={14} strokeWidth={2.5} />
+                        Add Module
                     </button>
-                    <p className="text-sm font-medium text-gray-400">
-                        {course.contentModules?.length || 0} Modules • 0 Lessons
-                    </p>
                 </div>
-            </div>
 
-            <div className="space-y-4">
-                {course.contentModules && course.contentModules.length > 0 ? (
-                    course.contentModules.map((module, idx) => (
-                        <div
-                            key={idx}
-                            className={`bg-white rounded-2xl border transition-all overflow-hidden ${expandedModule === idx ? 'border-[#166534] ring-1 ring-[#166534]/20 shadow-md' : 'border-gray-100 hover:border-gray-200'}`}
-                        >
-                            <button
-                                onClick={() => setExpandedModule(expandedModule === idx ? null : idx)}
-                                className="w-full flex items-center gap-4 p-5 text-left"
-                            >
-                                <div className={`p-3 rounded-xl transition-colors ${expandedModule === idx ? 'bg-[#166534] text-white' : 'bg-gray-50 text-gray-400'}`}>
-                                    <PlayCircle size={20} />
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="font-bold text-gray-900 mb-1">{module.title || `Module ${idx + 1}`}</h3>
-                                    <div className="flex items-center gap-3 text-xs text-gray-400 font-medium">
-                                        <span className="flex items-center gap-1">
-                                            <FileText size={12} />
-                                            0 Lessons
-                                        </span>
-                                        <span className="flex items-center gap-1">
-                                            <Clock size={12} />
-                                            {Math.floor((module.duration || 0) / 60)}m {(module.duration || 0) % 60}s
-                                        </span>
-                                    </div>
-                                </div>
-                                {expandedModule === idx ? <ChevronUp className="text-gray-400" /> : <ChevronDown className="text-gray-400" />}
-                            </button>
+                {/* Module list */}
+                <div className="divide-y divide-gray-100">
+                    {moduleCount > 0 ? (
+                        course?.contentModules?.map((module, idx) => {
+                            const isOpen = expandedModule === idx
+                            const duration = module.duration || 0
+                            const mins = Math.floor(duration / 60)
+                            const secs = duration % 60
 
-                            <AnimatePresence>
-                                {expandedModule === idx && (
-                                    <motion.div
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: "auto", opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        className="border-t border-gray-50 bg-gray-50/30 p-5"
+                            return (
+                                <div key={idx} className={`transition-colors ${isOpen ? "bg-gray-50/50" : "bg-white hover:bg-gray-50/40"}`}>
+                                    {/* Module header */}
+                                    <button
+                                        onClick={() => setExpandedModule(isOpen ? null : idx)}
+                                        className="w-full flex items-center gap-4 px-7 py-4 text-left group"
                                     >
-                                        <div className="flex justify-between items-start gap-4">
-                                            <p className="text-sm text-gray-600 leading-relaxed flex-1">
-                                                {module.summary || "No description available for this module."}
+                                        {/* Index */}
+                                        <span className="w-6 text-[12px] font-bold text-gray-300 tabular-nums shrink-0">
+                                            {String(idx + 1).padStart(2, "0")}
+                                        </span>
+
+                                        {/* Icon */}
+                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                                            isOpen ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-400 group-hover:bg-gray-200"
+                                        }`}>
+                                            <PlayCircle size={15} strokeWidth={2} />
+                                        </div>
+
+                                        {/* Title + meta */}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[14px] font-bold text-gray-900 truncate">
+                                                {module.title || `Module ${idx + 1}`}
                                             </p>
-                                            <div className="flex gap-2 shrink-0">
-                                                <button
-                                                    onClick={(e) => openEditModal(module, e)}
-                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title="Edit Content"
-                                                >
-                                                    <Edit2 size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleDeleteContent(module._id); }}
-                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                                                    disabled={isDeleting === module._id}
-                                                    title="Delete Content"
-                                                >
-                                                    {isDeleting === module._id ? (
-                                                        <div className="w-4 h-4 border-2 border-red-200 border-t-red-600 rounded-full animate-spin" />
-                                                    ) : (
-                                                        <Trash2 size={16} />
-                                                    )}
-                                                </button>
+                                            <div className="flex items-center gap-3 mt-0.5 text-[11px] text-gray-400 font-medium">
+                                                <span className="flex items-center gap-1">
+                                                    <FileText size={10} strokeWidth={2.5} />
+                                                    0 Lessons
+                                                </span>
+                                                <span className="flex items-center gap-1">
+                                                    <Clock size={10} strokeWidth={2.5} />
+                                                    {mins}m {secs}s
+                                                </span>
                                             </div>
                                         </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+
+                                        {/* Chevron */}
+                                        <ChevronDown
+                                            size={15}
+                                            strokeWidth={2.5}
+                                            className={`text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                                        />
+                                    </button>
+
+                                    {/* Expanded panel */}
+                                    <AnimatePresence initial={false}>
+                                        {isOpen && (
+                                            <motion.div
+                                                key="panel"
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: "auto", opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                                                className="overflow-hidden"
+                                            >
+                                                <div className="flex items-start justify-between gap-4 px-7 pb-5 pt-1 ml-[3.75rem]">
+                                                    <p className="text-[13px] text-gray-500 leading-relaxed flex-1">
+                                                        {module.summary || "No description provided for this module."}
+                                                    </p>
+                                                    <div className="flex items-center gap-1.5 shrink-0">
+                                                        <button
+                                                            onClick={(e) => openEditModal(module, e)}
+                                                            className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                                            title="Edit module"
+                                                        >
+                                                            <Edit2 size={14} strokeWidth={2} />
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleDeleteContent(module._id) }}
+                                                            disabled={isDeleting === module._id}
+                                                            className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
+                                                            title="Delete module"
+                                                        >
+                                                            {isDeleting === module._id ? (
+                                                                <div className="w-3.5 h-3.5 border-2 border-gray-300 border-t-red-400 rounded-full animate-spin" />
+                                                            ) : (
+                                                                <Trash2 size={14} strokeWidth={2} />
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            )
+                        })
+                    ) : (
+                        /* Empty state */
+                        <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+                            <div className="w-12 h-12 rounded-xl bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center mb-4">
+                                <HelpCircle size={20} className="text-gray-300" />
+                            </div>
+                            <p className="text-[14px] font-semibold text-gray-400">No modules added yet</p>
+                            <p className="text-[13px] text-gray-400 mt-1">
+                                Start building your curriculum by adding the first module.
+                            </p>
+                            <button
+                                onClick={() => navigate(`/edit-course/${course._id}`)}
+                                className="mt-5 text-[13px] font-semibold text-gray-900 underline underline-offset-2 hover:text-emerald-700 transition-colors"
+                            >
+                                Go to course editor →
+                            </button>
                         </div>
-                    ))
-                ) : (
-                    <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-gray-200 text-gray-400">
-                        <HelpCircle size={40} className="mx-auto mb-3 opacity-20" />
-                        <p className="font-medium">No modules added yet.</p>
-                        <button
-                            onClick={() => navigate(`/edit-course/${course._id}`)}
-                            className="mt-4 text-[#166534] font-bold hover:underline"
-                        >
-                            Start adding content
-                        </button>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
 
             <ContentModal
                 isOpen={isModalOpen}
-                onClose={() => { setIsModalOpen(false); setEditingContent(null); }}
+                onClose={() => { setIsModalOpen(false); setEditingContent(null) }}
                 onSubmit={editingContent ? handleUpdateContent : handleAddContent}
                 initialData={editingContent}
                 isSubmitting={isSubmitting}

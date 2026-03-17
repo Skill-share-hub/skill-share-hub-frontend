@@ -5,6 +5,7 @@ import getTutorCourseReducer from '../features/tutorCourses/slice/getCourseSlice
 import courseReducer from '../features/courses/slice/courseSlice'
 import profileReducer from '../features/profile/slice/profile.slice'
 import purchaseReducer from '../features/coursePurchase/redux/purchaseSlice'
+import walletReducer from '../features/wallet/walletSlice'
 
 const store = configureStore({
   reducer: {
@@ -13,7 +14,8 @@ const store = configureStore({
     courseBuilder: courseCreationReducer,
     tutorCourses: getTutorCourseReducer,
     courses: courseReducer,
-    purchase: purchaseReducer
+    purchase: purchaseReducer,
+    wallet: walletReducer
   }
 });
 

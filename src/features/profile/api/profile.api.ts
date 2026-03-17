@@ -17,8 +17,9 @@ export interface UpdateUserProfileDto {
 }
 
 // Backend wraps response as { success, data: User }
-export const getProfie = async () => {
+export const getProfile = async () => {
     const response = await api.get("/users/profile");
+    console.log("Profile API response:", response.data);
     return response.data.data; // unwrap the nested .data
 };
 

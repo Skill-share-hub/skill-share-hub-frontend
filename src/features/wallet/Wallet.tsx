@@ -5,17 +5,21 @@ import { WalletBalance, WalletTransaction, BuyCredits, WithdrawCredits } from '.
 import api from "../../shared/services/axios";
 import FullScreenLoader from "../../shared/components/FullScreenLoader";
 import type { Wallet as WalletType } from "./wallet.types";
+import type { Wallet } from "./wallet.types";
+import { fetchWalletBalance } from "./walletSlice";
 
 
 export default function Wallet() {
   const { user } = useAppSelector(state => state.user);
-  const [data,setData] = useState<WalletType | null>(null);
+  const dispatch = useAppDispatch();
+  const [data,setData] = useState<Wallet | null>(null);
 
   const fetchWallet = async () => {
     try{
 
       const {data:walletData} = await api.get('/wallet');
       setData(walletData.data);
+      dispatch(fetchWalletBalance());
 
     }catch(error){
       handleError(error)
