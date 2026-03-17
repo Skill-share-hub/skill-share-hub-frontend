@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Course } from '../../types/course.types';
 import { Star, Users, PlayCircle, BookmarkPlus, Share2 } from 'lucide-react';
 
@@ -7,6 +8,7 @@ interface CourseHeroProps {
 }
 
 const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
+  const navigate = useNavigate();
   const tutorObj = typeof course.tutorId === 'object' ? course.tutorId : null;
   const tutorName = tutorObj?.name || 'Instructor';
   const tutorAvatar =
@@ -114,7 +116,10 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
               {/* Actions */}
               <div className="flex items-center gap-3 sm:ml-auto w-full sm:w-auto">
 
-                <button className="flex-1 sm:flex-none px-8 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-sm font-semibold rounded-lg shadow-[0_4px_14px_0_rgba(4,120,87,0.39)] hover:shadow-[0_6px_20px_rgba(4,120,87,0.23)] transition-all duration-300 transform hover:-translate-y-0.5">
+                <button 
+                  onClick={() => navigate(`/courses/${course._id}/purchase`)}
+                  className="flex-1 sm:flex-none px-8 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-sm font-semibold rounded-lg shadow-[0_4px_14px_0_rgba(4,120,87,0.39)] hover:shadow-[0_6px_20px_rgba(4,120,87,0.23)] transition-all duration-300 transform hover:-translate-y-0.5"
+                >
                   Enroll Now
                 </button>
 

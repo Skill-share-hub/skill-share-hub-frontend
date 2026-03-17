@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Plus, Sparkles, ArrowRight, AlertCircle, Coins } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import api from '../../../shared/services/axios';
+import { loadRazorpayScript } from '../../../shared/utils/razorpay';
 
 export function BuyCredits(
   { creditConst , fetchWallet }:
@@ -21,6 +23,12 @@ export function BuyCredits(
       const {data:orderRes} = await api.post("/wallet/credits", {amount});
 
       const order = orderRes.data;
+
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        toast.error("Failed to load Razorpay SDK. Please check your connection.");
+        return;
+      }
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
