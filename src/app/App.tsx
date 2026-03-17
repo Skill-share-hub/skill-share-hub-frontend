@@ -21,6 +21,7 @@ import ProtectedRoute from "../routes/ProtectedRoute";
 import Wallet from "../features/wallet/Wallet";
 import MyActivity from "../features/courses/pages/MyActivity";
 import StudentProfilePage from "../features/profile/pages/studentProfilePage";
+import CoursePurchasePage from "../features/coursePurchase/pages/CoursePurchasePage";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -39,6 +40,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/courses/:id" element={<CourseDetailsPage />} />
+          
+          <Route element={<ProtectedRoute />}>
+              <Route path="/courses/:id/purchase" element={<CoursePurchasePage />} />
+          </Route>
 
           {/* Any Authenticated User */}
           <Route element={<ProtectedRoute />}>
