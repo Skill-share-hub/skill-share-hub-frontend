@@ -63,7 +63,10 @@ export default function Content() {
                                 poster={content?.thumbnailUrl} 
                                 title={content?.title} 
                                 videoUrl={content?.contentUrl}
-                                isCompleted={data.enrollment.completedContent.includes(content._id)}
+                                isCompleted={
+                                    content._id &&
+                                    data.enrollment.completedContent.includes(content._id)
+                                }
                                 handleComplete={handleComplete}
                                 loading={loading}
                             />

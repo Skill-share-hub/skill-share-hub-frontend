@@ -1,152 +1,119 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaPlay,
   FaCheckCircle,
   FaBookmark,
-  FaStar,
-  FaUserTie,
 } from "react-icons/fa";
-import { FiClock, FiAward } from "react-icons/fi";
-type CourseStatus = "in-progress" | "completed" | "saved" | "recommended";
+import { FiAward } from "react-icons/fi";
+import { useAppSelector } from "../../../shared/hooks/redux";
+import FullScreenLoader from "../../../shared/components/FullScreenLoader";
+import api from "../../../shared/services/axios";
+import handleError from "../../../shared/services/handleError";
+import { useNavigate } from "react-router-dom";
 
-type Course = {
-  id: number;
-  title: string;
-  instructor: string;
-  thumbnail: string;
-  progress: number;
+
+type CourseStatus = "active" | "completed" | "cancelled" ;
+
+type Enrollment = {
+  _id : string;
+  userId: string;
+  courseId: string;
   status: CourseStatus;
-  duration?: string;
-  rating?: number;
-};
+  progress: number;
+  completedContent : string[];
+  totalContents : number
+  courseSnapshot: {
+    title: string;
+    thumbnail: string;
+    price: number;
+    courseType: string;
+    creditCost?: number;
+  };
 
-const courses: Course[] = [
-  {
-    id: 1,
-    title: "React for Beginners",
-    instructor: "John Doe",
-    thumbnail: "/course.jpg",
-    progress: 65,
-    status: "in-progress",
-    duration: "8h 30m",
-    rating: 4.8,
-  },
-  {
-    id: 2,
-    title: "Advanced JavaScript",
-    instructor: "Jane Smith",
-    thumbnail: "/course.jpg",
-    progress: 100,
-    status: "completed",
-    duration: "12h 15m",
-    rating: 4.9,
-  },
-  {
-    id: 3,
-    title: "Node.js Fundamentals",
-    instructor: "Alex Brown",
-    thumbnail: "/course.jpg",
-    progress: 0,
-    status: "saved",
-    duration: "6h 45m",
-    rating: 4.7,
-  },
-];
+}
 
-const statusConfig: Record<
-  CourseStatus,
-  { icon: React.ReactNode; color: string; label: string }
-> = {
-  "in-progress": {
-    icon: <FaPlay className="text-xs" />,
-    color: "bg-blue-100 text-blue-700",
-    label: "In Progress",
-  },
-  completed: {
-    icon: <FaCheckCircle className="text-xs" />,
-    color: "bg-emerald-100 text-emerald-700",
-    label: "Completed",
-  },
-  saved: {
-    icon: <FaBookmark className="text-xs" />,
-    color: "bg-amber-100 text-amber-700",
-    label: "Saved",
-  },
-  recommended: {
-    icon: <FaStar className="text-xs" />,
-    color: "bg-purple-100 text-purple-700",
-    label: "Recommended",
-  },
-};
+type DataType = {
+  totalEnrollment : number ;
+  courses : Enrollment[];
+  inProgress : number;
+  completed : number;
+  saved : number
+}
 
 const filters: { label: string; value: CourseStatus; icon: React.ReactNode }[] =
   [
     {
       label: "In Progress",
-      value: "in-progress",
+      value: "active",
       icon: <FaPlay className="text-xs" />,
     },
     {
       label: "Completed",
       value: "completed",
       icon: <FaCheckCircle className="text-xs" />,
-    },
-    {
-      label: "Saved",
-      value: "saved",
-      icon: <FaBookmark className="text-xs" />,
-    },
-    {
-      label: "Recommended",
-      value: "recommended",
-      icon: <FaStar className="text-xs" />,
-    },
+    }
   ];
 
 export default function MyActivity() {
-  const [filter, setFilter] = useState<CourseStatus>("in-progress");
-  const filteredCourses = courses.filter((c) => c.status === filter);
+  const [filter, setFilter] = useState<CourseStatus>("active");
+  const [data,setData] = useState<DataType|null>(null);
+  const {user} = useAppSelector(state => state.user);
 
   const stats = [
     {
       label: "Enrolled",
-      value: courses.length,
+      value: data?.totalEnrollment,
       icon: <FiAward className="text-emerald-600" />,
     },
     {
       label: "Completed",
-      value: courses.filter((c) => c.status === "completed").length,
+      value: data?.completed,
       icon: <FaCheckCircle className="text-emerald-600" />,
     },
     {
       label: "In Progress",
-      value: courses.filter((c) => c.status === "in-progress").length,
+      value: data?.inProgress,
       icon: <FaPlay className="text-emerald-600" />,
     },
     {
       label: "Saved",
-      value: courses.filter((c) => c.status === "saved").length,
+      value: data?.saved,
       icon: <FaBookmark className="text-emerald-600" />,
     },
   ];
+
+  const fetchData = async () => {
+    try{
+      const {data:enrollmentData} = await api.get(`/enrollments?status=${filter}`);
+      setData(enrollmentData.data);
+    }catch(error){
+      handleError(error);
+    }
+  }
+
+  useEffect(()=>{
+    fetchData();
+  },[filter]);
+
+  if(!data)return <FullScreenLoader />
 
   return (
     <>
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-20 py-12">
-          {/* Welcome */}
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
             <div className="flex items-center gap-4">
               <div className="relative">
                 <img
-                  src="/avatar.png"
+                  src={user?.avatarUrl}
                   className="w-16 h-16 rounded-full object-cover ring-2 ring-emerald-500 ring-offset-2"
                 />
                 <span className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full" />
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
-                  Welcome back 👋
+                  {user?.name} Let's Grind
                 </h2>
                 <p className="text-sm text-gray-500 mt-0.5">
                   Continue your learning journey
@@ -160,7 +127,6 @@ export default function MyActivity() {
             </button>
           </div>
 
-          {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
             {stats.map((s) => (
               <div
@@ -178,7 +144,6 @@ export default function MyActivity() {
             ))}
           </div>
 
-          {/* Filters */}
           <div className="flex flex-wrap gap-2 mb-8">
             {filters.map((f) => (
               <button
@@ -196,8 +161,7 @@ export default function MyActivity() {
             ))}
           </div>
 
-          {/* Courses */}
-          {filteredCourses.length === 0 ? (
+          {data.courses.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4 text-2xl text-gray-300">
                 <FaBookmark />
@@ -209,8 +173,8 @@ export default function MyActivity() {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCourses.map((course) => (
-                <CourseCard key={course.id} course={course} />
+              {data.courses?.map((course) => (
+                <CourseCard key={course._id} course={course} />
               ))}
             </div>
           )}
@@ -220,64 +184,25 @@ export default function MyActivity() {
   );
 }
 
-function CourseCard({ course }: { course: Course }) {
-  const badge = statusConfig[course.status];
+function CourseCard({ course }: { course: Enrollment }) {
 
-  const actionLabel =
-    course.status === "completed"
-      ? "View Certificate"
-      : course.status === "saved"
-      ? "Start Learning"
-      : "Continue Learning";
+  const navigate = useNavigate();
 
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col">
+    <div onClick={()=>navigate(`/my-activity/${course.courseId}`)} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col">
       <div className="relative">
-        <img src={course.thumbnail} className="w-full h-44 object-cover" />
+        <img src={course.courseSnapshot.thumbnail} className="w-full h-44 object-cover" />
         <span
-          className={`absolute top-3 left-3 flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${badge.color}`}
+          className={`absolute top-3 left-3 flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full`}
         >
-          {badge.icon}
-          {badge.label}
+          
         </span>
       </div>
 
       <div className="p-5 flex flex-col flex-1">
         <h3 className="font-semibold text-gray-900 text-base leading-snug">
-          {course.title}
+          {course.courseSnapshot.title}
         </h3>
-
-        <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center gap-1.5 text-sm text-gray-500">
-            <FaUserTie className="text-gray-400 text-xs" />
-            {course.instructor}
-          </div>
-
-          {course.duration && (
-            <div className="flex items-center gap-1 text-xs text-gray-400">
-              <FiClock />
-              {course.duration}
-            </div>
-          )}
-        </div>
-
-        {course.rating && (
-          <div className="flex items-center gap-1 mt-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <FaStar
-                key={i}
-                className={`text-xs ${
-                  i < Math.floor(course.rating!)
-                    ? "text-amber-400"
-                    : "text-gray-200"
-                }`}
-              />
-            ))}
-            <span className="text-xs text-gray-500 ml-1">
-              {course.rating}
-            </span>
-          </div>
-        )}
 
         <div className="mt-4">
           <div className="flex justify-between text-xs text-gray-500 mb-1.5">
@@ -290,13 +215,13 @@ function CourseCard({ course }: { course: Course }) {
           <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
             <div
               className="h-1.5 bg-emerald-500 rounded-full transition-all duration-500"
-              style={{ width: `${course.progress}%` }}
+              style={{ width: `${course.progress.toFixed(0)}%` }}
             />
           </div>
         </div>
 
-        <button className="mt-5 w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium py-2.5 rounded-lg transition-colors duration-200">
-          {actionLabel}
+        <button className="mt-5 w-full cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium py-2.5 rounded-lg transition-colors duration-200">
+          View Course
         </button>
       </div>
     </div>
