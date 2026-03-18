@@ -31,3 +31,9 @@ export const courseService = {
   }
 
 };
+
+export const toggleSaveCourse = async (courseId: string) => {
+  const res = await api.post(`/courses/${courseId}/save`);
+  
+  return res.data;
+};

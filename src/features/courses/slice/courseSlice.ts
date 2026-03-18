@@ -6,99 +6,130 @@ import handleError from '../../../shared/services/handleError';
 import type { RootState } from '../../../store/store';
 
 interface CourseState {
-    list: Course[];
-    loading: boolean;
-    error: string | null;
-    page: number;
-    totalPages: number;
-    filters: CourseFilters;
-    search: string;
+  list: Course[];
+  loading: boolean;
+  error: string | null;
+  page: number;
+  totalPages: number;
+  filters: CourseFilters;
+  search: string;
 }
 
 const initialState: CourseState = {
-    list: [],
-    loading: false,
-    error: null,
-    page: 1,
-    totalPages: 1,
-    filters: {},
-    search: '',
+  list: [],
+  loading: false,
+  error: null,
+  page: 1,
+  totalPages: 1,
+  filters: {},
+  search: '',
 };
 
+// ✅ FETCH COURSES
 export const fetchCourses = createAsyncThunk(
-    'courses/fetchCourses',
-    async (_, { getState, rejectWithValue }) => {
-        try {
-            const state = getState() as RootState;
-            const { search, filters, page } = state.courses;
+  'courses/fetchCourses',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState;
+      const { search, filters, page } = state.courses;
 
-            const params: FetchCoursesParams = {
-                page,
-                limit: 12,
+      const params: FetchCoursesParams = {
+        page,
+        limit: 12,
+        ...(search && { q: search }),
+        ...(filters.category && { c: filters.category }),
+        ...(filters.type && { type: filters.type }),
+        ...(filters.minPrice !== undefined && { minPrice: filters.minPrice }),
+        ...(filters.maxPrice !== undefined && { maxPrice: filters.maxPrice }),
+        ...(filters.rating && { rating: filters.rating }),
+        ...(filters.sort && { sort: filters.sort }),
+        ...(filters.recommended && { recommended: filters.recommended }),
+      };
 
-                ...(search && { q: search }),
-
-                ...(filters.category && { c: filters.category }),
-                ...(filters.type && { type: filters.type }),
-
-                ...(filters.minPrice !== undefined && { minPrice: filters.minPrice }),
-                ...(filters.maxPrice !== undefined && { maxPrice: filters.maxPrice }),
-
-                ...(filters.rating && { rating: filters.rating }),
-
-                ...(filters.sort && { sort: filters.sort }),
-
-                ...(filters.recommended && { recommended: filters.recommended }),
-            };
-
-            const response = await courseService.fetchCourses(params);
-            return response;
-        } catch (error) {
-            return rejectWithValue(handleError(error));
-        }
+      const response = await courseService.fetchCourses(params);
+      return response;
+    } catch (error) {
+      return rejectWithValue(handleError(error));
     }
+  }
+);
+
+// ✅ TOGGLE SAVE
+export const toggleSave = createAsyncThunk(
+  'courses/toggleSave',
+  async (courseId: string, { rejectWithValue }) => {
+    try {
+      const res = await courseService.toggleSaveCourse(courseId);
+
+      // 🔥 IMPORTANT FIX → use res.data (array of saved courseIds)
+      return { courseId, data: res.data };
+    } catch (error) {
+      return rejectWithValue(handleError(error));
+    }
+  }
 );
 
 const courseSlice = createSlice({
-    name: 'courses',
-    initialState,
-    reducers: {
-        setSearch: (state, action: PayloadAction<string>) => {
-            state.search = action.payload;
-            state.page = 1; // Reset to first page on search
-        },
-        setFilters: (state, action: PayloadAction<Partial<CourseFilters>>) => {
-            state.filters = { ...state.filters, ...action.payload };
-            state.page = 1; // Reset to first page on filter change
-        },
-        setPage: (state, action: PayloadAction<number>) => {
-            state.page = action.payload;
-        },
-        clearFilters: (state) => {
-            state.filters = {};
-            state.search = '';
-            state.page = 1;
-        }
+  name: 'courses',
+  initialState,
+  reducers: {
+    setSearch: (state, action: PayloadAction<string>) => {
+      state.search = action.payload;
+      state.page = 1;
     },
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchCourses.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchCourses.fulfilled, (state, action) => {
-                state.loading = false;
-                state.list = action.payload.data;
-                state.totalPages = (action.payload as any)?.pagination?.totalPages || (action.payload as any)?.totalPages || 1;
-                state.page = (action.payload as any)?.pagination?.page || (action.payload as any)?.page || 1;
-            })
-            .addCase(fetchCourses.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            });
+    setFilters: (state, action: PayloadAction<Partial<CourseFilters>>) => {
+      state.filters = { ...state.filters, ...action.payload };
+      state.page = 1;
+    },
+    setPage: (state, action: PayloadAction<number>) => {
+      state.page = action.payload;
+    },
+    clearFilters: (state) => {
+      state.filters = {};
+      state.search = '';
+      state.page = 1;
     }
+  },
+  extraReducers: (builder) => {
+    builder
+
+      // ✅ FETCH
+      .addCase(fetchCourses.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCourses.fulfilled, (state, action) => {
+        state.loading = false;
+        state.list = action.payload.data;
+        state.totalPages =
+          (action.payload as any)?.pagination?.totalPages ||
+          (action.payload as any)?.totalPages ||
+          1;
+        state.page =
+          (action.payload as any)?.pagination?.page ||
+          (action.payload as any)?.page ||
+          1;
+      })
+      .addCase(fetchCourses.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // ✅ TOGGLE SAVE (FINAL FIX)
+      .addCase(toggleSave.fulfilled, (state, action) => {
+        const { courseId, data } = action.payload;
+
+        // 🔥 FIX 1 → use _id (not id)
+        const course = state.list.find(c => c._id === courseId);
+
+        if (course) {
+          // 🔥 FIX 2 → check from returned array
+          const isSaved = data.includes(courseId);
+          course.saved = isSaved;
+        }
+      });
+  }
 });
 
 export const { setSearch, setFilters, setPage, clearFilters } = courseSlice.actions;
-
 export default courseSlice.reducer;

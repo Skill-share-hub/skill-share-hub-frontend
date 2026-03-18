@@ -6,7 +6,8 @@ import courseReducer from '../features/courses/slice/courseSlice'
 import profileReducer from '../features/profile/slice/profile.slice'
 import purchaseReducer from '../features/coursePurchase/redux/purchaseSlice'
 import walletReducer from '../features/wallet/walletSlice'
-
+import dashboardReducer from "../features/dashboard/dashboardSlice";
+import activityReducer from "../features/courses/activity/activitySlice";
 const store = configureStore({
   reducer: {
     user: authReducer,
@@ -15,7 +16,9 @@ const store = configureStore({
     tutorCourses: getTutorCourseReducer,
     courses: courseReducer,
     purchase: purchaseReducer,
-    wallet: walletReducer
+    wallet: walletReducer,
+    dashboard: dashboardReducer,
+    activity: activityReducer
   }
 });
 

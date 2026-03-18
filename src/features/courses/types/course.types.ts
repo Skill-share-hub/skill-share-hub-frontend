@@ -5,7 +5,7 @@ export interface Course {
   description: string;
 
   category: string;
-
+isSaved?: boolean;
   courseLevel?: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
 
   courseType: 'paid' | 'credit';
