@@ -70,12 +70,13 @@ export default function AuthButtons({ user, isMobile = false }: AuthButtonsProps
                     <span className="hidden lg:inline">Create Course</span>
                 </Link>
             ) : (
-                <button
+                <Link
+                    to="/saved-courses"
                     className="p-2 text-gray-500 hover:text-green-600 transition bg-gray-50 hover:bg-green-50 rounded-full focus:outline-none focus:ring-2 focus:ring-green-600"
                     aria-label="Saved Items"
                 >
                     <Bookmark className="w-5 h-5" />
-                </button>
+                </Link>
             )}
 
             <button

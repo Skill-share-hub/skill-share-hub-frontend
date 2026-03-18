@@ -23,6 +23,7 @@ import MyActivity from "../features/courses/pages/MyActivity";
 import StudentProfilePage from "../features/profile/pages/studentProfilePage";
 import Content from "../features/content/Content";
 import CoursePurchasePage from "../features/coursePurchase/pages/CoursePurchasePage";
+import SavedCoursesPage from "../features/courses/pages/savedCourses";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -53,6 +54,7 @@ function App() {
             <Route path="/student-profile" element={<StudentProfilePage />} />
             <Route path="/my-activity/:id" element={<Content />} />
             <Route path="/wallet" element={<Wallet />} />
+            <Route path="/saved-courses" element={<SavedCoursesPage />} />
           </Route>
 
           {/* Tutor & Premium Tutor Only */}

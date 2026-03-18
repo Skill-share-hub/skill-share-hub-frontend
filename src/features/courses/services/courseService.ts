@@ -28,6 +28,21 @@ export const courseService = {
   fetchCourseById: async (id: string): Promise<{ success: boolean; data: Course }> => {
     const response = await api.get(`/courses/${id}`);
     return response.data;
+  },
+
+  fetchSavedCourses: async (): Promise<PaginatedResponse<Course>> => {
+    const response = await api.get('/users/saved');
+    return response.data;
+  },
+
+  saveCourse: async (courseId: string): Promise<{ success: boolean }> => {
+    const response = await api.post(`/users/saved`, { courseId });
+    return response.data;
+  },
+
+  unsaveCourse: async (courseId: string): Promise<{ success: boolean }> => {
+    const response = await api.delete(`/users/saved`, { data: { courseId } });
+    return response.data;
   }
 
 };
