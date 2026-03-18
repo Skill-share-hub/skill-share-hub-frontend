@@ -21,6 +21,7 @@ import ProtectedRoute from "../routes/ProtectedRoute";
 import Wallet from "../features/wallet/Wallet";
 import MyActivity from "../features/courses/pages/MyActivity";
 import StudentProfilePage from "../features/profile/pages/studentProfilePage";
+import Content from "../features/content/Content";
 import CoursePurchasePage from "../features/coursePurchase/pages/CoursePurchasePage";
 
 function App() {
@@ -50,6 +51,8 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<TutorProfilePage />} />
             <Route path="/student-profile" element={<StudentProfilePage />} />
+            <Route path="/my-activity/:id" element={<Content />} />
+            <Route path="/wallet" element={<Wallet />} />
           </Route>
 
           {/* Tutor & Premium Tutor Only */}
@@ -72,10 +75,6 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Route>
-        </Route>
-
-        <Route element={<ProtectedRoute />}>
-          <Route path="/wallet" element={<Wallet />} />
         </Route>
 
         {/* Protected / App Routes */}
