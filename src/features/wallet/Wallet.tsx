@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { useAppSelector } from "../../shared/hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../shared/hooks/redux";
 import handleError from "../../shared/services/handleError";
 import { WalletBalance, WalletTransaction, BuyCredits, WithdrawCredits } from './components/index';
 import api from "../../shared/services/axios";
 import FullScreenLoader from "../../shared/components/FullScreenLoader";
-import type { Wallet as WalletType } from "./wallet.types";
 import type { Wallet } from "./wallet.types";
 import { fetchWalletBalance } from "./walletSlice";
 
