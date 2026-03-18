@@ -13,6 +13,12 @@ interface ConfirmDialogProps {
   variant?: 'primary' | 'danger';
 }
 
+const variantStyles = {
+  primary: 'bg-primary hover:bg-primary/90',
+  danger: 'bg-danger hover:bg-danger/90',
+  secondary: 'bg-secondary hover:bg-secondary/90',
+};
+
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   isOpen,
   onClose,
@@ -73,9 +79,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                   onClose();
                 }}
                 className={`px-5 py-2.5 text-sm font-bold text-white rounded-xl shadow-sm transition-all active:scale-95 ${
-                  variant === 'primary' 
-                    ? 'bg-green-600 hover:bg-green-700 shadow-green-100' 
-                    : 'bg-red-600 hover:bg-red-700 shadow-red-100'
+                  variantStyles[variant]
                 }`}
               >
                 {confirmText}

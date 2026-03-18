@@ -6,6 +6,7 @@ import { useState } from "react"
 import { useAppDispatch } from "../../../../shared/hooks/redux"
 import { deleteCourse, updateCourseStatus } from "../../thunk/course.thunk"
 import toast from "react-hot-toast"
+import ConfirmDialog from "../../../../shared/components/ConfirmDialog"
 
 interface OverviewHeroProps {
     course: Course
@@ -17,9 +18,10 @@ const OverviewHero = ({ course }: OverviewHeroProps) => {
     const [expanded, setExpanded] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
     const [isChangingStatus, setIsChangingStatus] = useState(false)
+    const [confirmDelete, setConfirmDelete] = useState<{isOpen: boolean}>({ isOpen: false,});
 
-    const handleDelete = async () => {
-        if (!window.confirm("Are you sure you want to delete this entire course? This action cannot be undone.")) return
+   
+    const handleConfirmDelete = async () => {
         setIsDeleting(true)
         try {
             await dispatch(deleteCourse(course._id)).unwrap()
@@ -153,7 +155,7 @@ const OverviewHero = ({ course }: OverviewHeroProps) => {
 
                             {/* Delete — far right, ghost style */}
                             <button
-                                onClick={handleDelete}
+                                onClick={() => setConfirmDelete({ isOpen: true })}
                                 disabled={isDeleting}
                                 className="ml-auto inline-flex items-center gap-2 text-[13px] font-semibold px-5 py-2.5 rounded-xl border border-gray-200 text-gray-400 hover:border-red-200 hover:bg-red-50 hover:text-red-500 transition-all duration-150 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -167,6 +169,15 @@ const OverviewHero = ({ course }: OverviewHeroProps) => {
                         </div>
                     </div>
                 </div>
+                  <ConfirmDialog
+                isOpen={confirmDelete.isOpen}
+                onClose={() => setConfirmDelete({ ...confirmDelete, isOpen: false })}
+                onConfirm={handleConfirmDelete}
+                title="Delete Course"
+                description={`Are you sure you want to delete this course? This action cannot be undone.`}
+                confirmText={`Delete`}
+                variant="danger"
+            />
             </div>
         </motion.div>
     )
