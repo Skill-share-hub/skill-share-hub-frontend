@@ -43,6 +43,15 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
     }
   };
 
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success('Course link copied to clipboard!');
+    } catch {
+      toast.error('Failed to copy link');
+    }
+  };
+
   return (
     <section className="relative w-full overflow-hidden mb-6 filter drop-shadow-sm">
 
@@ -171,7 +180,11 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
                   }
                 </button>
 
-                <button className="p-3 text-gray-500 hover:text-emerald-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-200 rounded-lg shadow-sm transition-colors duration-300">
+                <button 
+                  onClick={handleShare}
+                  title="Share course"
+                  className="p-3 text-gray-500 hover:text-emerald-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-200 rounded-lg shadow-sm transition-colors duration-300"
+                >
                   <Share2 className="w-5 h-5" />
                 </button>
 

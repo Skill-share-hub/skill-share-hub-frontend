@@ -36,8 +36,9 @@ export const toggleSaveCourse = createAsyncThunk(
   async (courseId: string, { rejectWithValue }) => {
     try {
       const response = await courseService.toggleSaveCourse(courseId);
-      // Make sure your API returns { isSaved: boolean }
-      return { courseId, isSaved: response.data.isSaved as boolean };
+      const savedCoursesList = response.data || [];
+      const isSaved = savedCoursesList.includes(courseId);
+      return { courseId, isSaved, savedCoursesList };
     } catch (error) {
       return rejectWithValue(handleError(error));
     }

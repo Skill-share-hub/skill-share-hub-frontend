@@ -74,21 +74,11 @@ const authSlice = createSlice({
     });
 
     builder.addCase(toggleSaveCourse.fulfilled, (state, action) => {
-  const { courseId, isSaved } = action.payload;
-  if (!state.user) return;
-
-  if (isSaved) {
-    // Add courseId if not already present
-    if (!state.user.savedCourses?.includes(courseId)) {
-      state.user.savedCourses?.push(courseId);
-    }
-  } else {
-    // Remove courseId
-    state.user.savedCourses = state.user.savedCourses?.filter(
-      (id) => id !== courseId
-    );
-  }
-});
+      const { savedCoursesList } = action.payload;
+      if (state.user) {
+        state.user.savedCourses = savedCoursesList;
+      }
+    });
 }
 });
 

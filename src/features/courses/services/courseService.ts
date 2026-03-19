@@ -35,7 +35,7 @@ export const courseService = {
     return response.data;
   },
 
-  toggleSaveCourse: async (courseId: string): Promise<{ success: boolean }> => {
+  toggleSaveCourse: async (courseId: string): Promise<{ success: boolean; data: string[] }> => {
     const response = await api.post(`/users/saved`, { courseId });
     return response.data;
   },
