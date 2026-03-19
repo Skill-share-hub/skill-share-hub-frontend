@@ -40,15 +40,14 @@ export function BuyCredits(
 
         handler: async function (response:any) {
 
-          const {data:verifyRes} = await api.post("/wallet/credits/verify", {
+          await api.post("/wallet/credits/verify", {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature
           });
 
-          if (verifyRes.success) {
-            fetchWallet();
-          }
+          
+          fetchWallet();
 
         },
 

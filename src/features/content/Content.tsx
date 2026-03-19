@@ -36,9 +36,9 @@ export default function Content() {
     const handleComplete = async () => {
         try{
             setLoading(true)
-            const {data} = await api.patch(`/enrollments/${id}/mark`,{contentId : content?._id});
-            if(data.success){
-                fetchContent();
+            const {data:updatedEnrollment} = await api.patch(`/enrollments/${id}/mark`,{contentId : content?._id});
+            if(updatedEnrollment.success){
+                setData(updatedEnrollment.data)
             }
         }catch(error){
             handleError(error);
