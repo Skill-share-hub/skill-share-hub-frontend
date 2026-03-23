@@ -37,6 +37,26 @@ export default function OtpInput(
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+
+    const pasteData = e.clipboardData.getData("text");
+    const digits = pasteData.replace(/\D/g, "").slice(0, 6).split("");
+
+    if (digits.length === 0) return;
+
+    const newOtp = [...otp];
+
+    digits.forEach((digit, i) => {
+      newOtp[i] = digit;
+    });
+
+    setOtp(newOtp);
+
+    const lastIndex = digits.length;
+    inputRef.current[lastIndex]?.focus();
+  };
+
   useEffect(()=>{
     inputRef.current[0]?.focus();
   },[]);
@@ -49,6 +69,7 @@ export default function OtpInput(
           ref={(e) => { inputRef.current[i] = e; }}
           onChange={(e) => handleChange(e.target.value, i)}
           onKeyDown={(e) => handleBack(e, i)}
+          onPaste={handlePaste}
           value={v}
           type="text"
           maxLength={1}

@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react"; // Note: Lucide usually uses EyeOff for the hidden state
+
 type Props = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   label: string;
@@ -9,17 +12,20 @@ type Props = {
 
 export default function Input({ onChange, label, error, name, type, value }: Props) {
 
+  const [isVisible, setIsVisible] = useState(false);
+
   return (
     <div className="relative w-full">
       <input
         id={name}
         name={name}
-        type={type}
+        type={type === "password" && isVisible ? "text" : type}
         value={value}
         onChange={onChange}
-        placeholder=" " 
+        placeholder=" "
         className={`peer w-full rounded-md border bg-white px-3 pb-2 pt-3 text-sm outline-none transition-all
-        ${error ? "border-red-500" : "border-gray-300 focus:border-gray-500"}`}
+        ${error ? "border-red-500" : "border-gray-300 focus:border-gray-500"} 
+        ${type === "password" ? "pr-10" : ""}`}
       />
 
       <label
@@ -30,6 +36,20 @@ export default function Input({ onChange, label, error, name, type, value }: Pro
       >
         {label}
       </label>
+
+      {type === "password" && !error && (
+        <button
+          type="button"
+          onClick={() => setIsVisible(!isVisible)}
+          className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+        >
+          {isVisible ? (
+            <EyeOff size={18} strokeWidth={2} />
+          ) : (
+            <Eye size={18} strokeWidth={2} />
+          )}
+        </button>
+      )}
 
       {error && (
         <div className="absolute right-3 top-1/2 -translate-y-1/2 bg-white pl-1 text-xs font-medium text-red-500">
