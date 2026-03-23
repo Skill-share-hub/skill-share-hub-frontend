@@ -227,12 +227,23 @@ export default function ProfileModal({
               Name <span className="text-red-400">*</span>
             </label>
             <input
-              {...register("name", { required: "Name is required" })}
+              {...register("name", {
+                required: "Name is required",
+                maxLength: { value: 30, message: "Name must be 30 characters or fewer" },
+              })}
               type="text"
+              maxLength={30}
               placeholder="Your full name"
               className={`bg-slate-50 border rounded-xl px-4 py-3 text-sm text-slate-700 placeholder:text-slate-300 outline-none focus:ring-2 transition-all ${accent} ${errors.name ? "border-red-300" : "border-slate-200"}`}
             />
-            {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
+            <div className="flex items-center justify-between">
+              {errors.name ? (
+                <p className="text-xs text-red-500">{errors.name.message}</p>
+              ) : (
+                <span />
+              )}
+              <p className="text-[11px] text-slate-400 ml-auto">{(watch("name") ?? "").length}/30</p>
+            </div>
           </div>
 
           {/* Email — read only */}

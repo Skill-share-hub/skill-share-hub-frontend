@@ -48,9 +48,17 @@ console.log("userData",profile)
     interests: [],
   };
 
-  // These would come from enrolled courses data in a real app
-  // Pass actual enrolled course data here when available
-  const enrolledCourses = []; // e.g. from profile.enrolledCourses or a separate selector
+  // map the populated enrolledCourses (which are now Enrollment objects)
+  const enrolledCourses = (profile.enrolledCourses || []).map((enrollment: any) => {
+    const courseData = enrollment.courseId || {};
+    return {
+      _id: courseData._id,
+      title: courseData.title || "Untitled Course",
+      thumbnailUrl: courseData.thumbnailUrl,
+      progress: enrollment.progress || 0,
+      instructor: courseData.tutorId?.name || "Instructor",
+    };
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full min-h-screen bg-gray-50">

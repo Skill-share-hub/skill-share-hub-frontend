@@ -10,6 +10,8 @@ interface Props {
   watch: UseFormWatch<ProfileFormData>
 }
 
+const TAG_MAX = 30
+
 function TagInput({
   label,
   placeholder,
@@ -65,8 +67,9 @@ function TagInput({
         ))}
         <input
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => setInput(e.target.value.slice(0, TAG_MAX))}
           onKeyDown={onKey}
+          maxLength={TAG_MAX}
           placeholder={values.length === 0 ? placeholder : "Add more..."}
           className="flex-1 min-w-[120px] bg-transparent text-sm text-slate-700 placeholder:text-slate-300 outline-none"
         />
@@ -77,7 +80,14 @@ function TagInput({
         )}
       </div>
       {error && <p className="text-xs text-red-500">{error}</p>}
-      <p className="text-[11px] text-slate-400">Press Enter or comma to add a tag</p>
+      <div className="flex items-center justify-between">
+        <p className="text-[11px] text-slate-400">Press Enter or comma to add a tag</p>
+        {input.length > 0 && (
+          <p className={`text-[11px] ${input.length >= TAG_MAX ? "text-red-400" : "text-slate-400"}`}>
+            {input.length}/{TAG_MAX}
+          </p>
+        )}
+      </div>
     </div>
   )
 }
@@ -93,14 +103,27 @@ export default function TutorProfileForm({ register, errors, setValue, watch }: 
           Bio <span className="text-red-400">*</span>
         </label>
         <textarea
-          {...register("bio", { required: "Bio is required for tutors" })}
+          {...register("bio", {
+            required: "Bio is required for tutors",
+            maxLength: { value: 500, message: "Bio must be 500 characters or fewer" },
+          })}
           rows={3}
+          maxLength={500}
           placeholder="Describe your teaching style, background, and expertise..."
           className={`resize-none bg-slate-50 border rounded-xl px-4 py-3 text-sm text-slate-700 placeholder:text-slate-300 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${
             errors.bio ? "border-red-300" : "border-slate-200"
           }`}
         />
-        {errors.bio && <p className="text-xs text-red-500">{errors.bio.message}</p>}
+        <div className="flex items-center justify-between">
+          {errors.bio ? (
+            <p className="text-xs text-red-500">{errors.bio.message}</p>
+          ) : (
+            <span />
+          )}
+          <p className={`text-[11px] ml-auto ${ (watch("bio") ?? "").length >= 500 ? "text-red-400" : "text-slate-400" }`}>
+            {(watch("bio") ?? "").length}/500
+          </p>
+        </div>
       </div>
 
       {/* Skills */}
@@ -123,17 +146,28 @@ export default function TutorProfileForm({ register, errors, setValue, watch }: 
             className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
           />
           <input
-            {...register("experience", { required: "Experience is required" })}
+            {...register("experience", {
+              required: "Experience is required",
+              maxLength: { value: 150, message: "Experience must be 150 characters or fewer" },
+            })}
             type="text"
+            maxLength={150}
             placeholder="e.g. 5 years teaching web development at university..."
             className={`w-full bg-slate-50 border rounded-xl pl-10 pr-4 py-3 text-sm text-slate-700 placeholder:text-slate-300 outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all ${
               errors.experience ? "border-red-300" : "border-slate-200"
             }`}
           />
         </div>
-        {errors.experience && (
-          <p className="text-xs text-red-500">{errors.experience.message}</p>
-        )}
+        <div className="flex items-center justify-between">
+          {errors.experience ? (
+            <p className="text-xs text-red-500">{errors.experience.message}</p>
+          ) : (
+            <span />
+          )}
+          <p className={`text-[11px] ml-auto ${ (watch("experience") ?? "").length >= 150 ? "text-red-400" : "text-slate-400" }`}>
+            {(watch("experience") ?? "").length}/150
+          </p>
+        </div>
       </div>
     </div>
   )

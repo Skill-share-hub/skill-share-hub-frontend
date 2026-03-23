@@ -17,7 +17,7 @@ export default function TutorProfileAbout({ bio, skills, experience }: TutorProf
                         About Me
                     </h3>
                     {bio ? (
-                        <p className="text-gray-600 leading-relaxed font-medium">
+                        <p className="text-gray-600 leading-relaxed font-medium break-words whitespace-pre-wrap">
                             {bio}
                         </p>
                     ) : (
@@ -33,7 +33,7 @@ export default function TutorProfileAbout({ bio, skills, experience }: TutorProf
                             <Briefcase className="w-5 h-5 text-green-600" />
                             Professional Experience
                         </h3>
-                        <p className="text-gray-600 leading-relaxed font-medium">
+                        <p className="text-gray-600 leading-relaxed font-medium break-words whitespace-pre-wrap">
                             {experience}
                         </p>
                     </div>

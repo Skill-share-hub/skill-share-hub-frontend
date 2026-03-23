@@ -36,4 +36,5 @@ export type User = {
   createdAt?: string;
   updatedAt?: string;
   savedCourses?: string[];
+  enrolledCourses?: any[];
 };

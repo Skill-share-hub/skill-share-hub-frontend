@@ -38,7 +38,7 @@ export default function StudentProfileAbout({
           <h3 className="text-base font-bold text-gray-900">About Me</h3>
         </div>
         {bio ? (
-          <p className="text-gray-600 leading-relaxed text-sm">{bio}</p>
+          <p className="text-gray-600 leading-relaxed text-sm break-words whitespace-pre-wrap">{bio}</p>
         ) : (
           <p className="text-gray-400 italic text-sm">
             No bio added yet. Tell others about yourself!

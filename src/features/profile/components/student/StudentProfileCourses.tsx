@@ -1,4 +1,5 @@
 import { BookOpen, PlayCircle } from "lucide-react";
+import { useNavigate } from "react-router";
 
 interface EnrolledCourse {
   _id: string;
@@ -13,10 +14,14 @@ interface StudentProfileCoursesProps {
 }
 
 function CourseCard({ course }: { course: EnrolledCourse }) {
+  const navigate = useNavigate();
   const progress = course.progress ?? 0;
 
   return (
-    <div className="bg-gray-50 rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
+    <div
+      onClick={() => navigate(`/my-activity/${course._id}`)}
+      className="bg-gray-50 rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group cursor-pointer"
+    >
       {/* Thumbnail */}
       <div className="relative h-32 bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center overflow-hidden">
         {course.thumbnailUrl ? (
@@ -59,6 +64,8 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
 }
 
 export default function StudentProfileCourses({ courses = [] }: StudentProfileCoursesProps) {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
       <div className="flex items-center justify-between mb-8">
@@ -84,7 +91,10 @@ export default function StudentProfileCourses({ courses = [] }: StudentProfileCo
           <p className="text-sm text-gray-500 font-medium">
             You haven't enrolled in any courses yet. Start learning today!
           </p>
-          <button className="mt-5 px-5 py-2.5 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold rounded-xl transition-colors">
+          <button
+            onClick={() => navigate("/courses")}
+            className="mt-5 px-5 py-2.5 bg-green-800 hover:bg-green-900 text-white text-sm font-semibold rounded-xl transition-colors"
+          >
             Browse Courses
           </button>
         </div>

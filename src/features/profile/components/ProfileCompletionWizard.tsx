@@ -10,27 +10,32 @@ export default function ProfileCompletionWizard() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state: RootState) => state.user);
   const [showModal, setShowModal] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   useEffect(() => {
-    // Show modal if user is logged in and profile is NOT completed
-    // We also check for 'admin' role because admins usually don't need this modal
-    if (user && user.role !== "admin" && user.isProfileCompleted === false) {
+   
+    if (user && user.role !== "admin" && user.isProfileCompleted === false && !hasSubmitted) {
       setShowModal(true);
     } else {
       setShowModal(false);
     }
-  }, [user]);
+  }, [user, hasSubmitted]);
 
   const handleSubmit = async (payload: UpdateProfilePayload) => {
-    const result = await dispatch(updateUserProfile(payload));
-    
-    if (updateUserProfile.fulfilled.match(result)) {
-      // Update the auth user state with the returned user (which has isProfileCompleted: true)
-      dispatch(fetchSuccess(result.payload));
-      setShowModal(false);
-    } else {
-      // Let the modal handle the error display
-      throw new Error(result.error.message || "Failed to update profile");
+    try {
+      const result = await dispatch(updateUserProfile(payload));
+      
+      if (updateUserProfile.fulfilled.match(result)) {
+       
+        setHasSubmitted(true);
+       
+        dispatch(fetchSuccess(result.payload));
+        
+      } else {
+        throw new Error(result.error?.message || "Failed to update profile");
+      }
+    } catch (error) {
+      throw error;
     }
   };
 
