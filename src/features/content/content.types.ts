@@ -6,7 +6,8 @@ export type ContentModules = {
   summary : string ;
   thumbnailUrl : string ;
   title : string ;
-  subTitle ?: string 
+  subTitle ?: string ;
+  next : number
 }
 
 export type CourseType = {

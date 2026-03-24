@@ -3,7 +3,7 @@ import ContentList from "./components/ContentList";
 import CourseSummary from "./components/CourseSummary";
 import ModuleSummary from "./components/ModuleSummary";
 import api from "../../shared/services/axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import handleError from "../../shared/services/handleError";
 import { useEffect, useState } from "react";
 import FullScreenLoader from "../../shared/components/FullScreenLoader";
@@ -21,8 +21,10 @@ export default function Content() {
         duration : 0 ,
         summary : "",
         thumbnailUrl : "",
-        title : ""
+        title : "",
+        next : 0
     });
+
 
     const fetchContent = async()=>{
         try{
@@ -37,9 +39,19 @@ export default function Content() {
         try{
             setLoading(true)
             const {data:updatedEnrollment} = await api.patch(`/enrollments/${id}/mark`,{contentId : content?._id});
-            console.log(updatedEnrollment);
-            if(updatedEnrollment.success){
-                setData((pre:any) => ({...pre,enrollment :updatedEnrollment.data }));
+
+            const {data:enrollmentData,success} = updatedEnrollment
+            
+            if(success){
+                setData((pre:any) => ({...pre,enrollment : enrollmentData.enrollment }));                
+            }
+
+            if(enrollmentData.completed){
+                const contentModules = data.course.contentModules
+                const nextContent = contentModules[content.next]
+                setContent({
+                    ...nextContent,
+                    next : contentModules.length ===  content.next+1 ? contentModules.length-1 : content.next+1 })
             }
         }catch(error){
             handleError(error);
@@ -59,13 +71,22 @@ export default function Content() {
             <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
                 <div className="flex flex-col lg:flex-row gap-8 items-start">
                     <div className="w-full lg:w-2/3 flex flex-col gap-8">
+                        {/* <div className="w-full max-w-7xl">
+                            <button
+                                onClick={() => navigate('/my-activity')}
+                                className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors duration-200 group"
+                            >
+                                <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                                <span className="font-medium">My Activity</span>
+                            </button>
+                        </div> */}
                         <section aria-label="Course Video Player">
                             <VideoComp 
                                 poster={content?.thumbnailUrl} 
                                 title={content?.title} 
                                 videoUrl={content?.contentUrl}
                                 isCompleted={
-                                    content._id &&
+                                    content?._id &&
                                     data.enrollment?.completedContent?.includes(content?._id)
                                 }
                                 handleComplete={handleComplete}
@@ -86,6 +107,7 @@ export default function Content() {
                                 setContent={setContent} 
                                 completedModules = {data.enrollment.completedContent} 
                                 modules={data.course.contentModules} 
+                                courseId={id || ""}
                             />
                         </section>
                     </aside>

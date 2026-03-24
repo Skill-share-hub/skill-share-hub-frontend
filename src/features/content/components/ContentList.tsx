@@ -7,24 +7,30 @@ export default function ContentList(
         modules,
         setContent,
         completedModules,
-        content
+        content,
+        courseId
     }:
     {
         modules:ContentModules[],
         setContent : (content:ContentModules)=> void,
         completedModules : string[],
-        content : ContentModules
+        content : ContentModules,
+        courseId : string
     }
 ) {
 
     const handleSelect = (id:string) => {
-        setContent(modules.find(v=>v._id === id) ?? modules[0]);
-        localStorage.setItem('lastPlayed',id);
+        const findedIndex = modules.findIndex(v=>v._id === id)
+        const index = findedIndex < 0 ? 0 : findedIndex ;
+        setContent({...modules[index],next : index === modules.length-1 ? modules.length-1 : index+1});
+        localStorage.setItem(`lastPlayed-${courseId}`,id);
     }
 
     useEffect(()=>{
-        const id = localStorage.getItem('lastPlayed');
-        setContent(modules.find(v=>v._id === id) ?? modules[0]);
+        const id = localStorage.getItem(`lastPlayed-${courseId}`);
+        const findedIndex = modules.findIndex(v=>v._id === id)
+        const index = findedIndex < 0 ? 0 : findedIndex ;
+        setContent({...modules[index],next : index === modules.length-1 ? modules.length-1 : index+1});
     },[]);
 
     return (
