@@ -1,9 +1,8 @@
 import { ArrowUpRight, ArrowDownLeft, ShoppingBag, CreditCard, Calendar, ChevronDown, Filter, Coins } from "lucide-react";
-import type { STATUS, Transaction as TransactionType } from "../wallet.types";
-import { useEffect, useState } from "react";
-import handleError from "../../../shared/services/handleError";
-import api from "../../../shared/services/axios";
+import type { QueryType, STATUS, Transaction, Transaction as TransactionType } from "../wallet.types";
+import { useState } from "react";
 import { formatDate } from "../../../shared/utils/dateFormatter";
+import TransactionModal from "../../../shared/components/TransactionModal";
 
 const STATUS_OPTIONS: { label: string; value: STATUS }[] = [
   { label: "All", value: "" },
@@ -12,39 +11,16 @@ const STATUS_OPTIONS: { label: string; value: STATUS }[] = [
   { label: "Rejected", value: "rejected" }
 ];
 
-export function WalletTransaction() {
-  const [transaction, setTransaction] = useState<TransactionType[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState<{ limit: number; status: STATUS }>({
-    limit: 1,
-    status: "",
-  });
-
-  const fetchTransaction = async (isNewFilter: boolean = false) => {
-    setLoading(true);
-    try {
-      const currentLimit = isNewFilter ? 1 : form.limit;
-      const { data: walletData } = await api.get(
-        `/wallet?limit=${3 * currentLimit}&status=${form.status}`
-      );
-      setTransaction(walletData.data.transactions);
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchTransaction();
-  }, [form.status, form.limit]);
-
+export function WalletTransaction(
+  {setForm , transaction , loading , form}:
+  {setForm : (pre:any)=>void , transaction :TransactionType[] , loading : boolean , form:QueryType }
+) {
   const handleStatusChange = (newStatus: STATUS) => {
-    setForm({ limit: 1, status: newStatus });
+    setForm((pre:QueryType) => ({...pre , status : newStatus}));
   };
 
   const handleShowMore = () => {
-    setForm((prev) => ({ ...prev, limit: prev.limit + 1 }));
+    setForm((pre:QueryType) => ({ ...pre, limit: pre.limit + 1 }));
   };
 
   return (
@@ -71,7 +47,7 @@ export function WalletTransaction() {
       </div>
 
       <div className={`space-y-4 transition-opacity ${loading ? "opacity-50" : "opacity-100"}`}>
-        {transaction.length > 0 ? (
+        {transaction?.length > 0 ? (
           transaction.map((v) => <Transaction key={v._id} data={v} />)
         ) : (
           <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-xl border border-dashed">
@@ -97,6 +73,7 @@ export function WalletTransaction() {
 }
 
 function Transaction({ data }: { data: TransactionType }) {
+  const [open,setOpen] = useState(false);
   const config = {
     credit_purchase: {
       borderColor: "border-l-emerald-500",
@@ -130,42 +107,45 @@ function Transaction({ data }: { data: TransactionType }) {
   const date = formatDate(data.createdAt);
 
   return (
-    <div className={`w-full flex items-center justify-between p-4 bg-white border border-gray-100 border-l-4 ${style.borderColor} rounded-xl shadow-sm hover:shadow-md transition-shadow`}>
-      <div className="flex items-center gap-4">
-        <div className={`p-3 rounded-full ${style.bg}`}>
-          {style.icon}
-        </div>
-        <div>
-          <div className="font-semibold text-gray-900 capitalize">
-            {style.label}
+    <>
+      <div onClick={()=>setOpen(true)} className={`w-full flex cursor-pointer items-center justify-between p-4 bg-white border border-gray-100 border-l-4 ${style.borderColor} rounded-xl shadow-sm hover:shadow-xl transition-shadow`}>
+        <div className="flex items-center gap-4">
+          <div className={`p-3 rounded-full ${style.bg}`}>
+            {style.icon}
           </div>
-          <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
-            <span className="flex items-center gap-1">
-              <CreditCard className="w-3 h-3" /> {data.method.replace("_", " ")}
-            </span>
-            <span className="flex items-center gap-1 border-l pl-3">
-              <Calendar className="w-3 h-3" /> {date}
-            </span>
+          <div>
+            <div className="font-semibold text-gray-900 capitalize">
+              {style.label}
+            </div>
+            <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+              <span className="flex items-center gap-1">
+                <CreditCard className="w-3 h-3" /> {data.method.replace("_", " ")}
+              </span>
+              <span className="flex items-center gap-1 border-l pl-3">
+                <Calendar className="w-3 h-3" /> {date}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="text-right">
-        <div className={`flex items-center justify-end gap-1.5 text-lg font-black tracking-tight ${data.type === "credit_purchase" ? "text-emerald-600" : "text-gray-900"}`}>
-          <span className="text-xl leading-none">
-            {data.type === "credit_purchase" ? "+" : "-"}
-          </span>
-          <div className="flex items-center bg-gray-50 px-2 py-1 rounded-lg border border-gray-100 shadow-sm">
-            <Coins className="w-4 h-4 text-[#164e33] mr-1" />
-            <span>{data.amount}</span>
+        <div className="text-right">
+          <div className={`flex items-center justify-end gap-1.5 text-lg font-black tracking-tight ${data.type === "credit_purchase" ? "text-emerald-600" : "text-gray-900"}`}>
+            <span className="text-xl leading-none">
+              {data.type === "credit_purchase" ? "+" : "-"}
+            </span>
+            <div className="flex items-center bg-gray-50 px-2 py-1 rounded-lg border border-gray-100 shadow-sm">
+              <Coins className="w-4 h-4 text-[#164e33] mr-1" />
+              <span>{data.amount}</span>
+            </div>
+          </div>
+          <div className="mt-1">
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${statusStyles[data.status as keyof typeof statusStyles] || 'bg-gray-100 text-gray-600'}`}>
+              {data.status || "All"}
+            </span>
           </div>
         </div>
-        <div className="mt-1">
-          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${statusStyles[data.status as keyof typeof statusStyles] || 'bg-gray-100 text-gray-600'}`}>
-            {data.status || "All"}
-          </span>
-        </div>
       </div>
-    </div>
+      <TransactionModal isOpen={open} onClose={() => setOpen(false)}  transaction={data}/>
+    </>
   );
 }

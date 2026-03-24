@@ -8,6 +8,10 @@ export type Transaction = {
   method : "razor_pay" | "wallet"; 
   createdAt : string ;
   status :  STATUS;
+  creditBalance: number;
+  razorpayOrderId: string;
+  razorpayPaymentId?: string;
+  currency: string;
 }
 
 export type Wallet = {
@@ -15,4 +19,10 @@ export type Wallet = {
   creditValue : number;
   transactions : Transaction[];
   creditConst :number
+}
+
+export type QueryType = { 
+  limit: number;
+  status: string;
+  refresh : boolean
 }
