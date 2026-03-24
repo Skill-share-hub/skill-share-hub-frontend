@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Course } from '../../types/course.types';
 import { Star, Users, PlayCircle, BookmarkPlus, BookmarkCheck, Share2 } from 'lucide-react';
-import { courseService } from '../../services/courseService';
 import toast from 'react-hot-toast';
 import { useAppDispatch, useAppSelector } from '../../../../shared/hooks/redux';
 import { toggleSaveCourse } from '../../slice/savedCourseSlice'; // adjust path

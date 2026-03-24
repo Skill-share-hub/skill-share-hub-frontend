@@ -1,7 +1,38 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useAppSelector, useAppDispatch } from "../../../shared/hooks/redux";
+import { switchRole } from "../../auth/authThunk";
+import ConfirmDialog from "../../../shared/components/ConfirmDialog";
 
 export default function Hero() {
+  const user = useAppSelector((state) => state.user.user);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [confirmRoleSwitch, setConfirmRoleSwitch] = useState<{
+        isOpen: boolean;
+        targetRole: 'student' | 'tutor' | null;
+  }>({ isOpen: false, targetRole: null });
+
+  const handleBecomeTutorClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!user) {
+      navigate('/login');
+    } else if (user.role === 'student') {
+      setConfirmRoleSwitch({ isOpen: true, targetRole: 'tutor' });
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
+  const handleConfirmSwitch = () => {
+        if (confirmRoleSwitch.targetRole) {
+            dispatch(switchRole({ role: confirmRoleSwitch.targetRole }));
+            navigate('/dashboard');
+        }
+        setConfirmRoleSwitch({ ...confirmRoleSwitch, isOpen: false });
+  };
+
   return (
     <section className="relative px-4 sm:px-6 lg:px-20 pt-16 lg:pt-24 pb-16 lg:pb-20 bg-transparent overflow-hidden">
 
@@ -69,12 +100,12 @@ export default function Hero() {
                 Explore Courses
               </Link>
 
-              <Link
-                to="/signup"
+              <button
+                onClick={handleBecomeTutorClick}
                 className="px-6 py-3 border border-[#145537]/20 text-[#145537] bg-white/50 backdrop-blur-sm text-sm lg:text-base font-medium rounded-full hover:bg-[#145537]/5 hover:border-[#145537]/40 transition-all duration-200 text-center"
               >
                 Become Tutor
-              </Link>
+              </button>
             </motion.div>
           </div>
 
@@ -99,6 +130,15 @@ export default function Hero() {
 
         </div>
       </div>
+
+      <ConfirmDialog
+          isOpen={confirmRoleSwitch.isOpen}
+          onClose={() => setConfirmRoleSwitch({ ...confirmRoleSwitch, isOpen: false })}
+          onConfirm={handleConfirmSwitch}
+          title="Switch Account Role?"
+          description={`Are you sure you want to switch to the ${confirmRoleSwitch.targetRole || 'selected'} dashboard? You can switch back at any time.`}
+          confirmText={`Switch to ${confirmRoleSwitch.targetRole === 'tutor' ? 'Tutor' : 'Student'}`}
+      />
     </section>
   );
 }
