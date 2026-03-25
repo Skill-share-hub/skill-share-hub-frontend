@@ -32,7 +32,7 @@ export default function StudentProfilePage() {
   };
 
   if (loading) return <FullScreenLoader />;
-console.log("userData",profile)
+
   if (!profile) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
@@ -48,7 +48,7 @@ console.log("userData",profile)
     interests: [],
   };
 
-  // map the populated enrolledCourses (which are now Enrollment objects)
+  
   const enrolledCourses = (profile.enrolledCourses || []).map((enrollment: any) => {
     const courseData = enrollment.courseId || {};
     return {
@@ -59,6 +59,8 @@ console.log("userData",profile)
       instructor: courseData.tutorId?.name || "Instructor",
     };
   });
+
+  const completedCoursesCount = (profile.enrolledCourses || []).filter((e: any) => e.status === "completed").length;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full min-h-screen bg-gray-50">
@@ -96,7 +98,7 @@ console.log("userData",profile)
       {/* Stats */}
       <StudentProfileStats
         enrolledCourses={enrolledCourses.length}
-        completedCourses={0}   // Replace with real data
+        completedCourses={completedCoursesCount}
         hoursLearned={0}       // Replace with real data
         streak={0}             // Replace with real data
       />

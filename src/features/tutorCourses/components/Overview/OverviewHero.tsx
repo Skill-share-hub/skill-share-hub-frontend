@@ -104,7 +104,7 @@ const OverviewHero = ({ course }: OverviewHeroProps) => {
                                 {course.title}
                             </h1>
                             <div>
-                                <p className={`text-gray-500 text-sm leading-relaxed ${expanded ? "" : "line-clamp-3"}`}>
+                                <p className={`text-gray-500 text-sm leading-relaxed break-words ${expanded ? "" : "line-clamp-3"}`}>
                                     {course.description}
                                 </p>
                                 {course.description?.length > 100 && (

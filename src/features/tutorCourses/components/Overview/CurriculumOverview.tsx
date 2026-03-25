@@ -169,30 +169,49 @@ const CurriculumOverview = ({ course }: CurriculumOverviewProps) => {
                                                 transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                                                 className="overflow-hidden"
                                             >
-                                                <div className="flex items-start justify-between gap-4 px-7 pb-5 pt-1 ml-[3.75rem]">
-                                                    <p className="text-[13px] text-gray-500 leading-relaxed flex-1">
-                                                        {module.summary || "No description provided for this module."}
-                                                    </p>
-                                                    <div className="flex items-center gap-1.5 shrink-0">
-                                                        <button
-                                                            onClick={(e) => openEditModal(module, e)}
-                                                            className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                                                            title="Edit module"
-                                                        >
-                                                            <Edit2 size={14} strokeWidth={2} />
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); handleDeleteContent(module._id) }}
-                                                            disabled={isDeleting === module._id}
-                                                            className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
-                                                            title="Delete module"
-                                                        >
-                                                            {isDeleting === module._id ? (
-                                                                <div className="w-3.5 h-3.5 border-2 border-gray-300 border-t-red-400 rounded-full animate-spin" />
-                                                            ) : (
-                                                                <Trash2 size={14} strokeWidth={2} />
-                                                            )}
-                                                        </button>
+                                                <div className="px-7 pb-6 pt-1 ml-[3.75rem] flex flex-col gap-4">
+                                                    {module.url && (
+                                                        <div className="relative aspect-video w-full max-w-xl rounded-xl overflow-hidden bg-gray-900 border border-gray-100 shadow-sm group/video mb-2">
+                                                            <video
+                                                                className="w-full h-full object-cover"
+                                                                poster={module.thumbnail}
+                                                                controls
+                                                            >
+                                                                <source src={module.url} type="video/mp4" />
+                                                                Your browser does not support the video tag.
+                                                            </video>
+                                                            <div className="absolute top-3 left-3 px-2 py-1 bg-black/50 backdrop-blur-md rounded-lg text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5 opacity-0 group-hover/video:opacity-100 transition-opacity">
+                                                                <PlayCircle size={12} className="text-emerald-400" />
+                                                                Lesson Video
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    
+                                                    <div className="flex items-start justify-between gap-4">
+                                                        <p className="text-[13px] text-gray-500 leading-relaxed flex-1">
+                                                            {module.summary || "No description provided for this module."}
+                                                        </p>
+                                                        <div className="flex items-center gap-1.5 shrink-0">
+                                                            <button
+                                                                onClick={(e) => openEditModal(module, e)}
+                                                                className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                                                title="Edit module"
+                                                            >
+                                                                <Edit2 size={14} strokeWidth={2} />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleDeleteContent(module._id) }}
+                                                                disabled={isDeleting === module._id}
+                                                                className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
+                                                                title="Delete module"
+                                                            >
+                                                                {isDeleting === module._id ? (
+                                                                    <div className="w-3.5 h-3.5 border-2 border-gray-300 border-t-red-400 rounded-full animate-spin" />
+                                                                ) : (
+                                                                    <Trash2 size={14} strokeWidth={2} />
+                                                                )}
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </motion.div>

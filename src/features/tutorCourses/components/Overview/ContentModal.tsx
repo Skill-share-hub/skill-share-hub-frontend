@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { X, Upload, Film, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 
 const contentSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(100, "Title is too long"),
@@ -59,6 +60,12 @@ export default function ContentModal({ isOpen, onClose, onSubmit, initialData, i
   }, [initialData, reset, isOpen]);
 
   const onFormSubmit = (data: ContentFormValues) => {
+    // Validate video file for new content
+    if (!initialData && !videoFile) {
+      toast.error("Please upload a video file for the content");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("summary", data.summary);
@@ -137,6 +144,7 @@ export default function ContentModal({ isOpen, onClose, onSubmit, initialData, i
                   </label>
                   <input
                     type="number"
+                    min="1"
                     {...register("duration")}
                     className={`w-full px-4 py-3 rounded-xl border ${errors.duration ? "border-red-500" : "border-gray-200"} focus:ring-2 focus:ring-[#166534] outline-none transition-all`}
                   />

@@ -1,12 +1,13 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import type { Course } from "../types/course.types"
-import { Users, Clock, MoreVertical, Edit2, CloudUpload, Loader2 } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { Users, Clock, MoreVertical, Edit2, CloudUpload, Loader2, BookOpen } from "lucide-react"
+import { AnimatePresence } from "framer-motion"
 import { useDispatch } from "react-redux"
 import type { AppDispatch } from "../../../store/store"
 import toast from "react-hot-toast"
 import { publishCourse } from "../thunk/course.thunk"
+import ConfirmDialog from "../../../shared/components/ConfirmDialog"
 interface Props {
   course: Course
 }
@@ -15,6 +16,7 @@ const CourseCard = ({ course }: Props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const [isPublishing, setIsPublishing] = useState(false)
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
   const statusStyles = {
     published: "bg-green-100 text-green-700",
@@ -93,59 +95,51 @@ const CourseCard = ({ course }: Props) => {
           </div>
         </div>
 
-        {/* Footer Actions */}
+        {/* Footer Actions - Prioritized "View Details" */}
         <div className="mt-auto flex gap-3 pt-4 border-t border-gray-50">
-          {course.status == "draft" ? (
-            <button
-              onClick={() => handlePublishCourse(course._id)}
-              disabled={isPublishing}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-gray-200 text-sm font-semibold text-white bg-secondary hover:bg-secondary/90 transition-all ${isPublishing ? 'opacity-80 cursor-not-allowed' : 'active:scale-95'}`}
-            >
-              <AnimatePresence mode="wait">
-                {isPublishing ? (
-                  <motion.div
-                    key="publishing"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    className="flex items-center gap-2"
-                  >
-                    <Loader2 size={16} className="animate-spin" />
-                    <span>Publishing...</span>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="publish"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    className="flex items-center gap-2"
-                  >
-                    <CloudUpload size={16} />
-                    <span>Publish Course</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </button>
-          ) : (
-            <button
-              onClick={() => navigate(`/edit-course/${course._id}`)}
-              disabled={isPublishing}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-gray-200 text-sm font-semibold text-white bg-secondary hover:bg-secondary transition-all ${isPublishing ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}`}
-            >
-              <Edit2 size={16} />
-              Edit Course
-            </button>
-          )}
+          <button
+            onClick={() => navigate(`/course-overview/${course._id}`)}
+            className="flex-[2] flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#1F5E45] hover:bg-[#164733] text-white text-sm font-semibold transition-all active:scale-95 shadow-sm"
+          >
+            <BookOpen size={16} />
+            <span>View Details</span>
+          </button>
 
-          {course.status == "draft" && (
-            <button
-              disabled={isPublishing}
-              className={`flex items-center justify-center w-11 h-11 rounded-xl bg-gray-50 text-gray-500 hover:bg-secondary hover:text-white transition-all border border-transparent active:scale-95 ${isPublishing ? 'opacity-50 cursor-not-allowed' : ''}`}
-              onClick={() => navigate(`/edit-course/${course._id}`)}
-            >
-              <Edit2 size={16} />
-            </button>
+          <button
+            onClick={() => navigate(`/edit-course/${course._id}`)}
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 text-sm font-semibold transition-all active:scale-95"
+            title="Edit Course"
+          >
+            <Edit2 size={16} />
+            <span className="hidden sm:inline">Edit</span>
+          </button>
+
+          {course.status === "draft" && (
+            <>
+              <ConfirmDialog
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={() => handlePublishCourse(course._id)}
+                title="Publish Course"
+                description="Are you sure you want to publish this course? It will be visible to students immediately."
+                confirmText="Publish"
+                variant="primary"
+              />
+              <button
+                onClick={() => setIsConfirmOpen(true)}
+                disabled={isPublishing}
+                className={`flex items-center justify-center w-11 h-11 rounded-xl bg-[#1F5E45] text-white hover:bg-[#164733] transition-all shadow-sm active:scale-95 ${isPublishing ? 'opacity-80 cursor-not-allowed' : ''}`}
+                title="Publish Course"
+              >
+                <AnimatePresence mode="wait">
+                  {isPublishing ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : (
+                    <CloudUpload size={18} />
+                  )}
+                </AnimatePresence>
+              </button>
+            </>
           )}
         </div>
       </div>

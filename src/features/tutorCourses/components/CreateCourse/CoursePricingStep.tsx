@@ -89,6 +89,7 @@ export default function CoursePricingStep() {
                                     <input
                                         type="number"
                                         step="0.01"
+                                        min="0"
                                         disabled={!isPremiumTutor}
                                         {...register("price", { valueAsNumber: true })}
                                         className={`w-full border-0 rounded-lg pl-8 pr-4 py-4 font-medium focus:ring-2 focus:ring-green-600 transition-colors ${isPremiumTutor ? "bg-gray-50 text-gray-900 focus:bg-white" : "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -125,6 +126,7 @@ export default function CoursePricingStep() {
                                         </div>
                                         <input
                                             type="number"
+                                            min="0"
                                             {...register("creditCost", { valueAsNumber: true })}
                                             className="w-full border rounded-xl pl-12 pr-4 py-4 text-center font-bold text-xl focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent bg-white border-gray-200 text-gray-900"
                                             placeholder="Example: 15"

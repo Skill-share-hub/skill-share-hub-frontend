@@ -8,6 +8,7 @@ import { updateFields, prevStep, resetCourse } from "../../slice/courseCreationS
 import { submitCourse } from "../../thunk/course.thunk"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-hot-toast"
+import ConfirmDialog from "../../../../shared/components/ConfirmDialog"
 
 const publishSchema = z.object({
     thumbnailUrl: z.string().optional(),
@@ -43,6 +44,15 @@ export default function CoursePublishStep() {
     const [isSavingDraft, setIsSavingDraft] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+    const onPublishClick = () => {
+        setIsConfirmOpen(true);
+    };
+
+    const handleConfirmPublish = () => {
+        handleSubmit(onSubmit)();
+    };
 
     const onSubmit = async (data: PublishFormValues) => {
         try {
@@ -113,7 +123,16 @@ export default function CoursePublishStep() {
                 <p className="text-gray-500">Upload a high-quality thumbnail and review your final details before launching your content to the community.</p>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                <ConfirmDialog
+                    isOpen={isConfirmOpen}
+                    onClose={() => setIsConfirmOpen(false)}
+                    onConfirm={handleConfirmPublish}
+                    title="Publish Course"
+                    description="Are you sure you want to submit this course for review? Once approved, it will be visible to all students on the platform."
+                    confirmText="Publish Now"
+                    variant="primary"
+                />
                 {/* Thumbnails Section */}
                 <div className="mb-10">
                     <label className="block text-sm font-semibold text-gray-900 mb-4">
@@ -196,8 +215,9 @@ export default function CoursePublishStep() {
                             {isSavingDraft ? "Saving..." : "Save as Draft"}
                         </button>
                         <button
-                            type="submit"
+                            type="button"
                             disabled={isPublishing || isSavingDraft}
+                            onClick={onPublishClick}
                             className="flex items-center px-6 py-2.5 bg-[#1F5E45] hover:bg-[#164733] text-white rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed gap-2"
                         >
                             {isPublishing && (
