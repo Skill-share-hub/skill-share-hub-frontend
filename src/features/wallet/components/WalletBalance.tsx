@@ -1,24 +1,10 @@
 import { RefreshCcw, Wallet, TrendingUp } from 'lucide-react';
-import type { Wallet as WalletType } from '../wallet.types';
-import { useState } from 'react';
-import handleError from '../../../shared/services/handleError';
-import api from '../../../shared/services/axios';
+import type { QueryType, Wallet as WalletType } from '../wallet.types';
 
-export function WalletBalance({data}:{data:WalletType}) {
-  const [loading,setLoading] = useState(false);
-  const [wallet,setWallet] = useState(data);
-
-  const fetchWallet = async () => {
-    try{
-      setLoading(true);
-      const {data:walletData} = await api.get('/wallet?refresh=true');
-      setWallet(walletData.data);
-    }catch(error){
-      handleError(error)
-    }finally{
-      setLoading(false);
-    }
-  }
+export function WalletBalance(
+  {loading , wallet , setForm }:
+  {loading :boolean , wallet : WalletType , setForm:(pre:any)=>void}
+) {
 
   return (
     <div className="relative overflow-hidden bg-[#164e33] rounded-3xl p-8 shadow-2xl shadow-[#164e33]/20">
@@ -51,7 +37,7 @@ export function WalletBalance({data}:{data:WalletType}) {
           </div>
         </div>
 
-        <button onClick={fetchWallet} className="p-3 bg-white/10 hover:bg-white/20 transition-all rounded-2xl border border-white/10 cursor-pointer">
+        <button onClick={() => setForm((pre:QueryType)=> ({...pre,refresh : true}))} className="p-3 bg-white/10 hover:bg-white/20 transition-all rounded-2xl border border-white/10 cursor-pointer">
           <RefreshCcw className={`w-5 h-5 text-white ${loading ? "animate-spin" : ""} transition-transform duration-500`} />
         </button>
       </div>

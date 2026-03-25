@@ -1,33 +1,38 @@
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../shared/hooks/redux";
+import { useAppSelector } from "../../shared/hooks/redux";
 import handleError from "../../shared/services/handleError";
 import { WalletBalance, WalletTransaction, BuyCredits, WithdrawCredits } from './components/index';
 import api from "../../shared/services/axios";
 import FullScreenLoader from "../../shared/components/FullScreenLoader";
-import type { Wallet } from "./wallet.types";
-import { fetchWalletBalance } from "./walletSlice";
+import type { QueryType, Wallet } from "./wallet.types";
 
 
 export default function Wallet() {
   const { user } = useAppSelector(state => state.user);
-  const dispatch = useAppDispatch();
   const [data,setData] = useState<Wallet | null>(null);
+  const [loading,setLoading] = useState(false);
+    const [form, setForm] = useState<QueryType>({
+    limit: 1,
+    status: "",
+    refresh : false
+  });
 
   const fetchWallet = async () => {
     try{
-
-      const {data:walletData} = await api.get('/wallet');
+      setLoading(true);
+      const {data:walletData} = await api.get(`/wallet?limit=${form.limit * 3}&status=${form.status}`);
       setData(walletData.data);
-      dispatch(fetchWalletBalance());
 
     }catch(error){
       handleError(error)
+    }finally{
+      setLoading(false);
     }
   }
 
   useEffect(()=>{
     fetchWallet()
-  },[])
+  },[form])
 
   if(!data)return <FullScreenLoader />
 
@@ -55,11 +60,20 @@ export default function Wallet() {
 
           <div className="lg:col-span-8 space-y-10">
             <section>
-              <WalletBalance data={data}  />
+              <WalletBalance 
+               loading={loading} 
+               wallet={data} 
+               setForm={setForm}
+              />
             </section>
 
-            <section className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-              <WalletTransaction />
+            <section className="bg-white p-6 pb-0 rounded-3xl border border-gray-100 shadow-sm">
+              <WalletTransaction 
+                form={form} 
+                loading={loading} 
+                setForm={setForm} 
+                transaction={data.transactions} 
+              />
             </section>
           </div>
 

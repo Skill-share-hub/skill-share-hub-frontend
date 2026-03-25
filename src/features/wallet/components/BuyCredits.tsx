@@ -3,12 +3,15 @@ import { Plus, Sparkles, ArrowRight, AlertCircle, Coins } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import api from '../../../shared/services/axios';
 import { loadRazorpayScript } from '../../../shared/utils/razorpay';
+import { useAppDispatch } from '../../../shared/hooks/redux';
+import { fetchWalletBalance } from '../walletSlice';
 
 export function BuyCredits(
   { creditConst , fetchWallet }:
   { creditConst: number, fetchWallet : ()=>void }
 ) {
   const [amount, setAmount] = useState<number>(0);
+  const dispatch = useAppDispatch();
 
   const presets = [
     { credits: 10, price: 10 * creditConst },
@@ -47,7 +50,10 @@ export function BuyCredits(
           });
 
           
-          fetchWallet();
+          await fetchWallet();
+          await dispatch(fetchWalletBalance())
+
+          toast.success("Payment successful 🎉");
 
         },
 
@@ -115,7 +121,15 @@ export function BuyCredits(
             <input
               type="number"
               value={amount || ''}
-              onChange={(e) => setAmount(Number(e.target.value))}
+              min={1}
+              onChange={(e) => {
+                const value  = Number(e.target.value)
+                if(value < 1){
+                  setAmount(0)
+                }else{
+                  setAmount(value)
+                }
+              }}
               placeholder="Enter custom amount..."
               className="w-full pl-4 pr-24 py-3 text-sm font-medium border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#164e33]/5 focus:border-[#164e33] transition-all"
             />
