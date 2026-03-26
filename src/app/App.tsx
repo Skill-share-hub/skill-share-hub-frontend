@@ -18,6 +18,7 @@ import TutorProfilePage from "../features/profile/pages/TutorProfilePage";
 import MainLayout from "../layouts/MainLayout";
 import CourseDetailsPage from "../features/courses/pages/CourseDetailsPage";
 import ProtectedRoute from "../routes/ProtectedRoute";
+import AdminLayout from "../layouts/AdminLayout";
 import Wallet from "../features/wallet/Wallet";
 import MyActivity from "../features/courses/pages/MyActivity";
 import StudentProfilePage from "../features/profile/pages/studentProfilePage";
@@ -65,10 +66,6 @@ function App() {
             <Route path="/course-overview/:id" element={<CourseOverviewPage />} />
           </Route>
 
-          {/* Admin Only */}
-          <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-            <Route path="/admin" element={<Dashboard />} />
-          </Route>
         </Route>
 
         {/* Auth Routes */}
@@ -76,6 +73,13 @@ function App() {
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+          </Route>
+        </Route>
+
+        {/* Admin Only Routes */}
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/admin" element={<Dashboard />} />
           </Route>
         </Route>
 
