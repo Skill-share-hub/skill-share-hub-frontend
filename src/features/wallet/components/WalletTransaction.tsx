@@ -87,7 +87,8 @@ function Transaction({ data }: { data: TransactionType }) {
 
   const displayLabel = data.type === "course_purchase" 
     ? `Purchased ${data.courseSnapshot?.title || "Course"}`
-    : data.type === "credit_purchase" ? "Credits Added" : "Transaction Details";
+    : data.type === "credit_purchase" ? "Credits Added" : 
+      data.type === "tutor_earning" ? `Earning from ${data.courseSnapshot?.title || "Course"}` : "Transaction Details";
     
   const displayThumbnail = data.courseSnapshot?.thumbnail;
 

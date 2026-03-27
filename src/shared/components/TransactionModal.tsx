@@ -86,12 +86,12 @@ export default function TransactionModal({ isOpen, onClose, transaction }: Modal
 
           <div className="text-center pb-4 border-b border-dashed border-gray-200">
             <p className="text-[10px] text-gray-400 uppercase tracking-[0.2em] font-black">Credits Transacted</p>
-            <div className={`flex items-center justify-center gap-2 mt-2 ${transaction.type === 'credit_purchase' ? 'text-emerald-600' : 'text-gray-900'}`}>
+            <div className={`flex items-center justify-center gap-2 mt-2 ${transaction.type === 'credit_purchase' || transaction.type === 'tutor_earning' ? 'text-emerald-600' : 'text-gray-900'}`}>
                 <div className="p-2 rounded-xl bg-gray-50 border border-gray-100 shadow-inner">
-                  <Coins className={transaction.type === 'credit_purchase' ? 'text-emerald-500' : 'text-gray-400'} size={28} />
+                  <Coins className={transaction.type === 'credit_purchase' || transaction.type === 'tutor_earning' ? 'text-emerald-500' : 'text-gray-400'} size={28} />
                 </div>
                 <h2 className="text-5xl font-black tracking-tighter">
-                  {transaction.type === 'credit_purchase' ? '+' : '-'}{transaction.amount.toLocaleString()}
+                  {transaction.type === 'credit_purchase' || transaction.type === 'tutor_earning' ? '+' : '-'}{transaction.amount.toLocaleString()}
                 </h2>
             </div>
             <div className={`inline-flex items-center gap-1.5 px-4 py-1.5 mt-5 rounded-full border text-[10px] font-black uppercase tracking-widest shadow-sm ${getStatusStyle(transaction.status)}`}>

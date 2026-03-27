@@ -2,24 +2,35 @@ import { useState, useEffect } from "react";
 import { useAppSelector } from "../../shared/hooks/redux";
 import { useNavigate } from "react-router-dom";
 import api from "../../shared/services/axios";
+import { 
+  BookOpen, 
+  PlayCircle, 
+  Clock, 
+  CheckCircle2, 
+  Wallet, 
+  Star, 
+  Users, 
+  ArrowRight, 
+  ChevronRight,
+  TrendingUp,
+  Award,
+  Zap
+} from "lucide-react";
 
 /* ─── tiny helpers ─────────────────────────────────────── */
 
 const Stars = ({ rating }: { rating: number }) => (
-  <div className="flex items-center gap-1">
-    <div className="flex">
+  <div className="flex items-center gap-1.5">
+    <div className="flex gap-0.5">
       {Array.from({ length: 5 }).map((_, i) => (
-        <svg
+        <Star
           key={i}
-          className={`w-3 h-3 ${i < Math.floor(rating) ? "text-amber-400" : "text-gray-200"}`}
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
+          size={12}
+          className={`${i < Math.floor(rating) ? "fill-amber-400 text-amber-400" : "text-gray-200"}`}
+        />
       ))}
     </div>
-    <span className="text-xs font-semibold text-gray-600">{rating.toFixed(1)}</span>
+    <span className="text-xs font-bold text-gray-500">{rating.toFixed(1)}</span>
   </div>
 );
 
@@ -28,18 +39,24 @@ const ProgressRing = ({ pct }: { pct: number }) => {
   const circ = 2 * Math.PI * r;
   const dash = circ * (pct / 100);
   return (
-    <svg className="w-12 h-12 -rotate-90" viewBox="0 0 44 44">
-      <circle cx="22" cy="22" r={r} fill="none" stroke="#e5e7eb" strokeWidth="4" />
+    <svg className="w-12 h-12 -rotate-90 drop-shadow-sm" viewBox="0 0 44 44">
+      <circle cx="22" cy="22" r={r} fill="none" stroke="#f1f5f9" strokeWidth="4" />
       <circle
         cx="22"
         cy="22"
         r={r}
         fill="none"
-        stroke="#15803d"
+        stroke="url(#progress-gradient)"
         strokeWidth="4"
         strokeLinecap="round"
         strokeDasharray={`${dash} ${circ}`}
       />
+      <defs>
+        <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#10b981" />
+          <stop offset="100%" stopColor="#059669" />
+        </linearGradient>
+      </defs>
     </svg>
   );
 };
@@ -61,21 +78,25 @@ const StudentDashboard = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const res = await api.get("/dashboard/student");
-      const data = res.data;
-      setEnrolledData(data.enrolledCourses);
-      setRecommendedCourse(data.recommendedCourses);
-      setAvailableCredit(data.creditBalance);
-      setContinueWatchingData(data.continueWatching);
-      setTotalHours(data.totalHours);
-      setWatchedHours(data.watchedHours);
-      setCompletedHours(data.completedHours);
+      try {
+        const res = await api.get("/dashboard/student");
+        const data = res.data;
+        setEnrolledData(data.enrolledCourses);
+        setRecommendedCourse(data.recommendedCourses);
+        setAvailableCredit(data.creditBalance);
+        setContinueWatchingData(data.continueWatching);
+        setTotalHours(data.totalHours);
+        setWatchedHours(data.watchedHours);
+        setCompletedHours(data.completedHours);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      }
     };
     getData();
   }, []);
 
   useEffect(() => {
-    const t = setTimeout(() => setVis(true), 60);
+    const t = setTimeout(() => setVis(true), 100);
     return () => clearTimeout(t);
   }, []);
 
@@ -84,157 +105,181 @@ const StudentDashboard = () => {
   const firstName = user.name.split(" ")[0];
 
   const stats = [
-    { label: "Enrolled", value: enrolledData?.length || 0, icon: "📚", sub: "courses" },
-    { label: "Watched", value: watchedHours, icon: "📽️", sub: "hours" },
-    { label: "Total", value: totalHours, icon: "⏱", sub: "hours" },
-    { label: "Completed", value: completedHours, icon: "✅", sub: "hours" },
+    { label: "Enrolled", value: enrolledData?.length || 0, icon: <BookOpen size={20} />, color: "bg-blue-50 text-blue-600", sub: "courses" },
+    { label: "Watched", value: watchedHours, icon: <PlayCircle size={20} />, color: "bg-emerald-50 text-emerald-600", sub: "hours" },
+    { label: "Total", value: totalHours, icon: <Clock size={20} />, color: "bg-indigo-50 text-indigo-600", sub: "tracking" },
+    { label: "Completed", value: completedHours, icon: <CheckCircle2 size={20} />, color: "bg-emerald-100 text-emerald-700", sub: "milestones" },
   ];
 
-  const formattedRecommended = recommendedCourse.map((r) => ({
-    title: r.title,
-    courseId: r._id,
-    instructor: r.tutorId?.name || "Unknown",
-    image: r.thumbnailUrl,
-    tag: r.category,
-    free: r.courseType === "free",
-    rating: r.ratingsAverage || 0,
-    students: r.totalEnrollments || 0,
-  }));
-
   /* animation helper */
-  const fade = (delay = 0) =>
+  const fade = () =>
     `transition-all duration-700 ease-out ${
       vis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
     }`;
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+    <div className="min-h-screen bg-[#f8fafc] pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
 
         {/* ── HEADER ── */}
         <div
-          className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${fade()}`}
+          className={`flex flex-col md:flex-row md:items-center justify-between gap-6 ${fade()}`}
           style={{ transitionDelay: "0ms" }}
         >
-          <div className="flex items-center gap-4">
-            {/* avatar */}
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-700 to-emerald-500 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-green-200 flex-shrink-0">
-              {firstName[0]}
+          <div className="flex items-center gap-6">
+            <div className="relative group">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-600 to-green-500 flex items-center justify-center text-white text-2xl font-black shadow-xl shadow-emerald-200 transition-transform group-hover:scale-105">
+                {firstName[0]}
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm">
+                  <Award size={12} className="text-emerald-600" />
+                </div>
+              </div>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-widest font-bold text-green-700">
-                Student Dashboard
-              </p>
-              <h1 className="text-2xl font-extrabold text-gray-900 leading-tight">
-                Welcome back, {firstName} 👋
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full border border-emerald-100">
+                  Student Account
+                </span>
+                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                  <TrendingUp size={10} /> Active Learner
+                </span>
+              </div>
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-none">
+                Welcome back, {firstName}
               </h1>
-              <p className="text-sm text-gray-500 mt-0.5">
-                Pick up where you left off — your progress awaits.
+              <p className="text-sm text-slate-400 mt-2 font-medium">
+                Your learning path is looking great. Ready for today's lesson?
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* credits badge */}
-            <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5">
-              <span className="text-amber-500 text-lg">💰</span>
-              <div>
-                <p className="text-xs text-amber-600 font-semibold uppercase tracking-wide leading-none">Credits</p>
-                <p className="text-lg font-extrabold text-amber-700 leading-tight">{availableCredit}</p>
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col items-end px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow group cursor-default">
+              <div className="flex items-center gap-2 mb-0.5">
+                <Wallet size={14} className="text-amber-500 group-hover:scale-110 transition-transform" />
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Credit Balance</span>
               </div>
+              <p className="text-2xl font-black text-slate-900 tabular-nums">{availableCredit}</p>
             </div>
             <button
               onClick={() => navigate("/courses")}
-              className="bg-green-700 hover:bg-green-800 active:scale-95 text-white text-sm font-bold px-5 py-3 rounded-xl shadow-md shadow-green-200 transition-all duration-150"
+              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-[13px] font-black uppercase tracking-widest px-7 py-4 rounded-2xl shadow-xl shadow-emerald-200 transition-all group"
             >
-              Explore Courses →
+              Explore Courses
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
 
         {/* ── STATS ── */}
         <div
-          className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${fade()}`}
-          style={{ transitionDelay: "80ms" }}
+          className={`grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 ${fade()}`}
+          style={{ transitionDelay: "100ms" }}
         >
-          {stats.map((s, i) => (
+          {stats.map((s) => (
             <div
               key={s.label}
-              className="bg-white border border-gray-100 rounded-2xl px-5 py-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+              className="bg-white border border-slate-100 rounded-[2rem] p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group"
             >
-              <div className="flex items-start justify-between mb-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{s.label}</p>
-                <span className="text-xl leading-none">{s.icon}</span>
+              <div className="flex items-start justify-between mb-4">
+                <div className={`p-3 rounded-2xl ${s.color} transition-colors group-hover:bg-slate-900 group-hover:text-white`}>
+                  {s.icon}
+                </div>
               </div>
-              <p className="text-3xl font-extrabold text-gray-900 tabular-nums">{s.value}</p>
-              <p className="text-xs text-gray-400 mt-1 font-medium">{s.sub}</p>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{s.label}</p>
+                <div className="flex items-baseline gap-1.5">
+                  <p className="text-3xl font-black text-slate-900 tabular-nums tracking-tighter">{s.value}</p>
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">{s.sub}</p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
 
         {/* ── CONTINUE WATCHING ── */}
-        <div className={fade()} style={{ transitionDelay: "160ms" }}>
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-extrabold text-gray-900">Continue Watching</h2>
-            <button className="text-sm text-green-700 font-bold hover:underline underline-offset-2">
-              View all
+        <div className={fade()} style={{ transitionDelay: "200ms" }}>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-1.5 h-6 bg-emerald-600 rounded-full"></div>
+              <h2 className="text-xl font-black text-slate-900 tracking-tight">Continue Learning</h2>
+            </div>
+            <button className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700 transition-colors group">
+              View History
+              <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
             </button>
           </div>
 
           {continueWatchingData.length === 0 ? (
-            <div className="bg-white border border-dashed border-gray-200 rounded-2xl p-10 text-center text-gray-400 text-sm">
-              No courses in progress yet. Start one below!
+            <div className="bg-white border-2 border-dashed border-slate-100 rounded-[2.5rem] py-16 text-center flex flex-col items-center group cursor-pointer hover:border-emerald-200 transition-colors" onClick={() => navigate("/courses")}>
+              <div className="w-16 h-16 bg-slate-50 text-slate-300 rounded-2xl flex items-center justify-center mb-4 transition-colors group-hover:bg-emerald-50 group-hover:text-emerald-400">
+                <Zap size={24} />
+              </div>
+              <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">No active sessions</p>
+              <p className="text-slate-300 text-xs mt-1">Start your learning journey today!</p>
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {continueWatchingData.map((r) => (
                 <div
                   key={r._id}
-                  className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col"
+                  className="bg-white border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col group"
                 >
-                  {/* thumbnail */}
-                  <div className="relative h-36 overflow-hidden bg-gray-100">
+                  <div className="relative h-44 overflow-hidden bg-slate-100">
                     <img
                       src={r.courseId.thumbnailUrl}
                       alt={r.courseId.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    {/* progress ring overlay */}
-                    <div className="absolute bottom-3 right-3 bg-white rounded-full p-0.5 shadow-md">
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                       <PlayCircle size={48} className="text-white drop-shadow-lg" />
+                    </div>
+                    <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md rounded-2xl p-1 shadow-lg ring-1 ring-black/5">
                       <div className="relative flex items-center justify-center">
                         <ProgressRing pct={r.progress} />
-                        <span className="absolute text-[10px] font-extrabold text-green-700">{r.progress}%</span>
+                        <span className="absolute text-[10px] font-black text-emerald-700">{r.progress}%</span>
                       </div>
                     </div>
-                    <span className="absolute top-3 left-3 text-xs font-bold text-green-700 bg-green-50 border border-green-100 px-2 py-0.5 rounded-lg">
-                      {r.courseId.category}
-                    </span>
+                    <div className="absolute top-3 left-3 flex gap-2">
+                       <span className="px-3 py-1 text-[9px] font-black text-white bg-slate-900/40 backdrop-blur-md rounded-lg uppercase tracking-widest">
+                        {r.courseId.category}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="p-5 flex flex-col flex-1">
-                    <h3 className="font-bold text-gray-900 text-sm leading-snug line-clamp-2">
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="font-black text-slate-900 text-base leading-snug line-clamp-2 mb-1 group-hover:text-emerald-700 transition-colors">
                       {r.courseId.title}
                     </h3>
-                    <p className="text-xs text-gray-400 mt-1 mb-4">by {r.courseId.tutorId?.name}</p>
+                    <div className="flex items-center gap-1.5 mb-6">
+                       <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-[8px] font-black text-slate-500">
+                          {r.courseId.tutorId?.name?.[0]}
+                       </div>
+                       <p className="text-[10px] font-bold text-slate-400 capitalize">by {r.courseId.tutorId?.name}</p>
+                    </div>
 
-                    {/* progress bar */}
-                    <div className="mt-auto">
-                      <div className="flex justify-between text-xs mb-1.5">
-                        <span className="text-gray-400 font-medium">Progress</span>
-                        <span className="text-green-700 font-bold">{r.progress}%</span>
+                    <div className="mt-auto space-y-4">
+                      <div className="flex justify-between items-end">
+                        <div className="space-y-1">
+                          <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none">Modules Left</p>
+                          <p className="text-xs font-black text-slate-700">3 of 12 complete</p>
+                        </div>
+                        <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">{r.progress}%</span>
                       </div>
-                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      
+                      <div className="h-2 bg-slate-50 rounded-full overflow-hidden p-0.5 border border-slate-100/50">
                         <div
-                          className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full transition-all duration-500"
+                          className="h-full bg-emerald-600 rounded-full transition-all duration-1000 ease-out"
                           style={{ width: `${r.progress}%` }}
                         />
                       </div>
 
                       <button
-                        className="mt-4 w-full py-2.5 rounded-xl border-2 border-green-700 text-green-700 text-sm font-bold hover:bg-green-700 hover:text-white active:scale-95 transition-all duration-150"
+                        className="w-full py-3.5 rounded-xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest hover:bg-emerald-600 hover:shadow-xl hover:shadow-emerald-200 active:scale-[0.98] transition-all duration-200"
                         onClick={() => navigate(`/courses/${r.courseId._id}`)}
                       >
-                        ▶ Resume
+                        Resume Learning
                       </button>
                     </div>
                   </div>
@@ -246,100 +291,109 @@ const StudentDashboard = () => {
 
         {/* ── CTA BANNER ── */}
         <div
-          className={`relative overflow-hidden bg-gradient-to-br from-green-900 via-green-800 to-emerald-700 rounded-3xl px-7 md:px-10 py-9 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 shadow-xl shadow-green-900/20 ${fade()}`}
-          style={{ transitionDelay: "240ms" }}
+          className={`relative overflow-hidden bg-slate-900 rounded-[2.5rem] p-10 flex flex-col lg:flex-row items-center justify-between gap-10 shadow-2xl shadow-slate-200 ${fade()}`}
+          style={{ transitionDelay: "300ms" }}
         >
-          {/* decorative circles */}
-          <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/5" />
-          <div className="absolute -bottom-8 -right-4 w-32 h-32 rounded-full bg-white/5" />
-          <div className="absolute top-4 right-32 w-16 h-16 rounded-full bg-white/5" />
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-emerald-600/10 to-transparent pointer-events-none" />
+          <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-emerald-500/10 blur-[80px]" />
 
-          <div className="relative z-10">
-            <p className="text-xs uppercase tracking-widest text-emerald-300 font-bold mb-2">
-              Tutor Programme
-            </p>
-            <h2 className="text-xl md:text-2xl font-extrabold text-white mb-2">
-              Ready to Teach & Earn?
+          <div className="relative z-10 text-center lg:text-left max-w-2xl">
+            <div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
+               <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg border border-emerald-500/20">
+                Tutor Opportunity
+               </span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight leading-tight">
+              Turn your expertise into <span className="text-emerald-500">Earnings</span>
             </h2>
-            <p className="text-green-200 text-sm max-w-lg leading-relaxed">
-              Share your expertise, build a student base, and earn credits plus real money.
+            <p className="text-slate-400 text-base font-medium leading-relaxed mb-8">
+              Join our premium tutor network, reach thousands of global students, and get paid for what you know best.
             </p>
-            <div className="flex flex-wrap gap-2 mt-4">
-              {["Earn Credits", "Real Money", "Analytics Dashboard", "Student Engagement"].map((t) => (
-                <span
-                  key={t}
-                  className="text-xs text-emerald-200 border border-emerald-600 bg-emerald-900/40 px-3 py-1 rounded-full font-medium"
+            <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+              {[
+                { label: "High Revenue", icon: <TrendingUp size={12}/> },
+                { label: "Analytics Tools", icon: <Award size={12}/> },
+                { label: "Global Reach", icon: <Users size={12}/> }
+              ].map((t) => (
+                <div
+                  key={t.label}
+                  className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-300"
                 >
-                  {t}
-                </span>
+                  {t.icon}
+                  {t.label}
+                </div>
               ))}
             </div>
           </div>
 
           <button
             onClick={() => navigate("/profile")}
-            className="relative z-10 flex-shrink-0 bg-white text-green-900 font-extrabold text-sm px-7 py-3.5 rounded-xl hover:bg-gray-50 active:scale-95 shadow-lg transition-all duration-150"
+            className="flex-shrink-0 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[13px] uppercase tracking-widest px-10 py-5 rounded-2xl shadow-xl shadow-emerald-600/20 hover:shadow-emerald-500/30 transition-all active:scale-95 group"
           >
-            Create Tutor Profile →
+            Become a Tutor 
+            <ArrowRight size={16} className="inline ml-2 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
 
         {/* ── RECOMMENDED ── */}
-        <div className={fade()} style={{ transitionDelay: "320ms" }}>
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-extrabold text-gray-900">Recommended for You</h2>
-            <button className="text-sm text-green-700 font-bold hover:underline underline-offset-2">
-              See all
+        <div className={fade()} style={{ transitionDelay: "400ms" }}>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-1.5 h-6 bg-slate-900 rounded-full"></div>
+              <h2 className="text-xl font-black text-slate-900 tracking-tight">Recommended For You</h2>
+            </div>
+            <button className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors group">
+              Browse All
+              <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
             </button>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {formattedRecommended.map((r) => (
-              <div
-                key={r.courseId}
-                className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer transition-all duration-200 flex flex-col group"
-                onClick={() => navigate(`/courses/${r.courseId}`)}
-              >
-                {/* thumbnail */}
-                <div className="relative h-28 overflow-hidden bg-gray-100">
-                  <img
-                    src={r.image}
-                    alt={r.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <span
-                    className={`absolute top-2 right-2 text-xs font-bold px-2 py-0.5 rounded-lg ${
-                      r.free
-                        ? "bg-green-100 text-green-700"
-                        : "bg-amber-100 text-amber-700"
-                    }`}
-                  >
-                    {r.free ? "Free" : "Premium"}
-                  </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {enrolledData.length === 0 && recommendedCourse.length === 0 ? (
+                <div className="col-span-full py-20 text-center">
+                    <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Looking for inspiration?</p>
                 </div>
-
-                <div className="p-3.5 flex flex-col flex-1">
-                  <span className="text-xs text-gray-400 uppercase font-bold tracking-wide mb-1">
-                    {r.tag}
-                  </span>
-                  <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 mb-1">
-                    {r.title}
-                  </h3>
-                  <p className="text-xs text-gray-400 mb-2">by {r.instructor}</p>
-
-                  <Stars rating={r.rating} />
-
-                  <div className="flex justify-between text-xs text-gray-400 mt-3 pt-3 border-t border-gray-50">
-                    <span className="flex items-center gap-1">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      {r.students.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
+            ) : (
+                recommendedCourse.map((r) => (
+                    <div
+                      key={r._id}
+                      className="bg-white border border-slate-100 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 cursor-pointer transition-all duration-500 group relative flex flex-col"
+                      onClick={() => navigate(`/courses/${r._id}`)}
+                    >
+                      <div className="relative h-40 overflow-hidden bg-slate-100">
+                        <img
+                          src={r.thumbnailUrl}
+                          alt={r.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className={`absolute top-3 right-3 px-3 py-1 font-black text-[9px] uppercase tracking-widest rounded-lg shadow-sm border ${
+                            r.courseType === "free" 
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
+                              : "bg-amber-50 text-amber-700 border-amber-100"
+                          }`}>
+                          {r.courseType === "free" ? "Free" : "Premium"}
+                        </div>
+                      </div>
+      
+                      <div className="p-5 flex flex-col flex-1">
+                        <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-1.5">{r.category || "General"}</p>
+                        <h3 className="text-sm font-black text-slate-900 leading-snug line-clamp-2 mb-2 group-hover:text-emerald-700 transition-colors">
+                          {r.title}
+                        </h3>
+                        <p className="text-[10px] font-bold text-slate-400 mb-4 capitalize">by {r.tutorId?.name || "Expert Tutor"}</p>
+      
+                        <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-50">
+                          <Stars rating={r.ratingsAverage || 5} />
+                          <div className="flex items-center gap-1.5 text-slate-400 font-bold text-[10px]">
+                            <Users size={12} />
+                            <span>{(r.totalEnrollments || 0).toLocaleString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+            )}
           </div>
         </div>
 

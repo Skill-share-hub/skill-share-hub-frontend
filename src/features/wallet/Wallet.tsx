@@ -79,7 +79,9 @@ export default function Wallet() {
 
           <div className="lg:col-span-4 space-y-8">
             <div className="sticky top-24 space-y-8">
-              <BuyCredits fetchWallet={fetchWallet} creditConst={data.creditConst} />
+              {['student', 'admin'].includes(user?.role || '') && (
+                <BuyCredits fetchWallet={fetchWallet} creditConst={data.creditConst} />
+              )}
               <WithdrawCredits />
             </div>
           </div>
