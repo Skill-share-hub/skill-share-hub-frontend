@@ -1,39 +1,29 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { purchaseApi } from "../services/purchaseApi";
-import type { PurchaseSummaryResponse, VerifyPaymentPayload } from "../services/purchaseApi";
+import type { VerifyPaymentPayload } from "../services/purchaseApi";
 
 type PaymentMethodType = "credit" | "payment" | "credit_payment";
 
 interface PurchaseState {
-  summary: PurchaseSummaryResponse | null;
   selectedPaymentMethod: PaymentMethodType;
   order: any | null;
   loading: boolean;
   paymentStatus: "idle" | "processing" | "success" | "failed";
   error: string | null;
+  showSuccessModal: boolean;
+  purchasedCourse: any | null;
 }
 
 const initialState: PurchaseState = {
-  summary: null,
   selectedPaymentMethod: "credit",
   order: null,
   loading: false,
   paymentStatus: "idle",
   error: null,
+  showSuccessModal: false,
+  purchasedCourse: null,
 };
-
-export const fetchPurchaseSummary = createAsyncThunk(
-  "purchase/fetchSummary",
-  async ({ courseId, paymentMethod }: { courseId: string; paymentMethod: PaymentMethodType }, { rejectWithValue }) => {
-    try {
-      const response = await purchaseApi.fetchSummary(courseId, paymentMethod);
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch summary");
-    }
-  }
-);
 
 export const createPaymentOrder = createAsyncThunk(
   "purchase/createOrder",
@@ -78,23 +68,26 @@ const purchaseSlice = createSlice({
     setPaymentMethod: (state, action: PayloadAction<PaymentMethodType>) => {
       state.selectedPaymentMethod = action.payload;
     },
-    resetPurchaseState: () => initialState,
+    setPurchaseSuccess: (state, action: PayloadAction<any>) => {
+      state.showSuccessModal = true;
+      state.purchasedCourse = action.payload;
+      state.paymentStatus = "success";
+    },
+    closeSuccessModal: (state) => {
+      state.showSuccessModal = false;
+      state.purchasedCourse = null;
+    },
+    resetPurchaseState: (state) => {
+      state.selectedPaymentMethod = "credit";
+      state.order = null;
+      state.loading = false;
+      state.paymentStatus = "idle";
+      state.error = null;
+      // Note: We don't necessarily reset the modal here if we want it to persist across remounts
+    },
   },
   extraReducers: (builder) => {
     builder
-      // Fetch Summary
-      .addCase(fetchPurchaseSummary.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchPurchaseSummary.fulfilled, (state, action) => {
-        state.loading = false;
-        state.summary = action.payload;
-      })
-      .addCase(fetchPurchaseSummary.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
       // Create Order
       .addCase(createPaymentOrder.pending, (state) => {
         state.loading = true;
@@ -143,5 +136,5 @@ const purchaseSlice = createSlice({
   },
 });
 
-export const { setPaymentMethod, resetPurchaseState } = purchaseSlice.actions;
+export const { setPaymentMethod, setPurchaseSuccess, closeSuccessModal, resetPurchaseState } = purchaseSlice.actions;
 export default purchaseSlice.reducer;

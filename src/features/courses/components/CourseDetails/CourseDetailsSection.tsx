@@ -1,12 +1,26 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Course } from '../../types/course.types';
-import { Tag, BookOpen, Layers } from 'lucide-react';
+import { Tag, BookOpen, Layers, Loader2 } from 'lucide-react';
+import { useEnrollmentStatus } from '../../../../shared/hooks/useEnrollmentStatus';
 
 interface CourseDetailsSectionProps {
   course: Course;
 }
 
 const CourseDetailsSection: React.FC<CourseDetailsSectionProps> = ({ course }) => {
+  const navigate = useNavigate();
+
+  const { isEnrolled, isLoading } = useEnrollmentStatus(course._id);
+
+  const handleAction = () => {
+    if (isEnrolled) {
+      navigate(`/my-activity/${course._id}`);
+    } else {
+      navigate(`/courses/${course._id}/purchase`);
+    }
+  };
+
   return (
     <section className="relative w-full">
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-14">
@@ -90,12 +104,25 @@ const CourseDetailsSection: React.FC<CourseDetailsSectionProps> = ({ course }) =
 
             </div>
 
-            {/* Enroll Button Mobile Fallback (Hidden on md/lg since Hero has it, but good for structural parity if needed) */}
+            {/* Enroll Button Mobile Fallback */}
             <div className="mt-8 pt-6 border-t border-gray-100 lg:hidden">
-              <button className="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold text-sm rounded-xl shadow-[0_4px_14px_0_rgba(4,120,87,0.39)] transition-all">
-                Enroll for {course.courseType === 'credit'
-                  ? `${course.creditCost} Credits`
-                  : (course.price === 0 || !course.price ? 'Free' : `$${course.price}`)}
+              <button 
+                onClick={handleAction}
+                disabled={isLoading}
+                className={`w-full py-3.5 text-white font-semibold text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 ${
+                  isEnrolled 
+                  ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200" 
+                  : "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-[0_4px_14px_0_rgba(4,120,87,0.39)]"
+                } ${isLoading ? "opacity-80 cursor-not-allowed" : ""}`}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Checking...
+                  </>
+                ) : (
+                  isEnrolled ? "Open Course" : `Enroll for ${course.courseType === 'credit' ? `${course.creditCost} Credits` : (course.price === 0 || !course.price ? 'Free' : `$${course.price}`)}`
+                )}
               </button>
             </div>
 

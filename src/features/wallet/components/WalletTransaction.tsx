@@ -1,4 +1,4 @@
-import { ArrowUpRight, ArrowDownLeft, ShoppingBag, CreditCard, Calendar, ChevronDown, Filter, Coins } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, CreditCard, Calendar, ChevronDown, Filter, Coins } from "lucide-react";
 import type { QueryType, STATUS, Transaction, Transaction as TransactionType } from "../wallet.types";
 import { useState } from "react";
 import { formatDate } from "../../../shared/utils/dateFormatter";
@@ -10,6 +10,14 @@ const STATUS_OPTIONS: { label: string; value: STATUS }[] = [
   { label: "Pending", value: "pending" },
   { label: "Rejected", value: "rejected" }
 ];
+
+const statusStyles = {
+  completed: "bg-emerald-100 text-emerald-700",
+  pending: "bg-amber-100 text-amber-700",
+  initialized: "bg-blue-100 text-blue-700",
+  rejected: "bg-red-100 text-red-700",
+  "": ""
+};
 
 export function WalletTransaction(
   {setForm , transaction , loading , form}:
@@ -73,55 +81,42 @@ export function WalletTransaction(
 }
 
 function Transaction({ data }: { data: TransactionType }) {
-  const [open,setOpen] = useState(false);
-  const config = {
-    credit_purchase: {
-      borderColor: "border-l-emerald-500",
-      icon: <ArrowDownLeft className="w-5 h-5 text-emerald-600" />,
-      bg: "bg-emerald-50",
-      label: "Credit Added",
-    },
-    course_purchase: {
-      borderColor: "border-l-blue-500",
-      icon: <ShoppingBag className="w-5 h-5 text-blue-600" />,
-      bg: "bg-blue-50",
-      label: "Course Purchase",
-    },
-    credit_withdraw: {
-      borderColor: "border-l-amber-500",
-      icon: <ArrowUpRight className="w-5 h-5 text-amber-600" />,
-      bg: "bg-amber-50",
-      label: "Withdrawal",
-    },
-  };
-
-  const statusStyles = {
-    completed: "bg-emerald-100 text-emerald-700",
-    pending: "bg-amber-100 text-amber-700",
-    initialized: "bg-blue-100 text-blue-700",
-    rejected: "bg-red-100 text-red-700",
-    "": ""
-  };
-
-  const style = config[data.type as keyof typeof config] || config.credit_purchase;
+  const [open, setOpen] = useState(false);
+  const isDebit = data.type === "course_purchase" || data.type === "credit_withdraw";
   const date = formatDate(data.createdAt);
+
+  const displayLabel = data.type === "course_purchase" 
+    ? `Purchased ${data.courseSnapshot?.title || "Course"}`
+    : data.type === "credit_purchase" ? "Credits Added" : "Transaction Details";
+    
+  const displayThumbnail = data.courseSnapshot?.thumbnail;
+
+  const handleClick = () => {
+    setOpen(true);
+  };
 
   return (
     <>
-      <div onClick={()=>setOpen(true)} className={`w-full flex cursor-pointer items-center justify-between p-4 bg-white border border-gray-100 border-l-4 ${style.borderColor} rounded-xl shadow-sm hover:shadow-xl transition-shadow`}>
+      <div onClick={handleClick} className={`w-full flex cursor-pointer items-center justify-between p-4 bg-white border border-gray-100 border-l-4 ${isDebit ? "border-l-red-500" : "border-l-green-500"} rounded-xl shadow-sm hover:shadow-xl transition-shadow`}>
         <div className="flex items-center gap-4">
-          <div className={`p-3 rounded-full ${style.bg}`}>
-            {style.icon}
+          <div className={`p-0.5 rounded-full overflow-hidden ${isDebit ? "bg-red-50" : "bg-green-50"} w-11 h-11 flex items-center justify-center shrink-0`}>
+            {displayThumbnail ? (
+              <img src={displayThumbnail} alt={displayLabel} className="w-full h-full object-cover rounded-full" />
+            ) : (
+              <div className={`p-2.5 rounded-full ${isDebit ? "text-red-600" : "text-green-600"}`}>
+                {isDebit ? <ArrowUpRight className="w-5 h-5" /> : <ArrowDownLeft className="w-5 h-5" />}
+              </div>
+            )}
           </div>
           <div>
-            <div className="font-semibold text-gray-900 capitalize">
-              {style.label}
+            <div className={`font-bold text-gray-900 line-clamp-1 max-w-[200px] sm:max-w-md ${isDebit ? "" : "text-green-900"}`}>
+              {displayLabel}
             </div>
-            <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+            <div className="flex items-center gap-3 mt-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
               <span className="flex items-center gap-1">
                 <CreditCard className="w-3 h-3" /> {data.method.replace("_", " ")}
               </span>
-              <span className="flex items-center gap-1 border-l pl-3">
+              <span className="flex items-center gap-1 border-l border-gray-200 pl-3">
                 <Calendar className="w-3 h-3" /> {date}
               </span>
             </div>
@@ -129,23 +124,24 @@ function Transaction({ data }: { data: TransactionType }) {
         </div>
 
         <div className="text-right">
-          <div className={`flex items-center justify-end gap-1.5 text-lg font-black tracking-tight ${data.type === "credit_purchase" ? "text-emerald-600" : "text-gray-900"}`}>
+          <div className={`flex items-center justify-end gap-1.5 text-lg font-black tracking-tight ${isDebit ? "text-gray-900" : "text-emerald-600"}`}>
             <span className="text-xl leading-none">
-              {data.type === "credit_purchase" ? "+" : "-"}
+              {isDebit ? "-" : "+"}
             </span>
-            <div className="flex items-center bg-gray-50 px-2 py-1 rounded-lg border border-gray-100 shadow-sm">
-              <Coins className="w-4 h-4 text-[#164e33] mr-1" />
+            <div className={`flex items-center px-2 py-1 rounded-lg border shadow-sm ${isDebit ? "bg-gray-50 border-gray-100" : "bg-emerald-50 border-emerald-100"}`}>
+              <Coins className={`w-4 h-4 mr-1 ${isDebit ? "text-gray-400" : "text-emerald-600"}`} />
               <span>{data.amount}</span>
             </div>
           </div>
           <div className="mt-1">
-            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${statusStyles[data.status as keyof typeof statusStyles] || 'bg-gray-100 text-gray-600'}`}>
+            <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest ${statusStyles[data.status as keyof typeof statusStyles] || 'bg-gray-100 text-gray-600'}`}>
               {data.status || "All"}
             </span>
           </div>
         </div>
       </div>
-      <TransactionModal isOpen={open} onClose={() => setOpen(false)}  transaction={data}/>
+      <TransactionModal isOpen={open} onClose={() => setOpen(false)} transaction={data} />
     </>
   );
 }
+

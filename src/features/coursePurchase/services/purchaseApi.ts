@@ -1,13 +1,5 @@
 import api from "../../../shared/services/axios";
 
-export interface PurchaseSummaryResponse {
-  coursePrice: number;
-  userCredits: number;
-  creditsApplied: number;
-  paymentAmount: number;
-  paymentRequired: boolean;
-}
-
 export interface RazorpayOrderResponse {
   orderId: string;
   amount: number;
@@ -23,14 +15,6 @@ export interface VerifyPaymentPayload {
 }
 
 export const purchaseApi = {
-  fetchSummary: async (courseId: string, paymentMethod: "credit" | "payment" | "credit_payment") => {
-    const response = await api.post<{ success: boolean; message: string; data: PurchaseSummaryResponse }>(
-      `/payments/${courseId}/summary`,
-      { paymentMethod }
-    );
-    return response.data.data;
-  },
-
   createPaymentOrder: async (courseId: string) => {
     const response = await api.post<RazorpayOrderResponse>(
       `/payments/course/order`,

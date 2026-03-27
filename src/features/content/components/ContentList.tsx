@@ -1,4 +1,4 @@
-import { PlayCircle, CheckCircle2, Lock } from "lucide-react";
+import { PlayCircle, CheckCircle2 } from "lucide-react";
 import type { ContentModules } from "../content.types";
 import { useEffect } from "react";
 
@@ -47,7 +47,7 @@ export default function ContentList(
 
                     {
                         modules.map(v => (
-                            <Content contentId={content._id} onSelect={handleSelect} completed={completedModules} data={v} />
+                            <Content key={v._id} contentId={content._id} onSelect={handleSelect} completed={completedModules} data={v} />
                         ))
                     }
 

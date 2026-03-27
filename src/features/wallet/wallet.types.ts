@@ -12,7 +12,16 @@ export type Transaction = {
   razorpayOrderId: string;
   razorpayPaymentId?: string;
   currency: string;
+  courseId? : string;
+  courseSnapshot?: {
+    title: string;
+    thumbnail: string;
+    price: number;
+    courseType: string;
+    creditCost?: number;
+  }
 }
+
 
 export type Wallet = {
   creditBalance : number;
