@@ -25,6 +25,8 @@ import StudentProfilePage from "../features/profile/pages/studentProfilePage";
 import Content from "../features/content/Content";
 import CoursePurchasePage from "../features/coursePurchase/pages/CoursePurchasePage";
 import SavedCoursesPage from "../features/courses/pages/savedCourses";
+import PremiumTutorApplicationsList from "../features/adminPremiumTutor/pages/ApplicationsList";
+import ApplicationDetailsPage from "../features/adminPremiumTutor/pages/ApplicationDetails";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -80,6 +82,8 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<Dashboard />} />
+            <Route path="/admin/applications" element={<PremiumTutorApplicationsList />} />
+            <Route path="/admin/applications/:id" element={<ApplicationDetailsPage />} />
           </Route>
         </Route>
 

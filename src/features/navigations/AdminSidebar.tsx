@@ -14,7 +14,7 @@ const AdminSidebar = () => {
     { name: 'Users', path: '/admin/users', icon: Users },
     { name: 'Courses', path: '/admin/courses', icon: BookOpen },
     { name: 'Enrollments', path: '/admin/enrollments', icon: GraduationCap },
-    { name: 'Settings', path: '/admin/settings', icon: Settings },
+    { name: 'Premium Applications', path: '/admin/applications', icon: Users },
   ];
 
   return (
