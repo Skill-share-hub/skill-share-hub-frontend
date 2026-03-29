@@ -8,7 +8,7 @@ import purchaseReducer from '../features/coursePurchase/redux/purchaseSlice'
 import walletReducer from '../features/wallet/walletSlice'
 import savedCoursesReducer from '../features/courses/slice/savedCourseSlice'
 import applicationReducer from '../features/adminPremiumTutor/slice/application.slice'
-
+import dashboardReducer from '../features/dashboard/slice/dashboard.slice'
 const store = configureStore({
   reducer: {
     user: authReducer,
@@ -20,6 +20,7 @@ const store = configureStore({
     wallet: walletReducer,
     savedCourses: savedCoursesReducer,
     applications: applicationReducer,
+    dashboard: dashboardReducer,
   }
 });
 

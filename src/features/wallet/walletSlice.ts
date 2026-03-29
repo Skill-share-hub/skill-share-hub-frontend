@@ -6,7 +6,7 @@ export const fetchWalletBalance = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await api.get('/wallet?refresh=true');
-      return data.data; // This returns the wallet object containing creditBalance
+      return data.data;
     } catch (err: unknown) {
       const error = err as Error & { response?: { data?: { message?: string } } };
       return rejectWithValue(error.response?.data?.message || "Failed to fetch wallet");
