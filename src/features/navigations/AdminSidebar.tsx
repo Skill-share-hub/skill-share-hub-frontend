@@ -10,7 +10,7 @@ import {
 
 const links = [
   { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-  { name: 'Users', path: '/admin/users', icon: Users }, // updated path
+  { name: 'Users', path: '/admin/tutors', icon: Users }, // updated path
   { name: 'Courses', path: '/admin/courses', icon: BookOpen },
   { name: 'Enrollments', path: '/admin/enrollments', icon: GraduationCap },
   { name: 'Premium Applications', path: '/admin/applications', icon: Users }, // new feature

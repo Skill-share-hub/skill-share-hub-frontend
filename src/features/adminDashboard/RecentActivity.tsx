@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { User, BookOpen, GraduationCap, ChevronDown, Activity, IndianRupee } from 'lucide-react';
-import type { ActivityType, ActivityItem, RecentActivityProps } from './dashboard.types';
+import type {  ActivityItem, RecentActivityProps } from './dashboard.types';
 
 export default function RecentActivity({ data = [], onFilterChange, onLoadMore, hasMore = false }: RecentActivityProps) {
   const [activeFilter, setActiveFilter] = useState('');
