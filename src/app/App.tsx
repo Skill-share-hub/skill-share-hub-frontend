@@ -27,6 +27,7 @@ import CoursePurchasePage from "../features/coursePurchase/pages/CoursePurchaseP
 import SavedCoursesPage from "../features/courses/pages/savedCourses";
 import PremiumTutorApplicationsList from "../features/adminPremiumTutor/pages/ApplicationsList";
 import ApplicationDetailsPage from "../features/adminPremiumTutor/pages/ApplicationDetails";
+import PremiumTutorApplication from "../features/premiumTutorApplication/PremiumTutorApplication";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -66,6 +67,7 @@ function App() {
             <Route path="/my-courses" element={<MyCoursesPage />} />
             <Route path="/edit-course/:id" element={<EditCoursePage />} />
             <Route path="/course-overview/:id" element={<CourseOverviewPage />} />
+            <Route path="/apply-premium" element={<PremiumTutorApplication />} />
           </Route>
 
         </Route>

@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../shared/hooks/redux";
 import { fetchTutorCourses } from "../tutorCourses/thunk/course.thunk";
-import { BookOpen, Users, Star, CreditCard, ChevronRight, Edit3, Eye, PlusCircle, Activity, LayoutDashboard, BarChart3, X } from "lucide-react";
+import { BookOpen, Users, Star, CreditCard, ChevronRight, Edit3, Eye, PlusCircle, Activity, LayoutDashboard, BarChart3, X, Award } from "lucide-react";
+import { motion } from "framer-motion";
 import FullScreenLoader from "../../shared/components/FullScreenLoader";
+import { fetchTutorDashboard } from "./thunk/dashboard.thunk";
 
 const TutorDashboard = () => {
   const dispatch = useAppDispatch();
@@ -11,20 +13,22 @@ const TutorDashboard = () => {
   const user = useAppSelector((state) => state.user.user);
   const { courses, loading } = useAppSelector((state) => state.tutorCourses);
   const [selectedCourse, setSelectedCourse] = useState<any | null>(null);
+const { tutorStats, loading:dashboardLoading } = useAppSelector((state) => state.dashboard);
 
   useEffect(() => {
     dispatch(fetchTutorCourses({ page: 1, limit: 10 }));
+     dispatch(fetchTutorDashboard());
   }, [dispatch]);
 
   if (!user) return null;
-  if (loading) return <FullScreenLoader />;
+  if (loading || dashboardLoading || !tutorStats) return <FullScreenLoader />;
 
-  const totalCourses = courses?.length;
-  const totalEnrollments = courses?.reduce((acc, course) => acc + (course.totalEnrollments || 0), 0);
-  const avgRating = courses?.length
-    ? (courses?.reduce((acc, course) => acc + (course.ratingsAverage || 0), 0) / courses?.length).toFixed(1)
-    : "0.0";
-  const creditsEarned = user.tutorProfile?.totalCreditsEarned || (user as any)?.credits || 0;
+  const { totalCourses,
+    totalEnrollments,
+    totalRevenue, avgRating, isPremiumTutorEligible } = tutorStats;
+ 
+    
+  
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -59,6 +63,36 @@ const TutorDashboard = () => {
             Create New Course
           </button>
         </div>
+
+        {/* Premium Application Banner */}
+        {user.role === 'tutor' && isPremiumTutorEligible && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-[#145537] to-green-900 rounded-2xl p-6 md:p-10 text-white relative overflow-hidden group shadow-xl"
+          >
+            <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform duration-700" />
+            <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-8">
+              <div className="flex gap-6 items-center flex-col sm:flex-row text-center sm:text-left">
+                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center shrink-0 backdrop-blur-md border border-white/30 rotate-3 transform group-hover:rotate-6 transition-transform shadow-lg">
+                  <Award size={36} className="text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-black tracking-tight">Become a Premium Instructor</h2>
+                  <p className="text-green-50/80 text-sm md:text-base mt-2 max-w-2xl font-medium leading-relaxed">
+                    Elevate your teaching career. Unlock exclusive features like higher revenue share, custom branding, and priority student support.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => navigate("/apply-premium")}
+                className="bg-white text-[#145537] px-10 py-4 rounded-2xl font-black text-lg hover:bg-green-50 transition-all hover:shadow-2xl active:scale-95 whitespace-nowrap shadow-xl"
+              >
+                Get Started
+              </button>
+            </div>
+          </motion.div>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
@@ -97,9 +131,9 @@ const TutorDashboard = () => {
               <div className="p-2 bg-green-50 text-green-600 rounded-lg group-hover:scale-110 transition-transform">
                 <CreditCard size={20} />
               </div>
-              <h3 className="font-medium">Credits Earned</h3>
+              <h3 className="font-medium">Total Revenue</h3>
             </div>
-            <p className="text-3xl font-bold text-gray-800">{creditsEarned}</p>
+            <p className="text-3xl font-bold text-gray-800">{totalRevenue}</p>
           </div>
         </div>
 

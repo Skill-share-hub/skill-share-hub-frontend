@@ -10,6 +10,7 @@ import TeachingDetailsSection from "../components/TeachingDetailsSection";
 import ExperienceDescription from "../components/ExperienceDescription";
 import SubmittedDocuments from "../components/SubmittedDocuments";
 import AdminActions from "../components/AdminActions";
+import AdminConfirmDialog from "../../../shared/components/AdminConfirmDialog";
 
 const ApplicationDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +19,7 @@ const ApplicationDetailsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -52,14 +54,17 @@ const ApplicationDetailsPage: React.FC = () => {
   };
 
   const handleReject = async () => {
+    setIsRejectDialogOpen(true);
+  };
+
+  const handleConfirmReject = async (reason: string) => {
     if (!id || !application) return;
-    const reason = prompt("Please enter the reason for rejection:");
-    if (reason === null) return;
     
     try {
       setIsProcessing(true);
       const updated = await rejectApplicationApi(id, reason);
       setApplication(updated);
+      setIsRejectDialogOpen(false);
       alert("Application rejected successfully!");
     } catch (err: any) {
       alert(err.message || "Failed to reject application");
@@ -173,6 +178,15 @@ const ApplicationDetailsPage: React.FC = () => {
 
         </div>
       </div>
+      
+      <AdminConfirmDialog
+        isOpen={isRejectDialogOpen}
+        onClose={() => setIsRejectDialogOpen(false)}
+        onConfirm={handleConfirmReject}
+        title="Reject Application"
+        description="Please provide a clear reason for the rejection to help the tutor improve."
+        isProcessing={isProcessing}
+      />
     </div>
   );
 };
