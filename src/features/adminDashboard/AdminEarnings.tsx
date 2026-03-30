@@ -15,7 +15,7 @@ export default function AdminEarnings({earnings}:{earnings:any} ) {
     {
       id: 1,
       label: 'Course Enrollments',
-      amount: formatCurrency(earnings.enrollmentEarnings),
+      amount: formatCurrency(earnings?.enrollmentEarnings),
       percentage: '+12.5%', 
       isPositive: true,
       icon: TrendingUp,
@@ -25,7 +25,7 @@ export default function AdminEarnings({earnings}:{earnings:any} ) {
     {
       id: 2,
       label: 'Platform Fees',
-      amount: formatCurrency(earnings.feeEarnings),
+      amount: formatCurrency(earnings?.feeEarnings),
       percentage: '+5.2%',
       isPositive: true,
       icon: Percent,
@@ -35,7 +35,7 @@ export default function AdminEarnings({earnings}:{earnings:any} ) {
     {
       id: 3,
       label: 'Withdrawal Fees.',
-      amount: formatCurrency(earnings.withdrawalEarnings),
+      amount: formatCurrency(earnings?.withdrawalEarnings),
       percentage: '0.0%',
       isPositive: true,
       icon: Wallet,
@@ -64,7 +64,7 @@ export default function AdminEarnings({earnings}:{earnings:any} ) {
             <span className="text-sm font-semibold text-slate-300 tracking-wide uppercase">Total Revenue</span>
           </div>
           <p className="text-4xl font-extrabold text-white tracking-tight">
-            {formatCurrency(earnings.totalEarnings)}
+            {formatCurrency(earnings?.totalEarnings)}
           </p>
           <div className="flex items-center gap-1.5 mt-4 text-sm bg-white/10 w-fit px-2.5 py-1 rounded-full backdrop-blur-sm border border-white/5">
             <span className="text-emerald-400 flex items-center font-bold">
@@ -78,7 +78,7 @@ export default function AdminEarnings({earnings}:{earnings:any} ) {
 
       {/* Breakdown List */}
       <div className="flex-1 overflow-y-auto pr-2 space-y-5 scrollbar-thin">
-        {earningsData.map((item) => {
+        {earningsData?.map((item) => {
           const Icon = item.icon;
           return (
             <div key={item.id} className="flex items-center justify-between group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-2 -mx-2 rounded-xl transition-colors">

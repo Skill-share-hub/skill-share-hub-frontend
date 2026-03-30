@@ -13,7 +13,7 @@ const TutorDashboard = () => {
   const user = useAppSelector((state) => state.user.user);
   const { courses, loading } = useAppSelector((state) => state.tutorCourses);
   const [selectedCourse, setSelectedCourse] = useState<any | null>(null);
-const { tutorStats, loading:dashboardLoading } = useAppSelector((state) => state.dashboard);
+const { tutorStats, loading:dashboardLoading, error } = useAppSelector((state) => state.dashboard);
 
   useEffect(() => {
     dispatch(fetchTutorCourses({ page: 1, limit: 10 }));
@@ -21,7 +21,9 @@ const { tutorStats, loading:dashboardLoading } = useAppSelector((state) => state
   }, [dispatch]);
 
   if (!user) return null;
-  if (loading || dashboardLoading || !tutorStats) return <FullScreenLoader />;
+  if (loading || dashboardLoading) return <FullScreenLoader />;
+  if (error) return <div className="text-center p-20 text-red-500 font-bold">{error}</div>;
+  if (!tutorStats) return null;
 
   const { totalCourses,
     totalEnrollments,
