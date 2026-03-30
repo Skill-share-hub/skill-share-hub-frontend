@@ -9,7 +9,7 @@ const AdminNavbar = () => {
 
   const getPageTitle = (pathname: string) => {
     if (pathname === '/admin') return 'Dashboard';
-    if (pathname.includes('/admin/tutors')) return 'User Management';
+    if (pathname.includes('/admin/Users')) return 'User Management';
     if (pathname.includes('/admin/courses')) return 'Courses Management';
     if (pathname.includes('/admin/enrollments')) return 'Enrollments';
     if (pathname.includes('/admin/settings')) return 'Settings';

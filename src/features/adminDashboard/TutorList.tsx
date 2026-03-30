@@ -12,7 +12,7 @@ export default function TutorList() {
 
   const fetchTutors = async () => {
     try {
-      const res = await api.get("/admin/tutors", {
+      const res = await api.get("/admin/Users", {
         params: {
           page,
           limit,

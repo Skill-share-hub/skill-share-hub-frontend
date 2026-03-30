@@ -29,6 +29,7 @@ import TutorList from "../features/adminDashboard/TutorList";
 import PremiumTutorApplicationsList from "../features/adminPremiumTutor/pages/ApplicationsList";
 import ApplicationDetailsPage from "../features/adminPremiumTutor/pages/ApplicationDetails";
 import PremiumTutorApplication from "../features/premiumTutorApplication/PremiumTutorApplication";
+import AdminCoursesPage from "../features/adminCourses/AdminCoursesPage";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -84,7 +85,8 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<Dashboard />} />
-            <Route path="/admin/tutors" element={<TutorList />} />
+            <Route path="/admin/Users" element={<TutorList />} />
+            <Route path="/admin/courses" element={<AdminCoursesPage />} />
             <Route path="/admin/applications" element={<PremiumTutorApplicationsList />} />
             <Route path="/admin/applications/:id" element={<ApplicationDetailsPage />} />
           </Route>

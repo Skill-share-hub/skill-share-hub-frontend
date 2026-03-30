@@ -41,3 +41,8 @@ export const courseService = {
   },
 
 };
+
+export const blockCourse = async (courseId: string) => {
+  const res = await api.patch(`/admin/courses/${courseId}/block`);
+  return res.data;
+};
