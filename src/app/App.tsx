@@ -30,6 +30,7 @@ import PremiumTutorApplicationsList from "../features/adminPremiumTutor/pages/Ap
 import ApplicationDetailsPage from "../features/adminPremiumTutor/pages/ApplicationDetails";
 import PremiumTutorApplication from "../features/premiumTutorApplication/PremiumTutorApplication";
 import AdminCoursesPage from "../features/adminCourses/AdminCoursesPage";
+import AdminEnrollmentsPage from "../features/adminEnrollments/AdminEnrollmentsPage";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -87,6 +88,7 @@ function App() {
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/admin/Users" element={<TutorList />} />
             <Route path="/admin/courses" element={<AdminCoursesPage />} />
+            <Route path="/admin/enrollments" element={<AdminEnrollmentsPage />} />
             <Route path="/admin/applications" element={<PremiumTutorApplicationsList />} />
             <Route path="/admin/applications/:id" element={<ApplicationDetailsPage />} />
           </Route>

@@ -1,11 +1,13 @@
 import { useLocation } from 'react-router-dom';
 import { Bell, Command } from 'lucide-react';
 import { useAppSelector } from '../../shared/hooks/redux';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const AdminNavbar = () => {
   const location = useLocation();
   const { user } = useAppSelector((state) => state.user);
+  const [isVisible, setIsVisible] = useState(true);
+  const lastScrollY = useRef(0);
 
   const getPageTitle = (pathname: string) => {
     if (pathname === '/admin') return 'Dashboard';
@@ -19,29 +21,43 @@ const AdminNavbar = () => {
   };
 
   const title = getPageTitle(location.pathname);
-  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
-    const handleScroll = (e: Event) => {
-      const target = e.target as HTMLElement;
-      setIsHidden(target.scrollTop > 50);
+    const container = document.getElementById('admin-scroll-container');
+    if (!container) return;
+
+    const handleScroll = () => {
+      const currentScrollY = container.scrollTop;
+      
+      // Always show at the very top (within navbar height)
+      if (currentScrollY < 64) {
+        setIsVisible(true);
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // Hide only if we've scrolled down a significant amount (threshold)
+      // Show if we've scrolled up
+      const diff = currentScrollY - lastScrollY.current;
+      
+      if (diff > 10) { // Scrolling down
+        setIsVisible(false);
+      } else if (diff < -10) { // Scrolling up
+        setIsVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
     };
-    const timer = setTimeout(() => {
-      const container = document.getElementById('admin-scroll-container');
-      if (container) container.addEventListener('scroll', handleScroll, { passive: true });
-    }, 100);
-    return () => {
-      clearTimeout(timer);
-      const container = document.getElementById('admin-scroll-container');
-      if (container) container.removeEventListener('scroll', handleScroll);
-    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
     <header
       className={`h-16 bg-[#0d0f12]/95 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-8 shrink-0 z-40 transition-all duration-300 ease-in-out ${
-        isHidden ? '-mt-16 opacity-0 pointer-events-none' : 'mt-0 opacity-100'
-      }`}
+        isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+      } ${!isVisible ? '-mb-16' : 'mb-0'}`}
     >
       {/* Page Title */}
       <div>
