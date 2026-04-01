@@ -1,0 +1,49 @@
+export interface CourseBuilderState {
+  id?: string
+  step: number
+
+  title: string
+  description: string
+
+  category: string
+  courseLevel: "beginner" | "intermediate" | "expert" | ""
+
+  courseType: "paid" | "credit"
+
+  price: number
+  creditCost: number
+
+  thumbnailUrl: string
+
+  courseSkills: string[]
+
+  status: "draft" | "pending" | "published"
+
+  isSubmitting?: boolean
+}
+
+export interface Course {
+  _id: string
+  title: string
+  description: string
+  category: string
+  courseType: "credit" | "paid"
+  courseSkills: string[]
+  status: "pending" | "published" | "draft"
+  courseLevel: "beginner" | "intermediate" | "expert"
+  price?: number
+  creditCost?: number
+  thumbnailUrl?: string
+  ratingsAverage?: number
+  totalEnrollments?: number
+  createdAt?: string
+  updatedAt?: string
+  contentModules?: {
+    _id: string
+    title: string
+    url: string
+    duration: number
+    summary?: string
+    thumbnail?: string
+  }[]
+}
