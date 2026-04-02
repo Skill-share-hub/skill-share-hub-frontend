@@ -4,7 +4,7 @@ import formatDuration from "../../../shared/utils/formatDuration";
 
 export default function CourseSummary({courseDetails}:{courseDetails:CourseType}) {
 
-    const totalDuration = formatDuration(courseDetails.courseDuration);
+    const totalDuration = formatDuration(courseDetails?.courseDuration || 1);
     return (
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
             <div className="mb-6">
@@ -20,9 +20,9 @@ export default function CourseSummary({courseDetails}:{courseDetails:CourseType}
                 <div className="flex flex-col gap-1 p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center gap-1.5 text-yellow-500">
                         <Star className="w-4 h-4 fill-current" />
-                        <span className="font-bold">{courseDetails.ratingsAverage.toFixed(1)}</span>
+                        <span className="font-bold">{courseDetails?.ratingsAverage?.toFixed(1)}</span>
                     </div>
-                    <span className="text-xs text-gray-500">{courseDetails.ratingsAverage.toFixed(1)}k reviews</span>
+                    <span className="text-xs text-gray-500">{courseDetails?.ratingsAverage?.toFixed(1)}k reviews</span>
                 </div>
                 
                 <div className="flex flex-col gap-1 p-3 bg-gray-50 rounded-lg">

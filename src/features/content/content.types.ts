@@ -10,6 +10,11 @@ export type ContentModules = {
   next : number
 }
 
+export type ChatType = {
+  role : "system" | "user" | "assistent",
+  content : string
+}
+
 export type CourseType = {
   _id : string;
 
