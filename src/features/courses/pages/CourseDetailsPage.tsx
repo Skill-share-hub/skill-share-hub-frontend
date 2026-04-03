@@ -11,6 +11,7 @@ import CourseDetailsSection from '../components/CourseDetails/CourseDetailsSecti
 import CurriculumSection from '../components/CourseDetails/CurriculumSection';
 import TutorInfoCard from '../components/CourseDetails/TutorInfoCard';
 import RecommendedCourses from '../components/CourseDetails/RecommendedCourses';
+import ReviewList from '../components/Reviews/ReviewList';
 
 const CourseDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -96,6 +97,11 @@ const CourseDetailsPage: React.FC = () => {
             {course && <TutorInfoCard course={course} />}
           </div>
           
+        </div>
+
+        {/* Reviews Section */}
+        <div className="mb-16 lg:mb-20">
+          <ReviewList courseId={course._id} />
         </div>
 
         {/* Global/Full Width Sections */}

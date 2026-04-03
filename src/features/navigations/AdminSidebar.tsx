@@ -6,6 +6,7 @@ import {
   Settings,
   LogOut,
   GraduationCap,
+  ShieldAlert,
 } from 'lucide-react';
 
 const links = [
@@ -13,6 +14,7 @@ const links = [
   { name: 'Users', path: '/admin/Users', icon: Users }, 
   { name: 'Courses', path: '/admin/courses', icon: BookOpen },
   { name: 'Enrollments', path: '/admin/enrollments', icon: GraduationCap },
+  { name: 'Reports', path: '/admin/reports', icon: ShieldAlert },
   { name: 'Premium Applications', path: '/admin/applications', icon: Users }, 
   { name: 'Settings', path: '/admin/settings', icon: Settings },
 ];

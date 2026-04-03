@@ -9,6 +9,11 @@ import { useEffect, useState } from "react";
 import FullScreenLoader from "../../shared/components/FullScreenLoader";
 import type { ContentModules } from "./content.types";
 import ChatBot from "./components/ChatBot";
+import ReportModal from "../reports/components/ReportModal";
+import ReviewSection from "./components/ReviewSection";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { reportService } from "../reports/services/reportService";
+import { toast } from "react-hot-toast";
 
 export default function Content() {
 
@@ -25,12 +30,20 @@ export default function Content() {
         title : "",
         next : 0
     });
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [hasReportedCourse, setHasReportedCourse] = useState(false);
 
 
     const fetchContent = async()=>{
         try{
             const {data:content} = await api.get(`/enrollments/${id}`);
             setData(content.data);
+            
+            // Check report status
+            if (content.data.course?._id) {
+                const reportStatus = await reportService.checkCourseReport(content.data.course._id);
+                setHasReportedCourse(reportStatus);
+            }
         }catch(error){
             handleError(error);
         }
@@ -72,7 +85,8 @@ export default function Content() {
            <div className="flex flex-col bg-gradient-to-b from-gray-50 via-white to-gray-50 font-sans transition-colors duration-300">
                 <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
                     <div className="flex flex-col lg:flex-row gap-8 items-start">
-                        <div className="w-full lg:w-2/3 flex flex-col gap-8">
+                        {/* LEFT COLUMN */}
+                        <div className="flex-1 order-1 lg:order-1 flex flex-col gap-8">
                             {/* <div className="w-full max-w-7xl">
                                 <button
                                     onClick={() => navigate('/my-activity')}
@@ -102,7 +116,9 @@ export default function Content() {
                                 <CourseSummary courseDetails={data.course}  />
                             </section>
                         </div>
-                        <aside className="w-full lg:w-1/3 lg:sticky lg:top-28">
+
+                        {/* RIGHT SIDEBAR */}
+                        <aside className="w-full lg:w-80 order-2 lg:order-2 lg:sticky lg:top-24 flex flex-col gap-6">
                             <section aria-label="Course Content Modules">
                                 <ContentList
                                     content={content}
@@ -112,12 +128,48 @@ export default function Content() {
                                     courseId={id || ""}
                                 />
                             </section>
-                        </aside>
 
+                            {data.enrollment.status === "completed" && (
+                                <ReviewSection courseId={data.course._id} isSidebar />
+                            )}
+
+                            {data.enrollment.status === "completed" && (
+                                <div className="pt-4 border-t border-gray-100 mt-2 flex justify-center">
+                                    <button
+                                        onClick={() => {
+                                            if (hasReportedCourse) {
+                                                toast("You have already reported this course", { icon: "✔" });
+                                                return;
+                                            }
+                                            setIsReportModalOpen(true);
+                                        }}
+                                        className={`text-xs font-bold transition-all flex items-center gap-1.5 ${
+                                            hasReportedCourse 
+                                                ? "text-gray-400 cursor-not-allowed" 
+                                                : "text-red-500 hover:text-red-700 hover:underline"
+                                        }`}
+                                    >
+                                        {hasReportedCourse ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
+                                        {hasReportedCourse ? "Reported" : "Report this course"}
+                                    </button>
+                                </div>
+                            )}
+                        </aside>
                     </div>
                 </main>
             </div>
             <ChatBot id={content._id} />
+            
+            {data?.course && (
+                <ReportModal 
+                    isOpen={isReportModalOpen}
+                    onClose={() => setIsReportModalOpen(false)}
+                    type="course"
+                    targetId={data.course._id}
+                    courseId={data.course._id}
+                    onSuccess={() => setHasReportedCourse(true)}
+                />
+            )}
         </>
     );
 }

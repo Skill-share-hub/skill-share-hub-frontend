@@ -45,9 +45,15 @@ export interface CourseModule {
 
 export interface CourseReview {
   _id: string;
-  studentName: string;
+  courseId: string;
+  userId: {
+    _id: string;
+    name: string;
+    avatarUrl?: string;
+  };
   rating: number;
   reviewText: string;
+  createdAt: string;
 }
 
 export interface CourseFilters {
