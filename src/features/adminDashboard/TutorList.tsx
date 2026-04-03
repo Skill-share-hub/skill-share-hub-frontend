@@ -1,14 +1,26 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../shared/services/axios";
 
 export default function TutorList() {
+  const navigate = useNavigate();
+
   const [role, setRole] = useState("all");
-  const [tutors, setTutors] = useState([]);
+  const [tutors, setTutors] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [status, setStatus] = useState("");
   const [isPremium, setIsPremium] = useState("");
+
+  // ✅ debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const fetchTutors = async () => {
     try {
@@ -16,227 +28,167 @@ export default function TutorList() {
         params: {
           page,
           limit,
-          ...(search && { search }),
+          ...(debouncedSearch && { search: debouncedSearch }),
           ...(status && { status }),
           ...(isPremium !== "" && { isPremium }),
-          ...(role && { role }),
+          ...(role !== "all" && { role }),
         },
       });
+
       const data = res.data.data;
       setTutors(data.tutors || []);
     } catch (err: any) {
       console.log(err.message);
     }
   };
-const getTitle = () => {
-  if (role === "tutor") return "Tutors";
-  if (role === "student") return "Students";
-  if (role === "admin") return "Admins";
-  return "All Users";
-};
+
   useEffect(() => {
     fetchTutors();
-  }, [page, search, status, isPremium, role]);
+  }, [page, debouncedSearch, status, isPremium, role]);
+
+  // ✅ title based on role
+  const getTitle = () => {
+    if (role === "tutor") return "Tutors";
+    if (role === "student") return "Students";
+    if (role === "premiumTutor") return "Premium Tutors";
+    return "All Users";
+  };
+
+  // ✅ BAN / UNBAN
+  const handleBlock = async (id: string) => {
+    try {
+      await api.patch(`/admin/users/${id}/block`);
+      fetchTutors(); // refresh
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0d0f12] text-gray-100 p-4 md:p-8 font-mono">
-
-      {/* Header */}
+      {/* HEADER */}
       <div className="mb-8 border-b border-gray-800 pb-6">
-        <p className="text-xs tracking-[0.3em] text-gray-500 uppercase mb-1">User Management</p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">{getTitle()}</h1>
+        <p className="text-xs tracking-[0.3em] text-gray-500 uppercase mb-1">
+          User Management
+        </p>
+        <h1 className="text-2xl font-semibold text-white">{getTitle()}</h1>
       </div>
 
-      {/* Filters Bar */}
+      {/* FILTERS */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
-        {/* Search */}
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"
-            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-              d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search users..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#161a1f] border border-gray-700 text-gray-200 text-sm pl-9 pr-4 py-2 rounded focus:outline-none focus:border-gray-500 placeholder-gray-600 transition-colors"
-          />
-        </div>
+        {/* SEARCH */}
+        <input
+          type="text"
+          placeholder="Search users..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="bg-[#161a1f] border border-gray-700 px-3 py-2 rounded text-sm"
+        />
 
-        {/* Role Filter */}
+        {/* ROLE */}
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="bg-[#161a1f] border border-gray-700 text-gray-300 text-sm px-3 py-2 rounded focus:outline-none focus:border-gray-500 transition-colors cursor-pointer outline-none"
+          className="bg-[#161a1f] border border-gray-700 px-3 py-2 rounded text-sm"
         >
           <option value="all">All Roles</option>
-          <option value="tutor">Tutor</option>
           <option value="student">Student</option>
-          <option value="admin">Admin</option>
+          <option value="tutor">Tutor</option>
+          <option value="premiumTutor">Premium Tutor</option>
         </select>
 
-        {/* Status Filter */}
+        {/* STATUS */}
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="bg-[#161a1f] border border-gray-700 text-gray-300 text-sm px-3 py-2 rounded focus:outline-none focus:border-gray-500 transition-colors cursor-pointer outline-none"
+          className="bg-[#161a1f] border border-gray-700 px-3 py-2 rounded text-sm"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
           <option value="banned">Banned</option>
         </select>
 
-        {/* Premium Filter */}
+        {/* PLAN */}
         <select
           value={isPremium}
           onChange={(e) => setIsPremium(e.target.value)}
-          className="bg-[#161a1f] border border-gray-700 text-gray-300 text-sm px-3 py-2 rounded focus:outline-none focus:border-gray-500 transition-colors cursor-pointer outline-none"
+          className="bg-[#161a1f] border border-gray-700 px-3 py-2 rounded text-sm"
         >
           <option value="">All Plans</option>
           <option value="true">Premium</option>
           <option value="false">Free</option>
         </select>
-
-        <div className="ml-auto text-xs text-gray-600">
-          {tutors.length} record{tutors.length !== 1 ? "s" : ""}
-        </div>
       </div>
 
-      {/* Table Wrapper for Responsiveness */}
-      <div className="rounded-lg border border-gray-800 overflow-hidden bg-[#0d0f12]">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm min-w-[700px]">
-            <thead>
-              <tr className="bg-[#13161b] border-b border-gray-800">
-                <th className="text-left px-5 py-3 text-xs font-medium tracking-widest text-gray-500 uppercase">
-                  Name
-                </th>
-                <th className="text-left px-5 py-3 text-xs font-medium tracking-widest text-gray-500 uppercase">
-                  Email
-                </th>
-                <th className="text-left px-5 py-3 text-xs font-medium tracking-widest text-gray-500 uppercase">
-                  Status
-                </th>
-                <th className="text-left px-5 py-3 text-xs font-medium tracking-widest text-gray-500 uppercase">
-                  Plan
-                </th>
-                <th className="text-left px-5 py-3 text-xs font-medium tracking-widest text-gray-500 uppercase">
-                  Actions
-                </th>
-              </tr>
-            </thead>
+      {/* TABLE */}
+      <table className="w-full text-sm">
+        <thead className="bg-[#13161b]">
+          <tr>
+            <th className="p-3 text-left">Name</th>
+            <th className="p-3 text-left">Email</th>
+            <th className="p-3 text-left">Status</th>
+            <th className="p-3 text-left">Plan</th>
+            <th className="p-3 text-left">Actions</th>
+          </tr>
+        </thead>
 
-            <tbody className="divide-y divide-gray-800/60">
-              {tutors.map((t: any) => (
-                <tr
-                  key={t._id}
-                  className="bg-[#0d0f12] hover:bg-[#13161b] transition-colors group"
+        <tbody>
+          {tutors.map((t) => (
+            <tr key={t._id} className="border-t border-gray-800">
+              <td className="p-3">{t.name}</td>
+              <td className="p-3">{t.email}</td>
+              <td className="p-3">
+                {t.isBlocked ? "Banned" : "Active"}
+              </td>
+              <td className="p-3">
+                {t.isPremium ? "Premium" : "Free"}
+              </td>
+
+              {/* ACTIONS */}
+              <td className="p-3 flex gap-2">
+                {/* VIEW */}
+                <button
+                  onClick={() => navigate(`/admin/users/${t._id}/details`)}
+                  className="px-2 py-1 border text-xs"
                 >
-                  {/* Name + Avatar */}
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-xs font-semibold text-gray-300 shrink-0">
-                        {t.name?.charAt(0)?.toUpperCase() || "?"}
-                      </div>
-                      <span className="text-gray-200 font-medium">{t.name}</span>
-                    </div>
-                  </td>
+                  View
+                </button>
 
-                  {/* Email */}
-                  <td className="px-5 py-4 text-gray-400">{t.email}</td>
+                {/* BAN */}
+                <button
+                  onClick={() => handleBlock(t._id)}
+                  className="px-2 py-1 border text-xs text-red-400"
+                >
+                  {t.isBlocked ? "Unban" : "Ban"}
+                </button>
+              </td>
+            </tr>
+          ))}
 
-                  {/* Status Badge */}
-                  <td className="px-5 py-4">
-                    {t.status ? (
-                      <span
-                        className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium tracking-wide
-                          ${t.status === "active"
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                            : t.status === "banned"
-                            ? "bg-red-500/10 text-red-400 border border-red-500/20"
-                            : "bg-gray-500/10 text-gray-400 border border-gray-600/30"
-                          }`}
-                      >
-                        <span className={`w-1.5 h-1.5 rounded-full
-                          ${t.status === "active" ? "bg-emerald-400" :
-                            t.status === "banned" ? "bg-red-400" : "bg-gray-500"}`}
-                        />
-                        {t.status.charAt(0).toUpperCase() + t.status.slice(1)}
-                      </span>
-                    ) : (
-                      <span className="text-gray-600 text-xs">—</span>
-                    )}
-                  </td>
+          {tutors.length === 0 && (
+            <tr>
+              <td colSpan={5} className="text-center p-6 text-gray-500">
+                No users found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
 
-                  {/* Premium Badge */}
-                  <td className="px-5 py-4">
-                    {t.isPremium ? (
-                      <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 tracking-wide">
-                        ★ Premium
-                      </span>
-                    ) : (
-                      <span className="text-xs text-gray-600 font-medium tracking-wide">Free</span>
-                    )}
-                  </td>
-
-                  {/* Actions */}
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="text-xs text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500 px-2.5 py-1 rounded transition-colors">
-                        View
-                      </button>
-                      <button className="text-xs text-gray-400 hover:text-red-400 border border-gray-700 hover:border-red-500/40 px-2.5 py-1 rounded transition-colors">
-                        Ban
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-
-              {tutors.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="text-center py-16 text-gray-600">
-                    <div className="flex flex-col items-center gap-2">
-                      <svg className="w-8 h-8 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1}
-                          d="M17 20h5v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2h5M12 12a4 4 0 100-8 4 4 0 000 8z" />
-                      </svg>
-                      <span className="text-sm">No users found</span>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Pagination */}
-      <div className="flex items-center justify-between mt-5">
-        <span className="text-xs text-gray-600 font-medium tracking-tight">
-          Page {page}
-        </span>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="text-xs px-3 py-1.5 rounded border border-gray-800 text-gray-400 hover:text-white hover:border-gray-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            ← Prev
-          </button>
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            disabled={tutors.length < limit}
-            className="text-xs px-3 py-1.5 rounded border border-gray-800 text-gray-400 hover:text-white hover:border-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            Next →
-          </button>
-        </div>
+      {/* PAGINATION */}
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+        >
+          Prev
+        </button>
+        <span>Page {page}</span>
+        <button
+          onClick={() => setPage((p) => p + 1)}
+          disabled={tutors.length < limit}
+        >
+          Next
+        </button>
       </div>
     </div>
   );

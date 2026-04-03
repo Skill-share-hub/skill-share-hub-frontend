@@ -14,7 +14,17 @@ api.interceptors.request.use((config) => {
   }
   return config;
 }, (error) => Promise.reject(error));
-
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 403) {
+      alert("Your account is banned");
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    return Promise.reject(err);
+  }
+);
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
