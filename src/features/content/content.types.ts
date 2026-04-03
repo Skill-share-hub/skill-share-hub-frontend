@@ -45,3 +45,9 @@ export type CourseType = {
   courseDuration ?: number;
   courseResources : string[]
 }
+
+export type QuizType = {
+  question : string,
+  options : string[],
+  answer : string
+}

@@ -3,7 +3,7 @@ import ContentList from "./components/ContentList";
 import CourseSummary from "./components/CourseSummary";
 import ModuleSummary from "./components/ModuleSummary";
 import api from "../../shared/services/axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import handleError from "../../shared/services/handleError";
 import { useEffect, useState } from "react";
 import FullScreenLoader from "../../shared/components/FullScreenLoader";
@@ -14,6 +14,7 @@ import ReviewSection from "./components/ReviewSection";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { reportService } from "../reports/services/reportService";
 import { toast } from "react-hot-toast";
+import QuizModal from "./components/QuizComp";
 
 export default function Content() {
 
@@ -32,6 +33,8 @@ export default function Content() {
     });
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [hasReportedCourse, setHasReportedCourse] = useState(false);
+    const [isOpen , setIsOpen] = useState(false);
+    const [quizData,setQuizData] = useState([]);
 
 
     const fetchContent = async()=>{
@@ -57,7 +60,7 @@ export default function Content() {
             const {data:enrollmentData,success} = updatedEnrollment
             
             if(success){
-                setData((pre:any) => ({...pre,enrollment : enrollmentData.enrollment }));                
+                setData((pre:any) => ({...pre,enrollment : enrollmentData.enrollment }));             
             }
 
             if(enrollmentData.completed){
@@ -69,6 +72,22 @@ export default function Content() {
             }
         }catch(error){
             handleError(error);
+        }finally{
+            setLoading(false);
+        }
+    }
+
+    const fetchQuiz = async () => {
+        try{
+            setLoading(true);
+            const {data} = await api.get(`/enrollments/quiz/${content._id}`);
+            if(data.success){
+                setIsOpen(true);
+                setQuizData(data.data);
+            }
+        }catch(error){
+            console.log("quiz error",error);
+            handleComplete();
         }finally{
             setLoading(false);
         }
@@ -105,7 +124,7 @@ export default function Content() {
                                         content?._id &&
                                         data.enrollment?.completedContent?.includes(content?._id)
                                     }
-                                    handleComplete={handleComplete}
+                                    handleComplete={fetchQuiz}
                                     loading={loading}
                                 />
                             </section>
@@ -117,7 +136,6 @@ export default function Content() {
                             </section>
                         </div>
 
-                        {/* RIGHT SIDEBAR */}
                         <aside className="w-full lg:w-80 order-2 lg:order-2 lg:sticky lg:top-24 flex flex-col gap-6">
                             <section aria-label="Course Content Modules">
                                 <ContentList
@@ -170,6 +188,15 @@ export default function Content() {
                     onSuccess={() => setHasReportedCourse(true)}
                 />
             )}
+
+            {isOpen && (
+                <QuizModal 
+                    isOpen={isOpen}  
+                    onClose={()=>{setIsOpen(false)}} 
+                    quizData={quizData}
+                    handleComplete={handleComplete}
+                />
+                )  }
         </>
     );
 }
