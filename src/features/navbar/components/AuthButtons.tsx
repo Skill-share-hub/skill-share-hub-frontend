@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Bookmark, Bell, Plus, Coins } from "lucide-react";
+import { Bookmark, Plus, Coins } from "lucide-react";
 import type { User } from "../../../shared/types/user.Type";
 import ProfileMenu from "./ProfileMenu";
 import { useAppDispatch, useAppSelector } from "../../../shared/hooks/redux";
 import { fetchWalletBalance } from "../../wallet/walletSlice";
+import NotificationBell from "./NotificationBell";
 
 interface AuthButtonsProps {
     user: User | null;
@@ -36,18 +37,16 @@ export default function AuthButtons({ user, isMobile = false }: AuthButtonsProps
     if (isMobile) {
         return (
             <div className="flex gap-4 my-2">
-                <button
+                <Link
+                    to="/saved-courses"
                     className="flex-1 flex justify-center py-2 bg-gray-50 hover:bg-green-50 rounded-lg text-gray-500 hover:text-green-600 transition focus:outline-none focus:ring-2 focus:ring-green-600"
                     aria-label="Saved Items"
                 >
                     <Bookmark className="w-5 h-5" />
-                </button>
-                <button
-                    className="flex-1 flex justify-center py-2 bg-gray-50 hover:bg-green-50 rounded-lg text-gray-500 hover:text-green-600 transition focus:outline-none focus:ring-2 focus:ring-green-600"
-                    aria-label="Notifications"
-                >
-                    <Bell className="w-5 h-5" />
-                </button>
+                </Link>
+                <div className="flex-1 flex justify-center">
+                    <NotificationBell />
+                </div>
             </div>
         );
     }
@@ -79,13 +78,7 @@ export default function AuthButtons({ user, isMobile = false }: AuthButtonsProps
                 </Link>
             )}
 
-            <button
-                className="p-2 text-gray-500 hover:text-green-600 transition bg-gray-50 hover:bg-green-50 rounded-full focus:outline-none focus:ring-2 focus:ring-green-600 relative"
-                aria-label="Notifications"
-            >
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 border-2 border-white" />
-            </button>
+            <NotificationBell />
             <ProfileMenu />
         </div>
     );
