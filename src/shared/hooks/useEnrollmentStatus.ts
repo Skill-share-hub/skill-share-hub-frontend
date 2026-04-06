@@ -13,23 +13,20 @@ import { useMemo } from "react";
 export const useEnrollmentStatus = (courseId: string | undefined) => {
   const { user, loading } = useAppSelector((state) => state.user);
 
-  const isEnrolled = useMemo(() => {
-    if (!user || !courseId) return false;
+  const enrollment = useMemo(() => {
+    if (!user || !courseId) return null;
     
     const enrollments = user.enrolledCourses || [];
     
-    return enrollments.some((e: any) => {
-      // Handle both populated objects and plain ID strings
+    return enrollments.find((e: any) => {
       const eCourseId = e.courseId?._id || e.courseId;
-      return (
-        e.status === "active" && 
-        String(eCourseId) === String(courseId)
-      );
+      return String(eCourseId) === String(courseId);
     });
   }, [user, courseId]);
 
   return {
-    isEnrolled,
+    isEnrolled: enrollment?.status === "active",
+    isCompleted: enrollment?.status === "completed",
     isLoading: loading,
     user
   };

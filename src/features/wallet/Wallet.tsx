@@ -82,7 +82,7 @@ export default function Wallet() {
               {['student', 'admin'].includes(user?.role || '') && (
                 <BuyCredits fetchWallet={fetchWallet} creditConst={data.creditConst} />
               )}
-              <WithdrawCredits />
+              {user?.role !== 'student' && <WithdrawCredits />}
             </div>
           </div>
 

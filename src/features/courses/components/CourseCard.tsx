@@ -11,18 +11,18 @@ const CourseCard = memo(function CourseCard({ course }: CourseCardProps) {
 
   const isCredit = course.courseType === "credit";
 
-const tutor =
-  typeof course.tutorId === "object"
-    ? course.tutorId
-    : (course as any).tutor;
+  const tutor =
+    typeof course.tutorId === "object"
+      ? course.tutorId
+      : (course as any).tutor;
 
-const tutorName = tutor?.name ?? "Instructor";
+  const tutorName = tutor?.name ?? "Instructor";
 
-const tutorAvatar =
-  tutor?.avatarUrl ??
-  `https://ui-avatars.com/api/?name=${encodeURIComponent(
-    tutorName
-  )}&background=047857&color=fff`;
+  const tutorAvatar =
+    tutor?.avatarUrl ??
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      tutorName
+    )}&background=047857&color=fff`;
   return (
     <Link
       to={`/courses/${course._id}`}
@@ -53,8 +53,8 @@ const tutorAvatar =
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-70"></div>
 
         {/* Category Glass Label */}
-<span
-  className="
+        <span
+          className="
   absolute top-2 left-2
   text-[10px] font-semibold text-gray-900
   px-2 py-0.5 rounded-md
@@ -62,28 +62,27 @@ const tutorAvatar =
   border border-white/40
   shadow-md
   "
->
-  {course.category}
-</span>
+        >
+          {course.category}
+        </span>
 
         {/* Course Type Glass Label */}
         <span
-  className={`
+          className={`
   absolute top-2 right-2
   text-[10px] font-semibold text-white
   px-2 py-0.5 rounded-md
   backdrop-blur-md
   border border-white/20
   shadow-md
-  ${
-    isCredit
-      ? "bg-purple-600/85"
-      : "bg-emerald-600/85"
-  }
+  ${isCredit
+              ? "bg-purple-600/85"
+              : "bg-emerald-600/85"
+            }
   `}
->
-  {isCredit ? "Credit" : "Paid"}
-</span>
+        >
+          {isCredit ? "Credit" : "Paid"}
+        </span>
 
       </div>
 
@@ -119,12 +118,12 @@ const tutorAvatar =
         <div className="flex items-center justify-between text-xs mb-2">
 
           <div className="flex items-center gap-1 text-gray-700 font-medium">
-            <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500"/>
+            <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
             {course.ratingsAverage?.toFixed(1) || "0.0"}
           </div>
 
           <div className="flex items-center text-gray-500 gap-1">
-            <Users className="w-3.5 h-3.5"/>
+            <Users className="w-3.5 h-3.5" />
             {course.totalEnrollments || 0}
           </div>
 
@@ -138,7 +137,7 @@ const tutorAvatar =
 
             {isCredit ? (
               <span className="flex items-center gap-1 text-yellow-500">
-                <Coins className="w-4 h-4"/>
+                <Coins className="w-4 h-4" />
                 {course.creditCost ?? 0}
               </span>
             ) : (
