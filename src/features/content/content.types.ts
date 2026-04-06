@@ -7,7 +7,12 @@ export type ContentModules = {
   thumbnailUrl : string ;
   title : string ;
   subTitle ?: string ;
-  next : number
+  next : number,
+  quizData:{
+    questions:string,
+    answer:string,
+    options:string[]
+  }
 }
 
 export type ChatType = {

@@ -17,72 +17,73 @@ import { toast } from "react-hot-toast";
 
 export default function Content() {
 
-    const {id} = useParams();
-    const [data,setData] = useState<any>(null);
-    const [loading,setLoading] = useState(false);
-    const [content,setContent] = useState<ContentModules>({
-        _id : '',
-        contentUrl : "",
-        courseId : "",
-        duration : 0 ,
-        summary : "",
-        thumbnailUrl : "",
-        title : "",
-        next : 0
+    const { id } = useParams();
+    const [data, setData] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
+    const [content, setContent] = useState<ContentModules>({
+        _id: '',
+        contentUrl: "",
+        courseId: "",
+        duration: 0,
+        summary: "",
+        thumbnailUrl: "",
+        title: "",
+        next: 0,
     });
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [hasReportedCourse, setHasReportedCourse] = useState(false);
 
 
-    const fetchContent = async()=>{
-        try{
-            const {data:content} = await api.get(`/enrollments/${id}`);
+    const fetchContent = async () => {
+        try {
+            const { data: content } = await api.get(`/enrollments/${id}`);
             setData(content.data);
-            
+
             // Check report status
             if (content.data.course?._id) {
                 const reportStatus = await reportService.checkCourseReport(content.data.course._id);
                 setHasReportedCourse(reportStatus);
             }
-        }catch(error){
+        } catch (error) {
             handleError(error);
         }
     }
 
     const handleComplete = async () => {
-        try{
+        try {
             setLoading(true)
-            const {data:updatedEnrollment} = await api.patch(`/enrollments/${id}/mark`,{contentId : content?._id});
+            const { data: updatedEnrollment } = await api.patch(`/enrollments/${id}/mark`, { contentId: content?._id });
 
-            const {data:enrollmentData,success} = updatedEnrollment
-            
-            if(success){
-                setData((pre:any) => ({...pre,enrollment : enrollmentData.enrollment }));                
+            const { data: enrollmentData, success } = updatedEnrollment
+
+            if (success) {
+                setData((pre: any) => ({ ...pre, enrollment: enrollmentData.enrollment }));
             }
 
-            if(enrollmentData.completed){
+            if (enrollmentData.completed) {
                 const contentModules = data.course.contentModules
                 const nextContent = contentModules[content.next]
                 setContent({
                     ...nextContent,
-                    next : contentModules.length ===  content.next+1 ? contentModules.length-1 : content.next+1 })
+                    next: contentModules.length === content.next + 1 ? contentModules.length - 1 : content.next + 1
+                })
             }
-        }catch(error){
+        } catch (error) {
             handleError(error);
-        }finally{
+        } finally {
             setLoading(false);
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchContent();
-    },[id]);
+    }, [id]);
 
-    if(!data)return <FullScreenLoader />
+    if (!data) return <FullScreenLoader />
 
     return (
         <>
-           <div className="flex flex-col bg-gradient-to-b from-gray-50 via-white to-gray-50 font-sans transition-colors duration-300">
+            <div className="flex flex-col bg-gradient-to-b from-gray-50 via-white to-gray-50 font-sans transition-colors duration-300">
                 <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
                     <div className="flex flex-col lg:flex-row gap-8 items-start">
                         {/* LEFT COLUMN */}
@@ -97,9 +98,9 @@ export default function Content() {
                                 </button>
                             </div> */}
                             <section aria-label="Course Video Player">
-                                <VideoComp 
-                                    poster={content?.thumbnailUrl} 
-                                    title={content?.title} 
+                                <VideoComp
+                                    poster={content?.thumbnailUrl}
+                                    title={content?.title}
                                     videoUrl={content?.contentUrl}
                                     isCompleted={
                                         content?._id &&
@@ -110,10 +111,10 @@ export default function Content() {
                                 />
                             </section>
                             <section aria-label="Module Summary">
-                                <ModuleSummary summary={content.summary}/>
+                                <ModuleSummary summary={content.summary} />
                             </section>
                             <section aria-label="Course Overview">
-                                <CourseSummary courseDetails={data.course}  />
+                                <CourseSummary courseDetails={data.course} />
                             </section>
                         </div>
 
@@ -122,9 +123,9 @@ export default function Content() {
                             <section aria-label="Course Content Modules">
                                 <ContentList
                                     content={content}
-                                    setContent={setContent} 
-                                    completedModules = {data.enrollment.completedContent} 
-                                    modules={data.course.contentModules} 
+                                    setContent={setContent}
+                                    completedModules={data.enrollment.completedContent}
+                                    modules={data.course.contentModules}
                                     courseId={id || ""}
                                 />
                             </section>
@@ -143,11 +144,10 @@ export default function Content() {
                                             }
                                             setIsReportModalOpen(true);
                                         }}
-                                        className={`text-xs font-bold transition-all flex items-center gap-1.5 ${
-                                            hasReportedCourse 
-                                                ? "text-gray-400 cursor-not-allowed" 
+                                        className={`text-xs font-bold transition-all flex items-center gap-1.5 ${hasReportedCourse
+                                                ? "text-gray-400 cursor-not-allowed"
                                                 : "text-red-500 hover:text-red-700 hover:underline"
-                                        }`}
+                                            }`}
                                     >
                                         {hasReportedCourse ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
                                         {hasReportedCourse ? "Reported" : "Report this course"}
@@ -159,9 +159,9 @@ export default function Content() {
                 </main>
             </div>
             <ChatBot id={content._id} />
-            
+
             {data?.course && (
-                <ReportModal 
+                <ReportModal
                     isOpen={isReportModalOpen}
                     onClose={() => setIsReportModalOpen(false)}
                     type="course"
