@@ -52,10 +52,10 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
     }
   };
 
-  const { isEnrolled, isLoading } = useEnrollmentStatus(course._id);
+  const { isEnrolled, isCompleted, isLoading } = useEnrollmentStatus(course._id);
 
   const handleEnrollClick = () => {
-    if (isEnrolled) {
+    if (isEnrolled || isCompleted) {
       navigate(`/my-activity/${course._id}`);
     } else {
       navigate(`/courses/${course._id}/purchase`);
@@ -167,6 +167,8 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
               <div className="text-2xl font-bold text-gray-900 flex items-center gap-1.5">
                 {isEnrolled ? (
                   <span className="text-emerald-600 text-sm font-medium bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">You already enrolled</span>
+                ) : isCompleted ? (
+                  <span className="text-green-800 text-sm font-medium bg-green-100 px-3 py-1 rounded-full border border-gray-200">You completed this course</span>
                 ) : course.courseType === 'credit' ? (
                   <span className="flex items-center gap-1.5 text-yellow-600">
                     <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -189,8 +191,8 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
                   onClick={handleEnrollClick}
                   disabled={isLoading}
                   className={`flex-1 sm:flex-none px-8 py-3 text-white text-sm font-semibold rounded-lg shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-2 ${
-                    isEnrolled 
-                    ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200" 
+                    isEnrolled || isCompleted
+                    ? "bg-blue-400 hover:bg-blue-500 text-white shadow-md" 
                     : "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-emerald-500/20"
                   } ${isLoading ? "opacity-80 cursor-not-allowed" : ""}`}
                 >
@@ -200,6 +202,7 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
                       Checking...
                     </>
                   ) : (
+                    isCompleted ? "View" : 
                     isEnrolled ? "Open Course" : "Enroll Now"
                   )}
                 </button>

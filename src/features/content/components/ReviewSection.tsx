@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Star, Send, Edit, Trash2, CheckCircle2, Loader2, MessageSquare } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { reviewService, type ReviewResponse } from '../../courses/services/reviewService';
+import ConfirmDialog from '../../../shared/components/ConfirmDialog';
 
 interface ReviewSectionProps {
   courseId: string;
@@ -13,6 +14,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ courseId, isSidebar }) =>
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Form State
   const [rating, setRating] = useState(0);
@@ -70,9 +72,11 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ courseId, isSidebar }) =>
     }
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete your review?")) return;
+  const handleDelete = () => {
+    setIsDeleteModalOpen(true);
+  };
 
+  const confirmDelete = async () => {
     try {
       setSubmitting(true);
       await reviewService.deleteReview(courseId);
@@ -100,6 +104,16 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ courseId, isSidebar }) =>
   if (review && !isEditing) {
     return (
       <div className={`items-center justify-center animate-in fade-in duration-500 ${isSidebar ? 'mt-4 p-4 bg-gray-50 border border-gray-100 rounded-2xl shadow-sm' : 'mt-8 p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-sm'}`}>
+        <ConfirmDialog
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={confirmDelete}
+          title="Delete Review"
+          description="Are you sure you want to delete your review? This action cannot be undone."
+          confirmText="Delete Review"
+          cancelText="Cancel"
+          variant="danger"
+        />
         <div className={`flex flex-col justify-between gap-6 ${isSidebar ? 'gap-4' : 'md:flex-row md:items-center'}`}>
           <div className={`${isSidebar ? 'space-y-3' : 'space-y-4'}`}>
             <div className="flex items-center gap-3">

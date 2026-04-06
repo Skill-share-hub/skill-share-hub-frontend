@@ -15,8 +15,8 @@ interface ConfirmDialogProps {
 
 const variantStyles = {
   primary: 'bg-primary hover:bg-primary/90',
-  danger: 'bg-danger hover:bg-danger/90',
-  secondary: 'bg-secondary hover:bg-secondary/90',
+  danger: 'bg-red-600 hover:bg-red-700',
+  secondary: 'bg-gray-600 hover:bg-gray-700',
 };
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
