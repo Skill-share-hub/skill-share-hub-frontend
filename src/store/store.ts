@@ -9,6 +9,7 @@ import walletReducer from '../features/wallet/walletSlice'
 import savedCoursesReducer from '../features/courses/slice/savedCourseSlice'
 import applicationReducer from '../features/adminPremiumTutor/slice/application.slice'
 import dashboardReducer from '../features/dashboard/slice/dashboard.slice'
+import notificationReducer from '../features/notifications/slice/notificationSlice'
 const store = configureStore({
   reducer: {
     user: authReducer,
@@ -21,6 +22,7 @@ const store = configureStore({
     savedCourses: savedCoursesReducer,
     applications: applicationReducer,
     dashboard: dashboardReducer,
+    notifications: notificationReducer,
   }
 });
 

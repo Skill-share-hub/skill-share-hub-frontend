@@ -33,9 +33,12 @@ import AdminCoursesPage from "../features/adminCourses/AdminCoursesPage";
 import AdminEnrollmentsPage from "../features/adminEnrollments/AdminEnrollmentsPage";
 import ReportManagement from "../features/admin/pages/ReportManagement";
 import UserDetails from "../features/adminDashboard/UserDetails";
+import { useInitializeSocket } from "../shared/hooks/useInitializeSocket";
+import NotificationsPage from "../features/notifications/pages/NotificationsPage";
 
 function App() {
   const dispatch = useAppDispatch();
+  useInitializeSocket();
 
   useEffect(() => {
     dispatch(checkAuth(() => {}));
@@ -64,6 +67,7 @@ function App() {
             <Route path="/my-activity/:id" element={<Content />} />
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/saved-courses" element={<SavedCoursesPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
           </Route>
 
           {/* Tutor & Premium Tutor Only */}

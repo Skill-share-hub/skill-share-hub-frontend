@@ -290,7 +290,7 @@ const StudentDashboard = () => {
         </div>
 
         {/* ── CTA BANNER ── */}
-        <div
+        {/* <div
           className={`relative overflow-hidden bg-slate-900 rounded-[2.5rem] p-10 flex flex-col lg:flex-row items-center justify-between gap-10 shadow-2xl shadow-slate-200 ${fade()}`}
           style={{ transitionDelay: "300ms" }}
         >
@@ -333,7 +333,7 @@ const StudentDashboard = () => {
             Become a Tutor 
             <ArrowRight size={16} className="inline ml-2 group-hover:translate-x-1 transition-transform" />
           </button>
-        </div>
+        </div> */}
 
         {/* ── RECOMMENDED ── */}
         <div className={fade()} style={{ transitionDelay: "400ms" }}>

@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { X, Upload, Film, Clock } from "lucide-react";
+import { X, Upload, Film, Clock, Plus, Trash2, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
+import type { ContentModules } from "../../../content/content.types";
+
 
 const contentSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(100, "Title is too long"),
   summary: z.string().min(20, "Summary must be at least 20 characters").max(500, "Summary is too long"),
-  duration: z.coerce.number().min(1, "Duration must be at least 1 minute"),
+  duration: z.number().min(1, "Duration must be at least 1 minute"),
+  quizData: z.object({
+    questions: z.string().default(""),
+    answer: z.string().default(""),
+    options: z.array(z.object({ value: z.string() })).default([{ value: "" }, { value: "" }]),
+  }),
 });
 
 type ContentFormValues = z.infer<typeof contentSchema>;
@@ -18,7 +25,7 @@ interface ContentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (formData: FormData) => void;
-  initialData?: any;
+  initialData?: Partial<ContentModules> | null;
   isSubmitting: boolean;
 }
 
@@ -26,32 +33,63 @@ export default function ContentModal({ isOpen, onClose, onSubmit, initialData, i
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(initialData?.thumbnail || null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(initialData?.thumbnailUrl || null);
 
   const {
     register,
     handleSubmit,
     reset,
+    control,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<ContentFormValues>({
-    resolver: zodResolver(contentSchema) as any,
+    resolver: zodResolver(contentSchema),
     defaultValues: {
       title: initialData?.title || "",
       summary: initialData?.summary || "",
       duration: initialData?.duration || 0,
+      quizData: {
+        questions: initialData?.quizData?.questions || "",
+        answer: initialData?.quizData?.answer || "",
+        options: initialData?.quizData?.options?.length 
+          ? initialData.quizData.options.map((opt: string) => ({ value: opt })) 
+          : [{ value: "" }, { value: "" }],
+      },
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "quizData.options",
   });
 
   useEffect(() => {
     if (initialData) {
       reset({
-        title: initialData.title,
-        summary: initialData.summary,
-        duration: initialData.duration,
+        title: initialData.title || "",
+        summary: initialData.summary || "",
+        duration: initialData.duration || 0,
+        quizData: {
+          questions: initialData.quizData?.questions || "",
+          answer: initialData.quizData?.answer || "",
+          options: initialData.quizData?.options?.length
+            ? initialData.quizData.options.map((opt: string) => ({ value: opt }))
+            : [{ value: "" }, { value: "" }],
+        },
       });
-      setThumbnailPreview(initialData.thumbnail);
+      setThumbnailPreview(initialData.thumbnailUrl || null);
     } else {
-      reset({ title: "", summary: "", duration: 0 });
+      reset({ 
+        title: "", 
+        summary: "", 
+        duration: 0,
+        quizData: {
+          questions: "",
+          answer: "",
+          options: [{ value: "" }, { value: "" }],
+        }
+      });
       setVideoFile(null);
       setThumbnailFile(null);
       setVideoPreview(null);
@@ -59,10 +97,12 @@ export default function ContentModal({ isOpen, onClose, onSubmit, initialData, i
     }
   }, [initialData, reset, isOpen]);
 
-  const onFormSubmit = (data: ContentFormValues) => {
-    // Validate video file for new content
-    if (!initialData && !videoFile) {
-      toast.error("Please upload a video file for the content");
+  const onFormSubmit: SubmitHandler<ContentFormValues> = (data) => {
+    // Validate video file for new content if no quiz is provided
+    const hasQuiz = data.quizData?.questions && data.quizData?.answer;
+    
+    if (!initialData && !videoFile && !hasQuiz) {
+      toast.error("Please upload a video file or add a quiz");
       return;
     }
 
@@ -70,6 +110,15 @@ export default function ContentModal({ isOpen, onClose, onSubmit, initialData, i
     formData.append("title", data.title);
     formData.append("summary", data.summary);
     formData.append("duration", String(data.duration));
+    
+    if (hasQuiz) {
+      const submitQuizData = {
+        ...data.quizData,
+        options: data.quizData.options.map((opt) => opt.value),
+      };
+      formData.append("quizData", JSON.stringify(submitQuizData));
+    }
+
     if (videoFile) formData.append("contentUrl", videoFile);
     if (thumbnailFile) formData.append("thumbnailUrl", thumbnailFile);
     onSubmit(formData);
@@ -139,13 +188,13 @@ export default function ContentModal({ isOpen, onClose, onSubmit, initialData, i
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Duration */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-flex items-center gap-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                     <Clock size={16} /> Duration (minutes)
                   </label>
                   <input
                     type="number"
                     min="1"
-                    {...register("duration")}
+                    {...register("duration", { valueAsNumber: true })}
                     className={`w-full px-4 py-3 rounded-xl border ${errors.duration ? "border-red-500" : "border-gray-200"} focus:ring-2 focus:ring-[#166534] outline-none transition-all`}
                   />
                   {errors.duration && <p className="mt-1 text-xs text-red-500">{errors.duration.message}</p>}
@@ -153,7 +202,7 @@ export default function ContentModal({ isOpen, onClose, onSubmit, initialData, i
 
                 {/* Video Upload */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-flex items-center gap-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                     <Film size={16} /> Video Content
                   </label>
                   <div className="relative group">
@@ -199,6 +248,73 @@ export default function ContentModal({ isOpen, onClose, onSubmit, initialData, i
                       <p className="text-xs font-bold text-gray-900">Click to upload thumbnail</p>
                       <p className="text-[10px] text-gray-400 mt-1">Aspect ratio 16:9 recommended</p>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quiz Data Section */}
+              <div className="p-6 bg-[#166534]/5 rounded-3xl border border-green-100 space-y-6">
+                <div className="flex items-center gap-2 text-[#166534]">
+                  <HelpCircle size={20} />
+                  <h3 className="font-bold">Quiz Section (Alternative to Video)</h3>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-[#166534] mb-1.5 uppercase tracking-wider">The Question</label>
+                    <textarea
+                      {...register("quizData.questions")}
+                      rows={2}
+                      className="w-full px-4 py-3 rounded-xl border border-green-100 focus:ring-2 focus:ring-[#166534] outline-none transition-all resize-none bg-white font-medium"
+                      placeholder="Enter the quiz question here..."
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold text-[#166534] uppercase tracking-wider">Answer Options</label>
+                      <button
+                        type="button"
+                        onClick={() => append({ value: "" })}
+                        className="text-[10px] font-bold bg-[#166534] text-white px-2 py-1 rounded-lg hover:bg-[#14532D] transition-colors flex items-center gap-1"
+                      >
+                        <Plus size={10} /> Add Option
+                      </button>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 gap-2">
+                      {fields.map((field, index) => (
+                        <div key={field.id} className="flex gap-2">
+                          <input
+                            {...register(`quizData.options.${index}.value`)}
+                            className="flex-1 px-4 py-2 rounded-lg border border-green-100 focus:ring-2 focus:ring-[#166534] outline-none transition-all bg-white text-sm"
+                            placeholder={`Option ${index + 1}`}
+                          />
+                          {fields.length > 2 && (
+                            <button
+                              type="button"
+                              onClick={() => remove(index)}
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#166534] mb-1.5 uppercase tracking-wider">Correct Answer</label>
+                    <select
+                      {...register("quizData.answer")}
+                      className="w-full px-4 py-3 rounded-xl border border-green-100 focus:ring-2 focus:ring-[#166534] outline-none transition-all bg-white font-medium"
+                    >
+                      <option value="">Select the correct option</option>
+                      {watch("quizData.options")?.map((opt: { value: string }, idx: number) => (
+                        opt.value && <option key={idx} value={opt.value}>{opt.value}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>
