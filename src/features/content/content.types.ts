@@ -11,8 +11,19 @@ export type ContentModules = {
   quizData:{
     questions:string,
     answer:string,
-    options:string[]
-  }
+    options:string[] 
+  } | []
+}
+
+export type RoomChatType = {
+  _id : string,
+  sender : {
+    _id : string,
+    name : string,
+    avatarUrl ?: string
+  },
+  message : string,
+  createdAt : string
 }
 
 export type ChatType = {

@@ -15,6 +15,7 @@ import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { reportService } from "../reports/services/reportService";
 import { toast } from "react-hot-toast";
 import QuizModal from "./components/QuizComp";
+import socket from "../../services/socket";
 
 export default function Content() {
 
@@ -30,6 +31,7 @@ export default function Content() {
         thumbnailUrl: "",
         title: "",
         next: 0,
+        quizData : []
     });
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [hasReportedCourse, setHasReportedCourse] = useState(false);
@@ -97,6 +99,15 @@ export default function Content() {
     useEffect(()=>{
         fetchContent();
     }, [id]);
+
+    useEffect(()=>{
+        socket.emit("join_room",content._id);
+
+        return () => {
+            socket.off("join_room");
+            socket.emit("leave_room",content._id);
+        }
+    },[content])
 
     if (!data) return <FullScreenLoader />
 

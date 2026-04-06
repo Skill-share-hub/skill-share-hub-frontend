@@ -24,7 +24,7 @@ export type TutorProfile = {
 };
 
 export type User = {
-  id: string;
+  _id: string;
   name: string;
   avatarUrl?: string;
   email: string;
