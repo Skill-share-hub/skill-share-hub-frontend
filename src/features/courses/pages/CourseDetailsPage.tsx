@@ -112,32 +112,5 @@ const CourseDetailsPage: React.FC = () => {
   );
 };
 
-// Fallback data if API fails. Ensures UI is still beautiful and demo-able.
-const getMockCourse = (id: string): Course => ({
-  _id: id,
-  title: 'React Development Bootcamp: From Zero to Hero',
-  description: 'From this course you will learn about react and its fundamentals. You will build comprehensive real-world applications using modern frontend architectures and state management.',
-  category: 'Development',
-  courseLevel: 'Beginner',
-  courseType: 'credit',
-  creditCost: 20,
-  courseSkills: ['React', 'JavaScript', 'TypeScript', 'TailwindCSS'],
-  thumbnailUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=1000&q=80',
-  ratingsAverage: 4.8,
-  totalEnrollments: 12450,
-  status: 'published',
-  tutorId: {
-    _id: 'tutor1',
-    name: 'Tutor Name',
-    email: 'tutor@email.com',
-    avatarUrl: `https://ui-avatars.com/api/?name=Tutor+Name&background=047857&color=fff`,
-    bio: 'Senior Software Engineer with extensive experience in React, NextJS, Node, and architectural design. I focus on comprehensive, professional-grade engineering courses.'
-  },
-  contentModules: [
-    { _id: '1', title: 'React Fundamentals', summary: 'Components, JSX, Props, and State basics.', duration: '1h 45m', isLocked: false },
-    { _id: '2', title: 'Hooks in Depth', summary: 'Mastering useState, useEffect, and custom hooks.', duration: '2h 30m', isLocked: true },
-    { _id: '3', title: 'State Management', summary: 'Context API and Redux Toolkit essentials.', duration: '3h 15m', isLocked: true },
-  ]
-});
 
 export default CourseDetailsPage;

@@ -19,7 +19,10 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
 
   // Derive isSaved directly from user.savedCourses array
   const isSaved = user?.savedCourses?.includes(course._id) ?? false;
-
+  const tutorId = typeof course.tutorId === "object" ? course.tutorId._id : course.tutorId;
+  const isCourseOwner=user?._id==tutorId
+  console.log(user?._id)
+  console.log(course.tutorId)
   const [saving, setSaving] = useState(false);
 
   const tutorObj = typeof course.tutorId === 'object' ? course.tutorId : null;
@@ -165,28 +168,35 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
             <div className="mt-auto flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8 pt-6 border-t border-gray-100/80">
               {/* Price */}
               <div className="text-2xl font-bold text-gray-900 flex items-center gap-1.5">
-                {isEnrolled ? (
-                  <span className="text-emerald-600 text-sm font-medium bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">You already enrolled</span>
-                ) : isCompleted ? (
-                  <span className="text-green-800 text-sm font-medium bg-green-100 px-3 py-1 rounded-full border border-gray-200">You completed this course</span>
-                ) : course.courseType === 'credit' ? (
-                  <span className="flex items-center gap-1.5 text-yellow-600">
-                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
-                      <path d="M12 18V6" />
-                    </svg>
-                    {course.creditCost}
-                  </span>
-                ) : course.price === 0 || !course.price ? (
-                  <span className="text-emerald-600">Free</span>
-                ) : (
-                  <span className="text-gray-900">${course.price}</span>
-                )}
+               {isCourseOwner ? (
+  "This is your course"
+) : (
+  isEnrolled ? (
+    <span className="text-emerald-600 text-sm font-medium bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+      You already enrolled
+    </span>
+  ) : isCompleted ? (
+    <span className="text-green-800 text-sm font-medium bg-green-100 px-3 py-1 rounded-full border border-gray-200">
+      You completed this course
+    </span>
+  ) : course.courseType === 'credit' ? (
+    <span className="flex items-center gap-1.5 text-yellow-600">
+      ...
+      {course.creditCost}
+    </span>
+  ) : course.price === 0 || !course.price ? (
+    <span className="text-emerald-600">Free</span>
+  ) : (
+    <span className="text-gray-900">${course.price}</span>
+  )
+)}
+                
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-3 sm:ml-auto w-full sm:w-auto">
+              {!isCourseOwner&&
+              (
+<div className="flex items-center gap-3 sm:ml-auto w-full sm:w-auto">
                 <button
                   onClick={handleEnrollClick}
                   disabled={isLoading}
@@ -207,6 +217,8 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
                   )}
                 </button>
               </div>
+              )}
+              
 
             </div>
 
