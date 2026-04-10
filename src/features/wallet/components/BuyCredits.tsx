@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Sparkles, ArrowRight, AlertCircle, Coins } from 'lucide-react';
+import { Plus, Sparkles, ArrowRight, AlertCircle, Coins, Receipt } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import api from '../../../shared/services/axios';
 import { loadRazorpayScript } from '../../../shared/utils/razorpay';
@@ -7,11 +7,15 @@ import { useAppDispatch } from '../../../shared/hooks/redux';
 import { fetchWalletBalance } from '../walletSlice';
 
 export function BuyCredits(
-  { creditConst , fetchWallet }:
-  { creditConst: number, fetchWallet : ()=>void }
+  { creditConst, fetchWallet, purchaseCommision }:
+    { creditConst: number, fetchWallet: () => void, purchaseCommision: number }
 ) {
   const [amount, setAmount] = useState<number>(0);
   const dispatch = useAppDispatch();
+
+  // Calculations
+  const platformFee = amount * purchaseCommision;
+  const creditsInAccount = amount - platformFee
 
   const presets = [
     { credits: 10, price: 10 * creditConst },
@@ -21,10 +25,9 @@ export function BuyCredits(
   ];
 
   const handlePayment = async () => {
-    if(!amount || amount < 0)return ;
+    if (!amount || amount < 0) return;
     try {
-      const {data:orderRes} = await api.post("/wallet/credits", {amount});
-
+      const { data: orderRes } = await api.post("/wallet/credits", { amount });
       const order = orderRes.data;
 
       const isLoaded = await loadRazorpayScript();
@@ -40,37 +43,26 @@ export function BuyCredits(
         name: "Skill share hub",
         description: "Buy Credits",
         order_id: order.id,
-
-        handler: async function (response:any) {
-
+        handler: async function (response: any) {
           await api.post("/wallet/credits/verify", {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature
           });
-
-          
           await fetchWallet();
-          await dispatch(fetchWalletBalance())
-
+          await dispatch(fetchWalletBalance());
           toast.success("Payment successful 🎉");
-
         },
-
         prefill: {
           name: "User Name",
           email: "user@email.com",
           contact: "9999999999"
         },
-
-        theme: {
-          color: "#3399cc"
-        }
+        theme: { color: "#164e33" }
       };
 
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
-
     } catch (error) {
       console.log(error);
     }
@@ -123,32 +115,46 @@ export function BuyCredits(
               value={amount || ''}
               min={1}
               onChange={(e) => {
-                const value  = Number(e.target.value)
-                if(value < 1){
-                  setAmount(0)
-                }else{
-                  setAmount(value)
-                }
+                const value = Number(e.target.value)
+                setAmount(value < 1 ? 0 : value)
               }}
               placeholder="Enter custom amount..."
-              className="w-full pl-4 pr-24 py-3 text-sm font-medium border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#164e33]/5 focus:border-[#164e33] transition-all"
+              className="w-full pl-4 pr-10 py-3 text-sm font-medium border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#164e33]/5 focus:border-[#164e33] transition-all"
             />
-            
-            {amount > 0 && (
-              <div className="absolute right-2.5 flex items-center gap-1.5 px-3 py-1.5 bg-[#164e33] rounded-lg shadow-lg shadow-[#164e33]/20 animate-in fade-in slide-in-from-right-2 duration-300">
-                <span className="text-[10px] font-bold text-white/70">Total:</span>
-                <span className="text-sm font-bold text-white">₹{amount * creditConst}</span>
-              </div>
-            )}
+            <div className="absolute right-3">
+                <Coins className="w-4 h-4 text-gray-400" />
+            </div>
           </div>
 
-          <button 
+          {/* Pricing Summary */}
+          {amount > 0 && (
+            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-2 animate-in fade-in slide-in-from-top-2">
+                <div className="flex items-center gap-2 mb-2 border-b border-gray-200 pb-2">
+                    <Receipt className="w-3.5 h-3.5 text-gray-400" />
+                    <span className="text-[10px] font-bold text-gray-500 uppercase">Payment Summary</span>
+                </div>
+                <div className="flex justify-between text-xs text-gray-600">
+                    <span>Credits in Account :</span>
+                    <span>₹{creditsInAccount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-xs text-gray-600">
+                    <span>Platform Fee ({(purchaseCommision * 100).toFixed(0)}%)</span>
+                    <span>₹{platformFee.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm font-black text-[#164e33] pt-1">
+                    <span>Total Payable</span>
+                    <span>₹{amount.toFixed(2)}</span>
+                </div>
+            </div>
+          )}
+
+          <button
             onClick={handlePayment}
             disabled={amount <= 0}
             className={`w-full py-3.5 font-bold text-white bg-[#164e33] rounded-xl transition-all flex items-center justify-center gap-2 text-sm shadow-xl shadow-[#164e33]/10 
-              ${amount > 0 
-                ? "hover:bg-[#1a5d3d] active:scale-[0.99] hover:shadow-[#164e33]/20" 
-                : "opacity-40 cursor-not-allowed grayscale"
+              ${amount > 0
+                ? "hover:bg-[#1a5d3d] active:scale-[0.99]"
+                : "opacity-40 cursor-not-allowed"
               }`}
           >
             Confirm Purchase
@@ -159,7 +165,7 @@ export function BuyCredits(
         <div className="flex items-start gap-2 mt-6 p-3 bg-amber-50/50 rounded-xl border border-amber-100/50">
           <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
           <p className="text-[11px] leading-relaxed text-amber-800 font-medium">
-            <span className="font-bold">Important:</span> Credits are non-refundable.
+            <span className="font-bold">Important:</span> Credits are non-refundable and subject to platform terms of service.
           </p>
         </div>
       </div>

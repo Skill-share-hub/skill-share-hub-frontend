@@ -37,4 +37,6 @@ export type User = {
   updatedAt?: string;
   savedCourses?: string[];
   enrolledCourses?: any[];
+  usercreditBalance : number;
+  userUpiId : string;
 };

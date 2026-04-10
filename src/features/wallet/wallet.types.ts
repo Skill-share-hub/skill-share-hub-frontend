@@ -27,7 +27,12 @@ export type Wallet = {
   creditBalance : number;
   creditValue : number;
   transactions : Transaction[];
-  creditConst :number
+  creditConst :number;
+  creditPurchaseCommision : number;
+  creditWithdrawMinLimit : number ;
+  creditWithdrawMaxLimit : number ;
+  creditWithdrawCommision : number;
+  creditWithdrawCommisionLimit : number;
 }
 
 export type QueryType = { 

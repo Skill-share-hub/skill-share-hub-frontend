@@ -6,7 +6,7 @@ import {
 } from "../slice/application.slice";
 import StatsCard from "../components/StatsCard";
 import Filters from "../components/Filters";
-import ApplicationTable from "../components/applicationTable";
+import ApplicationTable from "../components/ApplicationTable";
 import Pagination from "../components/Pagination";
 
 const PremiumTutorApplicationsList: React.FC = () => {

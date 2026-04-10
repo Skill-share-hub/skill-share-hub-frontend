@@ -1,8 +1,7 @@
 import React from "react";
-import type { PurchaseSummaryResponse } from "../services/purchaseApi";
 
 interface PurchaseSummaryPanelProps {
-  summary: PurchaseSummaryResponse | null;
+  summary: any | null;
   loading: boolean;
   onContinue: () => void;
   continueDisabled: boolean;

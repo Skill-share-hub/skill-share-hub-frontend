@@ -10,7 +10,7 @@ export const useInitializeSocket = () => {
   const { user } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    const userId = user?.id || (user as any)?._id;
+    const userId = user?._id || (user as any)?._id;
     if (userId) {
       // Connect and join personal room
       socket.connect();

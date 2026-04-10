@@ -1,30 +1,63 @@
 import { useState } from 'react';
-import { ArrowRightLeft, CheckCircle2, QrCode, ArrowUpCircle, ShieldCheck, User, RefreshCw, Coins } from 'lucide-react';
+import { ArrowRightLeft, CheckCircle2, QrCode, ArrowUpCircle, ShieldCheck, User, RefreshCw, Coins, Info } from 'lucide-react';
+import api from '../../../shared/services/axios';
+import { useAppDispatch, useAppSelector } from '../../../shared/hooks/redux';
+import { fetchWalletBalance } from '../walletSlice';
 
-export function WithdrawCredits() {
-  const [linkedUpi, setLinkedUpi] = useState<string>(""); 
+export function WithdrawCredits(
+  { creditConst, fetchWallet, creditLimit, minCredit, creditCommision, creditCommisionLimit }:
+    { creditConst: number, fetchWallet: () => void, creditLimit: number, minCredit: number, creditCommision: number, creditCommisionLimit: number }
+) {
+
+  const { user } = useAppSelector(state => state.user);
+
+  const [linkedUpi, setLinkedUpi] = useState<string>(user?.userUpiId ?? "");
   const [verifiedName, setVerifiedName] = useState<string>("");
   const [step, setStep] = useState(linkedUpi ? 2 : 1);
-  
+
   const [upiInput, setUpiInput] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
-  
-  const [credits, setCredits] = useState<number>(500);
-  const conversionRate = 0.10;
 
-  const handleVerifyUpi = () => {
+  const [credits, setCredits] = useState<number>(0);
+  const dispatch = useAppDispatch();
+
+  // Calculations
+  const grossAmount = credits * creditConst;
+  const isCommisionApplicable = credits >= creditCommisionLimit;
+  const commisionAmount = isCommisionApplicable ? grossAmount * creditCommision : 0;
+  const netAmount = grossAmount - commisionAmount;
+
+  const handleVerifyUpi = async () => {
     if (!upiInput.includes('@')) return;
     setIsVerifying(true);
-    setTimeout(() => {
-      setVerifiedName("John Doe");
-      setLinkedUpi(upiInput);
+    try {
+      const { data: upiData } = await api.post('/wallet/upi/verify', { upi: upiInput });
+      setVerifiedName(upiData.data.name);
+      setLinkedUpi(upiData.data.upi);
+    } catch (error) {
+      console.log("upi verification error", error);
+    } finally {
       setIsVerifying(false);
-    }, 1200);
+    }
+  };
+
+  const handleWithdrawalRequest = async () => {
+    if (credits > creditLimit || credits < minCredit) return;
+    try {
+      setIsVerifying(true);
+      await api.post('/wallet/credits/withdraw', { amount: credits });
+      await fetchWallet();
+      await dispatch(fetchWalletBalance());
+      setCredits(0);
+    } catch (error) {
+      console.log("withdraw request error", error);
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   return (
     <div className="max-w-md overflow-hidden bg-white border border-gray-100 rounded-2xl shadow-lg">
-      {/* Header - Scaled Down */}
       <div className="flex items-center justify-between px-5 py-3.5 bg-[#164e33]">
         <div className="flex items-center gap-2">
           <ArrowRightLeft className="w-4 h-4 text-white" />
@@ -57,8 +90,7 @@ export function WithdrawCredits() {
                 />
                 <QrCode className="absolute right-3 top-3 w-4 h-4 text-gray-300" />
               </div>
-              
-              {/* Simplified Name Verification */}
+
               {verifiedName && (
                 <div className="mt-2 ml-1 flex items-center gap-1.5 animate-in slide-in-from-top-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -86,36 +118,38 @@ export function WithdrawCredits() {
           </div>
         ) : (
           <div className="space-y-4 animate-in slide-in-from-right-2 duration-400">
-            {/* Minimal Linked Preview */}
             <div className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-xl border border-gray-100">
               <div className="flex items-center gap-2">
                 <User className="w-3 h-3 text-[#164e33]" />
                 <span className="text-[11px] font-bold text-gray-700 truncate max-w-[150px]">{linkedUpi}</span>
               </div>
-              <button onClick={() => setStep(1)} className="text-[9px] font-bold text-[#164e33] hover:underline uppercase">Change</button>
+              <button onClick={() => {
+                setStep(1);
+                setVerifiedName("");
+                setLinkedUpi("");
+              }} className="text-[9px] cursor-pointer font-bold text-[#164e33] hover:underline uppercase">Change</button>
             </div>
 
-            {/* Compact Conversion Inputs */}
             <div className="grid grid-cols-1 gap-2">
               <div className="relative">
-                <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Credits</label>
+                <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Credits to Withdraw</label>
                 <div className="mt-1 relative flex items-center">
                   <input
                     type="number"
-                    value={credits}
+                    value={credits || ''}
                     onChange={(e) => setCredits(Number(e.target.value))}
-                    className="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl text-lg font-black text-gray-800 focus:border-[#164e33] outline-none"
+                    className={`w-full px-3 py-3 bg-gray-50 border rounded-xl text-lg font-black outline-none ${ (credits > creditLimit || (credits > 0 && credits < minCredit)) ? 'border-red-300' : 'border-gray-200 focus:border-[#164e33]'}`}
                   />
                   <Coins className="absolute right-3 w-4 h-4 text-amber-500" />
                 </div>
               </div>
 
               <div className="relative">
-                <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Receiving (₹)</label>
+                <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Net Payout (₹)</label>
                 <div className="mt-1 relative flex items-center">
                   <input
                     readOnly
-                    value={(credits * conversionRate).toFixed(2)}
+                    value={netAmount.toFixed(2)}
                     className="w-full px-3 py-3 bg-emerald-50/50 border border-emerald-100 rounded-xl text-lg font-black text-emerald-700 outline-none"
                   />
                   <span className="absolute right-3 text-sm font-bold text-emerald-600">₹</span>
@@ -123,13 +157,45 @@ export function WithdrawCredits() {
               </div>
             </div>
 
-            <button 
-              onClick={() => alert('Processing...')}
-              className="w-full py-3 bg-[#164e33] text-white text-xs font-bold rounded-xl shadow-lg shadow-[#164e33]/10 flex items-center justify-center gap-2"
+            {/* Fee Breakdown */}
+            {credits > 0 && (
+                <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100 space-y-1">
+                    <div className="flex justify-between text-[10px] font-medium text-gray-500">
+                        <span>Gross Amount</span>
+                        <span>₹{grossAmount.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-[10px] font-medium text-red-500">
+                        <span>Platform Fee ({isCommisionApplicable ? (creditCommision * 100).toFixed(0) : 0}%)</span>
+                        <span>- ₹{commisionAmount.toFixed(2)}</span>
+                    </div>
+                    {!isCommisionApplicable && (
+                        <p className="text-[9px] text-amber-600 italic mt-1">
+                            * Commission applies on withdrawals ≥ {creditCommisionLimit} credits.
+                        </p>
+                    )}
+                </div>
+            )}
+
+            <button
+              onClick={handleWithdrawalRequest}
+              disabled={credits > creditLimit || credits < minCredit || credits <= 0}
+              className="w-full py-3 bg-[#164e33] text-white text-xs font-bold rounded-xl shadow-lg disabled:opacity-40 flex items-center justify-center gap-2"
             >
               <ArrowUpCircle className="w-4 h-4" />
               Confirm Withdrawal
             </button>
+
+            {/* Limits Info */}
+            <div className="flex flex-col gap-1.5 p-3 bg-amber-50/30 border border-amber-100 rounded-xl">
+                <div className="flex items-center gap-1.5">
+                    <Info className="w-3 h-3 text-amber-600" />
+                    <span className="text-[10px] font-bold text-amber-800 uppercase">Withdrawal Limits</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                    <div className="text-[10px] text-amber-700">Min: <span className="font-bold">{minCredit} Credits</span></div>
+                    <div className="text-[10px] text-amber-700 text-right">Max: <span className="font-bold">{creditLimit} Credits</span></div>
+                </div>
+            </div>
           </div>
         )}
 

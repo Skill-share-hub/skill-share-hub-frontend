@@ -1,5 +1,4 @@
 import api from "../../shared/services/axios";
-import type { ApplicationStatusResponse, SubmitApplicationInput } from "./types";
 
 export const submitPremiumApplication = async (formData: FormData) => {
   const response = await api.post("/premium-application", formData, {

@@ -7,7 +7,6 @@ import {
   Calendar,
   FileText,
   MessageCircle,
-  Search,
   Check
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';

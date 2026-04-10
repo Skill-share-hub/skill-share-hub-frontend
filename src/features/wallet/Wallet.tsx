@@ -80,9 +80,23 @@ export default function Wallet() {
           <div className="lg:col-span-4 space-y-8">
             <div className="sticky top-24 space-y-8">
               {['student', 'admin'].includes(user?.role || '') && (
-                <BuyCredits fetchWallet={fetchWallet} creditConst={data.creditConst} />
+                <BuyCredits 
+                 fetchWallet={fetchWallet} 
+                 creditConst={data.creditConst} 
+                 purchaseCommision={data.creditPurchaseCommision}
+                 />
               )}
-              {user?.role !== 'student' && <WithdrawCredits />}
+              {['premiumTutor','student', 'admin','tutor'].includes(user?.role || '') && (
+                <WithdrawCredits
+                 fetchWallet={fetchWallet}
+                  creditConst={data.creditConst}
+                  creditCommision = {data.creditWithdrawCommision}
+                  creditCommisionLimit = {data.creditWithdrawCommisionLimit}
+                  creditLimit={data.creditWithdrawMaxLimit}
+                  minCredit={data.creditWithdrawMinLimit}
+                />
+              )}
+              
             </div>
           </div>
 
