@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Loader2, ArrowLeft } from 'lucide-react';
 
+import { useAppSelector } from '../../../shared/hooks/redux';
 import { courseService } from '../services/courseService';
 import type { Course } from '../types/course.types';
 
@@ -16,6 +17,7 @@ import ReviewList from '../components/Reviews/ReviewList';
 const CourseDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAppSelector(state => state.user);
   const [course, setCourse] = useState<Course | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -68,11 +70,11 @@ const CourseDetailsPage: React.FC = () => {
         {/* Top Navigation */}
         <div className="mb-6">
           <button 
-            onClick={() => navigate('/courses')}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-800/70 hover:text-emerald-700 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-100/50 hover:border-emerald-200 shadow-sm hover:shadow transition-all group"
+            onClick={() => navigate(user?.role === 'admin' ? '/admin/courses' : '/courses')}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-800/70 hover:text-emerald-700 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-100/50 hover:border-emerald-200 shadow-sm hover:shadow transition-all group cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Courses
+            Back
           </button>
         </div>
 
