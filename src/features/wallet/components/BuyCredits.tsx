@@ -89,7 +89,7 @@ export function BuyCredits(
             <button
               key={pkg.credits}
               onClick={() => setAmount(pkg.credits)}
-              className={`flex flex-col items-center justify-center py-4 px-2 transition-all border-2 rounded-2xl active:scale-95 ${
+              className={`flex flex-col cursor-pointer items-center justify-center py-4 px-2 transition-all border-2 rounded-2xl active:scale-95 ${
                 amount === pkg.credits
                   ? "border-[#164e33] bg-[#f0f7f4] shadow-sm"
                   : "border-gray-100 hover:border-gray-200 bg-gray-50/50"
@@ -116,7 +116,7 @@ export function BuyCredits(
               min={1}
               onChange={(e) => {
                 const value = Number(e.target.value)
-                setAmount(value < 1 ? 0 : value)
+                setAmount(value < 1 ? 0 : value > 10000000 ? 10000000 : value)
               }}
               placeholder="Enter custom amount..."
               className="w-full pl-4 pr-10 py-3 text-sm font-medium border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#164e33]/5 focus:border-[#164e33] transition-all"
@@ -135,15 +135,21 @@ export function BuyCredits(
                 </div>
                 <div className="flex justify-between text-xs text-gray-600">
                     <span>Credits in Account :</span>
-                    <span>₹{creditsInAccount.toFixed(2)}</span>
+                    <span className='flex gap-0.5'>
+                      <Coins className="w-3 h-3 text-gray-400" />
+                      {creditsInAccount.toFixed(0)}
+                    </span>
                 </div>
                 <div className="flex justify-between text-xs text-gray-600">
                     <span>Platform Fee ({(purchaseCommision * 100).toFixed(0)}%)</span>
-                    <span>₹{platformFee.toFixed(2)}</span>
+                    <span className='flex gap-0.5'>
+                      <Coins className="w-3 h-3 text-gray-400" />
+                      {platformFee.toFixed(0)}
+                    </span>
                 </div>
                 <div className="flex justify-between text-sm font-black text-[#164e33] pt-1">
                     <span>Total Payable</span>
-                    <span>₹{amount.toFixed(2)}</span>
+                    <span>₹{(amount * creditConst).toFixed(2)}</span>
                 </div>
             </div>
           )}
@@ -151,7 +157,7 @@ export function BuyCredits(
           <button
             onClick={handlePayment}
             disabled={amount <= 0}
-            className={`w-full py-3.5 font-bold text-white bg-[#164e33] rounded-xl transition-all flex items-center justify-center gap-2 text-sm shadow-xl shadow-[#164e33]/10 
+            className={`w-full py-3.5 font-bold text-white bg-[#164e33] rounded-xl transition-all flex items-center justify-center cursor-pointer gap-2 text-sm shadow-xl shadow-[#164e33]/10 
               ${amount > 0
                 ? "hover:bg-[#1a5d3d] active:scale-[0.99]"
                 : "opacity-40 cursor-not-allowed"

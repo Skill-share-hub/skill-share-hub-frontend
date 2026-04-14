@@ -42,7 +42,6 @@ const CourseDetailsPage: React.FC = () => {
       } catch (error) {
         console.error("Failed to load course details", error);
         toast.error("Failed to load course details");
-        setCourse(getMockCourse(id || '1')); // Ensure UI doesn't break if API fails on dev
       } finally {
         setIsLoading(false);
       }

@@ -52,9 +52,9 @@ const TutorInfoCard: React.FC<TutorInfoCardProps> = ({ course }) => {
         )}
       </div>
 
-      <button className="w-full mt-6 py-2.5 bg-white border border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 text-gray-700 text-sm font-semibold rounded-xl transition-all shadow-sm">
+      {/* <button className="w-full mt-6 py-2.5 bg-white border border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 text-gray-700 text-sm font-semibold rounded-xl transition-all shadow-sm">
         View Profile
-      </button>
+      </button> */}
 
     </div>
   );

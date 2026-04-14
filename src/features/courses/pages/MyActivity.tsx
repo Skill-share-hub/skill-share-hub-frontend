@@ -149,7 +149,7 @@ export default function MyActivity() {
               <button
                 key={f.value}
                 onClick={() => setFilter(f.value)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center cursor-pointer gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   filter === f.value
                     ? "bg-emerald-600 text-white shadow-sm"
                     : "bg-white border border-gray-200 text-gray-600 hover:border-emerald-400 hover:text-emerald-600"
@@ -189,7 +189,7 @@ function CourseCard({ course }: { course: Enrollment }) {
   const navigate = useNavigate();
 
   return (
-    <div onClick={()=>navigate(`/my-activity/${course.courseId}`)} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col">
+    <div onClick={()=>navigate(`/my-activity/${course.courseId}`)} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200 flex flex-col">
       <div className="relative">
         <img src={course.courseSnapshot.thumbnail} className="w-full h-44 object-cover" />
         <span

@@ -33,6 +33,7 @@ export type Wallet = {
   creditWithdrawMaxLimit : number ;
   creditWithdrawCommision : number;
   creditWithdrawCommisionLimit : number;
+  totalTransactions : number
 }
 
 export type QueryType = { 

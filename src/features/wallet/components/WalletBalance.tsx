@@ -38,7 +38,7 @@ export function WalletBalance(
         </div>
 
         <button onClick={() => setForm((pre:QueryType)=> ({...pre,refresh : true}))} className="p-3 bg-white/10 hover:bg-white/20 transition-all rounded-2xl border border-white/10 cursor-pointer">
-          <RefreshCcw className={`w-5 h-5 text-white ${loading ? "animate-spin" : ""} transition-transform duration-500`} />
+          <RefreshCcw className={`w-5 h-5 text-white ${loading ? "animate-[spin_1s_linear_infinite_reverse]" : ""} transition-transform duration-500`} />
         </button>
       </div>
     </div>

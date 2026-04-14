@@ -5,6 +5,7 @@ import { WalletBalance, WalletTransaction, BuyCredits, WithdrawCredits } from '.
 import api from "../../shared/services/axios";
 import FullScreenLoader from "../../shared/components/FullScreenLoader";
 import type { QueryType, Wallet } from "./wallet.types";
+import { useNavigate } from "react-router-dom";
 
 
 export default function Wallet() {
@@ -16,6 +17,8 @@ export default function Wallet() {
     status: "",
     refresh : false
   });
+
+  const navigate = useNavigate()
 
   const fetchWallet = async () => {
     try{
@@ -48,7 +51,7 @@ export default function Wallet() {
               </h1>
               <p className="text-gray-500 mt-1 text-sm">Manage your credits, earnings, and transaction history.</p>
             </div>
-            <button className="w-fit px-5 py-2.5 bg-gray-900 text-white text-sm font-bold rounded-xl hover:bg-gray-800 transition-all active:scale-95">
+            <button onClick={()=>navigate('/courses')} className="w-fit px-5 cursor-pointer py-2.5 bg-gray-900 text-white text-sm font-bold rounded-xl hover:bg-gray-800 transition-all active:scale-95">
               View Courses
             </button>
           </div>
@@ -69,9 +72,11 @@ export default function Wallet() {
 
             <section className="bg-white p-6 pb-0 rounded-3xl border border-gray-100 shadow-sm">
               <WalletTransaction 
+              totalTransactions={data.totalTransactions}
                 form={form} 
                 loading={loading} 
                 setForm={setForm} 
+                creditConst={data.creditConst}
                 transaction={data.transactions} 
               />
             </section>
@@ -79,14 +84,14 @@ export default function Wallet() {
 
           <div className="lg:col-span-4 space-y-8">
             <div className="sticky top-24 space-y-8">
-              {['student', 'admin'].includes(user?.role || '') && (
+              {
                 <BuyCredits 
                  fetchWallet={fetchWallet} 
                  creditConst={data.creditConst} 
                  purchaseCommision={data.creditPurchaseCommision}
                  />
-              )}
-              {['premiumTutor','student', 'admin','tutor'].includes(user?.role || '') && (
+              }
+              {['premiumTutor'].includes(user?.role || '') && (
                 <WithdrawCredits
                  fetchWallet={fetchWallet}
                   creditConst={data.creditConst}

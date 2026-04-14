@@ -8,9 +8,10 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   transaction: Transaction | null;
+  creditConst : number ;
 }
 
-export default function TransactionModal({ isOpen, onClose, transaction }: ModalProps) {
+export default function TransactionModal({ isOpen, onClose, transaction , creditConst }: ModalProps) {
   const navigate = useNavigate();
   const { isEnrolled, isLoading } = useEnrollmentStatus(transaction?.courseId);
 
@@ -109,6 +110,11 @@ export default function TransactionModal({ isOpen, onClose, transaction }: Modal
                     value={`₹${transaction.currency.toLocaleString()}`} 
                     isLarge
                 />
+                <DetailItem 
+                    label="Platform Commision" 
+                    value={`₹${transaction.amount * creditConst}`} 
+                    isLarge
+                />
             </div>
 
             <div className="space-y-4 px-1">
@@ -120,7 +126,7 @@ export default function TransactionModal({ isOpen, onClose, transaction }: Modal
                 icon={transaction.method === 'razor_pay' ? <CreditCard size={14}/> : <Wallet size={14}/>}
               />
 
-              <DetailItem label="Credit Balance" value={`${transaction.creditBalance} Credits`} />
+              <DetailItem label="Credit Balance Before" value={`${transaction.creditBalance} Credits`} />
             </div>
             
             {!transaction.courseSnapshot && transaction.type !== 'credit_purchase' && (
@@ -131,9 +137,6 @@ export default function TransactionModal({ isOpen, onClose, transaction }: Modal
 
             <div className="pt-4 mt-2 space-y-3 border-t border-gray-100">
                <DetailItem label="Order ID" value={transaction.razorpayOrderId} isCode />
-               {transaction.razorpayPaymentId && (
-                 <DetailItem label="Payment ID" value={transaction.razorpayPaymentId} isCode />
-               )}
                <DetailItem label="Date" value={new Date(transaction.createdAt).toLocaleString()} />
             </div>
           </div>

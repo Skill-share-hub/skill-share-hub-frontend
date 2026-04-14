@@ -64,7 +64,7 @@ const PurchaseSummaryPanel: React.FC<PurchaseSummaryPanelProps> = ({
         className={`w-full py-3.5 px-4 rounded-xl font-semibold text-sm transition-all duration-300 transform ${
           continueDisabled || loading
             ? "bg-gray-100 text-gray-400 cursor-not-allowed shadow-none"
-            : "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white shadow-[0_4px_14px_0_rgba(4,120,87,0.39)] hover:shadow-[0_6px_20px_rgba(4,120,87,0.23)] hover:-translate-y-0.5"
+            : "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white cursor-pointer shadow-[0_4px_14px_0_rgba(4,120,87,0.39)] hover:shadow-[0_6px_20px_rgba(4,120,87,0.23)] hover:-translate-y-0.5"
         }`}
       >
         {loading ? (

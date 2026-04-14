@@ -39,6 +39,7 @@ export default function ProfileCompletionWizard() {
     }
   };
 
+
   if (!showModal || !user) return null;
 
   return (

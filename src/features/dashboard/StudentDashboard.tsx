@@ -16,6 +16,7 @@ import {
   Award,
   Zap
 } from "lucide-react";
+import formatDuration from "../../shared/utils/formatDuration";
 
 /* ─── tiny helpers ─────────────────────────────────────── */
 
@@ -72,7 +73,7 @@ const StudentDashboard = () => {
   const [recommendedCourse, setRecommendedCourse] = useState<any[]>([]);
   const [continueWatchingData, setContinueWatchingData] = useState<any[]>([]);
   const [totalHours, setTotalHours] = useState(0);
-  const [watchedHours, setWatchedHours] = useState(0);
+  const [watchedHours, setWatchedHours] = useState("");
   const [completedHours, setCompletedHours] = useState(0);
   const [availableCredit, setAvailableCredit] = useState(0);
 
@@ -86,7 +87,7 @@ const StudentDashboard = () => {
         setAvailableCredit(data.creditBalance);
         setContinueWatchingData(data.continueWatching);
         setTotalHours(data.totalHours);
-        setWatchedHours(data.watchedHours);
+        setWatchedHours(formatDuration(data.watchedHours));
         setCompletedHours(data.completedHours);
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
@@ -106,7 +107,7 @@ const StudentDashboard = () => {
 
   const stats = [
     { label: "Enrolled", value: enrolledData?.length || 0, icon: <BookOpen size={20} />, color: "bg-blue-50 text-blue-600", sub: "courses" },
-    { label: "Watched", value: watchedHours, icon: <PlayCircle size={20} />, color: "bg-emerald-50 text-emerald-600", sub: "hours" },
+    { label: "Watched", value: watchedHours, icon: <PlayCircle size={20} />, color: "bg-emerald-50 text-emerald-600", sub: "" },
     { label: "Total", value: totalHours, icon: <Clock size={20} />, color: "bg-indigo-50 text-indigo-600", sub: "tracking" },
     { label: "Completed", value: completedHours, icon: <CheckCircle2 size={20} />, color: "bg-emerald-100 text-emerald-700", sub: "milestones" },
   ];
@@ -164,7 +165,7 @@ const StudentDashboard = () => {
             </div>
             <button
               onClick={() => navigate("/courses")}
-              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-[13px] font-black uppercase tracking-widest px-7 py-4 rounded-2xl shadow-xl shadow-emerald-200 transition-all group"
+              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-[13px] cursor-pointer font-black uppercase tracking-widest px-7 py-4 rounded-2xl shadow-xl shadow-emerald-200 transition-all group"
             >
               Explore Courses
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -180,7 +181,7 @@ const StudentDashboard = () => {
           {stats.map((s) => (
             <div
               key={s.label}
-              className="bg-white border border-slate-100 rounded-[2rem] p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group"
+              className="bg-white border border-slate-100 rounded-[2rem] p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-1000 group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className={`p-3 rounded-2xl ${s.color} transition-colors group-hover:bg-slate-900 group-hover:text-white`}>

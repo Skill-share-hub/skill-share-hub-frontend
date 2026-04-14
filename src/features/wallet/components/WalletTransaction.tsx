@@ -1,4 +1,4 @@
-import { ArrowUpRight, ArrowDownLeft, CreditCard, Calendar, ChevronDown, Filter, Coins } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, CreditCard, Calendar, ChevronDown, Filter, Coins, ChevronUp } from "lucide-react";
 import type { QueryType, STATUS, Transaction, Transaction as TransactionType } from "../wallet.types";
 import { useState } from "react";
 import { formatDate } from "../../../shared/utils/dateFormatter";
@@ -20,20 +20,26 @@ const statusStyles = {
 };
 
 export function WalletTransaction(
-  {setForm , transaction , loading , form}:
-  {setForm : (pre:any)=>void , transaction :TransactionType[] , loading : boolean , form:QueryType }
+  {setForm , totalTransactions, transaction , loading , form , creditConst}:
+  {setForm : (pre:any)=>void , transaction :TransactionType[] , totalTransactions : number, loading : boolean , form:QueryType , creditConst:number }
 ) {
   const handleStatusChange = (newStatus: STATUS) => {
     setForm((pre:QueryType) => ({...pre , status : newStatus}));
   };
 
+  const isTotalAchive = form.limit * 3 >= totalTransactions
+
   const handleShowMore = () => {
-    setForm((pre:QueryType) => ({ ...pre, limit: pre.limit + 1 }));
+    if(isTotalAchive){
+      setForm((pre:QueryType) => ({ ...pre, limit: (pre.limit <= 1 ? 1 : pre.limit - 1)  }));
+    }else{
+      setForm((pre:QueryType) => ({ ...pre, limit: pre.limit + 1 }));
+    }
   };
 
   return (
-    <div className="w-full">
-      <div className="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
+    <div className="w-full pb-5">
+      <div className="flex flex-col gap-4  mb-8 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-xl font-bold text-gray-800">Transaction History</h2>
         
         <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 no-scrollbar">
@@ -56,7 +62,7 @@ export function WalletTransaction(
 
       <div className={`space-y-4 transition-opacity ${loading ? "opacity-50" : "opacity-100"}`}>
         {transaction?.length > 0 ? (
-          transaction.map((v) => <Transaction key={v._id} data={v} />)
+          transaction.map((v) => <Transaction creditConst={creditConst} key={v._id} data={v} />)
         ) : (
           <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-xl border border-dashed">
             No transactions found.
@@ -69,10 +75,10 @@ export function WalletTransaction(
           <button
             onClick={handleShowMore}
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-[#164e33] transition-all border border-[#164e33]/20 rounded-full hover:bg-[#164e33] hover:text-white disabled:opacity-50 active:scale-95 group"
+            className="flex cursor-pointer items-center gap-2 px-6 py-2.5 text-sm font-semibold text-[#164e33] transition-all border border-[#164e33]/20 rounded-full hover:bg-[#164e33] hover:text-white disabled:opacity-50 active:scale-95 group"
           >
-            {loading ? "Loading..." : "Show More"}
-            {!loading && <ChevronDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />}
+            {loading ? "Loading..." : isTotalAchive ? "Show Less" : "Show More"}
+            {!loading && ( isTotalAchive ?  (<ChevronUp className="w-4 h-4 transition-transform group-hover:translate-y-0.5" /> ) : (<ChevronDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />) ) }
           </button>
         </div>
       )}
@@ -80,7 +86,7 @@ export function WalletTransaction(
   );
 }
 
-function Transaction({ data }: { data: TransactionType }) {
+function Transaction({ data , creditConst }: { data: TransactionType , creditConst:number  }) {
   const [open, setOpen] = useState(false);
   const isDebit = data.type === "course_purchase" || data.type === "credit_withdraw";
   const date = formatDate(data.createdAt);
@@ -143,7 +149,7 @@ function Transaction({ data }: { data: TransactionType }) {
           </div>
         </div>
       </div>
-      <TransactionModal isOpen={open} onClose={() => setOpen(false)} transaction={data} />
+      <TransactionModal creditConst={creditConst} isOpen={open} onClose={() => setOpen(false)} transaction={data} />
     </>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Course } from '../../types/course.types';
-import { Star, Users, PlayCircle, BookmarkPlus, BookmarkCheck, Share2, Loader2 } from 'lucide-react';
+import { Star, Users, PlayCircle, BookmarkPlus, BookmarkCheck, Share2, Loader2, Coins } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAppDispatch, useAppSelector } from '../../../../shared/hooks/redux';
 import { toggleSaveCourse } from '../../slice/savedCourseSlice';
@@ -21,8 +21,6 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
   const isSaved = user?.savedCourses?.includes(course._id) ?? false;
   const tutorId = typeof course.tutorId === "object" ? course.tutorId._id : course.tutorId;
   const isCourseOwner=user?._id==tutorId
-  console.log(user?._id)
-  console.log(course.tutorId)
   const [saving, setSaving] = useState(false);
 
   const tutorObj = typeof course.tutorId === 'object' ? course.tutorId : null;
@@ -112,7 +110,7 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
                   disabled={saving}
                   title={isSaved ? 'Remove from saved' : 'Save course'}
                   className={`
-                    p-2.5 rounded-lg border shadow-sm transition-all duration-300
+                    p-2.5 rounded-lg cursor-pointer border shadow-sm transition-all duration-300
                     disabled:opacity-60 disabled:cursor-not-allowed
                     ${isSaved
                       ? 'text-emerald-700 bg-emerald-50 border-emerald-200 hover:bg-red-50 hover:text-red-500 hover:border-red-200'
@@ -129,7 +127,7 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
                 <button 
                   onClick={handleShare}
                   title="Share course"
-                  className="p-2.5 text-gray-500 hover:text-emerald-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-200 rounded-lg shadow-sm transition-colors duration-300"
+                  className="p-2.5 cursor-pointer text-gray-500 hover:text-emerald-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-200 rounded-lg shadow-sm transition-colors duration-300"
                 >
                   <Share2 className="w-5 h-5" />
                 </button>
@@ -170,53 +168,53 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
               <div className="text-2xl font-bold text-gray-900 flex items-center gap-1.5">
                {isCourseOwner ? (
   "This is your course"
-) : (
-  isEnrolled ? (
-    <span className="text-emerald-600 text-sm font-medium bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
-      You already enrolled
-    </span>
-  ) : isCompleted ? (
-    <span className="text-green-800 text-sm font-medium bg-green-100 px-3 py-1 rounded-full border border-gray-200">
-      You completed this course
-    </span>
-  ) : course.courseType === 'credit' ? (
-    <span className="flex items-center gap-1.5 text-yellow-600">
-      ...
-      {course.creditCost}
-    </span>
-  ) : course.price === 0 || !course.price ? (
-    <span className="text-emerald-600">Free</span>
-  ) : (
-    <span className="text-gray-900">${course.price}</span>
-  )
-)}
+                ) : (
+                  isEnrolled ? (
+                    <span className="text-emerald-600 text-sm font-medium bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                      You already enrolled
+                    </span>
+                  ) : isCompleted ? (
+                    <span className="text-green-800 text-sm font-medium bg-green-100 px-3 py-1 rounded-full border border-gray-200">
+                      You completed this course
+                    </span>
+                  ) : course.courseType === 'credit' ? (
+                    <span className="flex items-center gap-1.5 text-yellow-600">
+                      <Coins />
+                      {course.creditCost}
+                    </span>
+                  ) : course.price === 0 || !course.price ? (
+                    <span className="text-emerald-600">Free</span>
+                  ) : (
+                    <span className="text-gray-900">₹{course.price}</span>
+                  )
+                )}
                 
               </div>
 
               {/* Actions */}
               {!isCourseOwner&&
               (
-<div className="flex items-center gap-3 sm:ml-auto w-full sm:w-auto">
-                <button
-                  onClick={handleEnrollClick}
-                  disabled={isLoading}
-                  className={`flex-1 sm:flex-none px-8 py-3 text-white text-sm font-semibold rounded-lg shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-2 ${
-                    isEnrolled || isCompleted
-                    ? "bg-blue-400 hover:bg-blue-500 text-white shadow-md" 
-                    : "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-emerald-500/20"
-                  } ${isLoading ? "opacity-80 cursor-not-allowed" : ""}`}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Checking...
-                    </>
-                  ) : (
-                    isCompleted ? "View" : 
-                    isEnrolled ? "Open Course" : "Enroll Now"
-                  )}
-                </button>
-              </div>
+                <div className="flex items-center gap-3 sm:ml-auto w-full sm:w-auto">
+                    <button
+                      onClick={handleEnrollClick}
+                      disabled={isLoading}
+                      className={`flex-1 cursor-pointer sm:flex-none px-8 py-3 text-white text-sm font-semibold rounded-lg shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-2 ${
+                        isEnrolled || isCompleted
+                        ? "bg-blue-400 hover:bg-blue-500 text-white shadow-md" 
+                        : "bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-emerald-500/20"
+                      } ${isLoading ? "opacity-80 cursor-not-allowed" : ""}`}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Checking...
+                        </>
+                      ) : (
+                        isCompleted ? "View" : 
+                        isEnrolled ? "Open Course" : "Enroll Now"
+                      )}
+                    </button>
+                </div>
               )}
               
 

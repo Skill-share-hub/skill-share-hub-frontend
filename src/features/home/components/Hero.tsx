@@ -102,7 +102,7 @@ export default function Hero() {
 
               <button
                 onClick={handleBecomeTutorClick}
-                className="px-6 py-3 border border-[#145537]/20 text-[#145537] bg-white/50 backdrop-blur-sm text-sm lg:text-base font-medium rounded-full hover:bg-[#145537]/5 hover:border-[#145537]/40 transition-all duration-200 text-center"
+                className="px-6 py-3 cursor-pointer border border-[#145537]/20 text-[#145537] bg-white/50 backdrop-blur-sm text-sm lg:text-base font-medium rounded-full hover:bg-[#145537]/5 hover:border-[#145537]/40 transition-all duration-200 text-center"
               >
                 Become Tutor
               </button>

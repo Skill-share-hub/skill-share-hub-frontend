@@ -109,7 +109,7 @@ export default function ChatBot({ id }: { id: string }) {
                 {toggle ? <Users size={18} /> : <BotMessageSquare size={18} />}
                 <span className="font-bold text-sm">{toggle ? "Group Chat" : "Mentor Max AI"}</span>
               </div>
-              <button onClick={() => setOpen(false)} className="hover:bg-white/10 p-1 rounded-full"><X size={20} /></button>
+              <button onClick={() => setOpen(false)} className="hover:bg-white/10 p-1 cursor-pointer rounded-full"><X size={20} /></button>
             </div>
 
             <div className="flex bg-black/20 p-1 rounded-lg">
@@ -166,7 +166,7 @@ export default function ChatBot({ id }: { id: string }) {
         </div>
       )}
 
-      <button onClick={() => setOpen(!open)} className="w-14 h-14 bg-[#166534] rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform">
+      <button onClick={() => setOpen(!open)} className="w-14 h-14 cursor-pointer bg-[#166534] rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform">
         {open ? <X color="white" size={24} /> : <BotMessageSquare color="white" size={28} />}
       </button>
     </div>
