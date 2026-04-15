@@ -12,8 +12,9 @@ import CoursePricingStep from "../components/CreateCourse/CoursePricingStep"
 import CoursePublishStep from "../components/CreateCourse/CoursePublishStep"
 import { toast } from "react-hot-toast"
 import FullScreenLoader from "../../../shared/components/FullScreenLoader"
-import { ChevronRight, BookOpen } from "lucide-react"
+import { ChevronRight, BookOpen, X } from "lucide-react"
 import { motion } from "framer-motion"
+import { useNavigate } from "react-router-dom"
 
 const stepMeta = [
     { label: "Basic Info",    desc: "Title & description" },
@@ -25,7 +26,13 @@ const stepMeta = [
 export default function EditCoursePage() {
     const { id } = useParams<{ id: string }>()
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const [isLoading, setIsLoading] = useState(true)
+
+    const handleClose = () => {
+        dispatch(resetCourse())
+        navigate("/my-courses")
+    }
 
     const step = useSelector(
         (state: RootState) => state.courseBuilder.step
@@ -118,8 +125,17 @@ export default function EditCoursePage() {
                             </p>
                         </div>
 
-                        {/* Step pills — right side */}
-                        <div className="ml-auto flex items-center gap-1.5">
+                        {/* Close button */}
+                        <button
+                            onClick={handleClose}
+                            className="ml-auto p-2 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
+                            title="Close course editing"
+                        >
+                            <X size={18} />
+                        </button>
+
+                        {/* Step pills */}
+                        <div className="flex items-center gap-1.5">
                             {stepMeta.map((_, i) => {
                                 const idx = i + 1
                                 const done    = idx < step

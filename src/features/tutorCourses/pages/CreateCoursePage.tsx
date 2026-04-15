@@ -6,9 +6,11 @@ import CourseBasicInfoStep from "../components/CreateCourse/CourseBasicInfoStep"
 import CourseCategoryStep from "../components/CreateCourse/CourseCategoryStep"
 import CoursePricingStep from "../components/CreateCourse/CoursePricingStep"
 import CoursePublishStep from "../components/CreateCourse/CoursePublishStep"
-import { Link } from "react-router-dom"
-import { ChevronRight, BookOpen } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+import { ChevronRight, BookOpen, X } from "lucide-react"
 import { motion } from "framer-motion"
+import { useDispatch } from "react-redux"
+import { resetCourse } from "../slice/courseCreationSlice"
 
 const stepMeta = [
     { label: "Basic Info",    desc: "Title & description" },
@@ -19,6 +21,13 @@ const stepMeta = [
 
 export default function CreateCoursePage() {
     const step = useSelector((state: RootState) => state.courseBuilder.step)
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const handleClose = () => {
+        dispatch(resetCourse())
+        navigate("/my-courses")
+    }
 
     return (
         <div className="min-h-screen bg-[#f5f6f8] pb-24 pt-10 px-4 flex flex-col items-center">
@@ -59,8 +68,17 @@ export default function CreateCoursePage() {
                             </p>
                         </div>
 
-                        {/* Step pills — right side */}
-                        <div className="ml-auto flex items-center gap-1.5">
+                        {/* Close button */}
+                        <button
+                            onClick={handleClose}
+                            className="ml-auto p-2 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
+                            title="Close course creation"
+                        >
+                            <X size={18} />
+                        </button>
+
+                        {/* Step pills */}
+                        <div className="flex items-center gap-1.5">
                             {stepMeta.map((_, i) => {
                                 const idx = i + 1
                                 const done    = idx < step

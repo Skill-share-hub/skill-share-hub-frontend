@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import type { RootState } from "../../../../store/store"
-import { updateFields, nextStep } from "../../slice/courseCreationSlice"
+import { updateFields, nextStep, resetCourse } from "../../slice/courseCreationSlice"
+import { useNavigate } from "react-router-dom"
 
 const basicInfoSchema = z.object({
     title: z.string()
@@ -22,6 +23,7 @@ type BasicInfoFormValues = z.infer<typeof basicInfoSchema>
 
 export default function CourseBasicInfoStep() {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const course = useSelector((state: RootState) => state.courseBuilder)
 
     const {
@@ -163,10 +165,12 @@ export default function CourseBasicInfoStep() {
                                 className={`w-full appearance-none border ${errors.category ? "border-red-500" : "border-gray-200"} rounded-lg px-4 py-3 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent cursor-pointer`}
                             >
                                 <option value="" disabled>Select category</option>
-                                <option value="Design & Creative">Design & Creative</option>
                                 <option value="Development">Development</option>
-                                <option value="Business">Business</option>
+                                <option value="Web Development">Web Development</option>
+                                <option value="Design">Design</option>
                                 <option value="Marketing">Marketing</option>
+                                <option value="Data Science">Data Science</option>
+                                <option value="Business">Business</option>
                             </select>
                             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
                                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -201,6 +205,7 @@ export default function CourseBasicInfoStep() {
                 <div className="flex items-center justify-between pt-6 border-t border-gray-100">
                     <button
                         type="button"
+                        onClick={() => { dispatch(resetCourse()); navigate("/my-courses"); }}
                         className="px-6 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center transition-colors"
                     >
                         <svg className="w-4 h-4 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
