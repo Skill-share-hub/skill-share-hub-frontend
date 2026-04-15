@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { ArrowRightLeft, CheckCircle2, QrCode, ArrowUpCircle, ShieldCheck, User, RefreshCw, Coins, Info } from 'lucide-react';
+import { ArrowRightLeft, CheckCircle2, QrCode, ArrowUpCircle, ShieldCheck, User, RefreshCw, Coins, Info, Lock } from 'lucide-react';
 import api from '../../../shared/services/axios';
 import { useAppDispatch, useAppSelector } from '../../../shared/hooks/redux';
 import { fetchWalletBalance } from '../walletSlice';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export function WithdrawCredits(
-  { creditConst, fetchWallet, creditLimit, minCredit, creditCommision, creditCommisionLimit }:
-    { creditConst: number, fetchWallet: () => void, creditLimit: number, minCredit: number, creditCommision: number, creditCommisionLimit: number }
+  { creditConst, fetchWallet, creditLimit, minCredit, creditCommision, creditCommisionLimit, userRole }:
+    { creditConst: number, fetchWallet: () => void, creditLimit: number, minCredit: number, creditCommision: number, creditCommisionLimit: number, userRole: string }
 ) {
 
   const { user } = useAppSelector(state => state.user);
@@ -21,7 +23,10 @@ export function WithdrawCredits(
   const [credits, setCredits] = useState<number>(0);
   const dispatch = useAppDispatch();
 
-  // Calculations
+  const isPremium = userRole === 'premiumTutor';
+
+  const navigate = useNavigate();
+
   const grossAmount = credits * creditConst;
   const isCommisionApplicable = credits >= creditCommisionLimit;
   const commisionAmount = isCommisionApplicable ? grossAmount * creditCommision : 0;
@@ -42,7 +47,14 @@ export function WithdrawCredits(
   };
 
   const handleWithdrawalRequest = async () => {
-    if (credits > creditLimit || credits < minCredit) return;
+    if (credits > creditLimit) {
+      return toast.error(`maximum ${creditLimit} allowed!`);
+    }else if(credits < minCredit){
+      return toast.error(`minimum ${minCredit} needed!`);
+    }else if (credits > (user?.tutorProfile?.totalCreditsEarned || 10000)){
+      return toast.error(`Insufficient credits!`);
+    }
+
     try {
       setIsVerifying(true);
       await api.post('/wallet/credits/withdraw', { amount: credits });
@@ -57,7 +69,23 @@ export function WithdrawCredits(
   };
 
   return (
-    <div className="max-w-md overflow-hidden bg-white border border-gray-100 rounded-2xl shadow-lg">
+    <div className="relative max-w-md overflow-hidden bg-white border border-gray-100 rounded-2xl shadow-lg">
+      
+      {!isPremium && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[4px] p-6 text-center transition-all">
+          <div className="p-3 bg-white rounded-full shadow-xl mb-4">
+            <Lock className="w-6 h-6 text-[#164e33]" />
+          </div>
+          <h3 className="text-sm font-black text-gray-800 uppercase tracking-tight">Access Restricted</h3>
+          <p className="mt-1 text-[11px] font-bold text-gray-600 leading-relaxed">
+            Withdrawal is only allowed to <span className="text-[#164e33]">Premium Tutors</span>.
+          </p>
+          <button onClick={()=>navigate('/apply-premium')} className="mt-4 cursor-pointer px-4 py-2 bg-[#164e33] text-white text-[10px] font-bold rounded-lg shadow-lg hover:scale-105 transition-transform">
+            Become a Pro Tutor
+          </button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between px-5 py-3.5 bg-[#164e33]">
         <div className="flex items-center gap-2">
           <ArrowRightLeft className="w-4 h-4 text-white" />
@@ -157,15 +185,10 @@ export function WithdrawCredits(
               </div>
             </div>
 
-            {/* Fee Breakdown */}
             {credits > 0 && (
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100 space-y-1">
-                    <div className="flex justify-between text-[10px] font-medium text-gray-500">
-                        <span>Gross Amount</span>
-                        <span>₹{grossAmount.toFixed(2)}</span>
-                    </div>
                     <div className="flex justify-between text-[10px] font-medium text-red-500">
-                        <span>Platform Fee ({isCommisionApplicable ? (creditCommision * 100).toFixed(0) : 0}%)</span>
+                        <span>Withdrawal Fee ({isCommisionApplicable ? (creditCommision * 100).toFixed(0) : 0}%)</span>
                         <span>- ₹{commisionAmount.toFixed(2)}</span>
                     </div>
                     {!isCommisionApplicable && (
@@ -179,21 +202,20 @@ export function WithdrawCredits(
             <button
               onClick={handleWithdrawalRequest}
               disabled={credits > creditLimit || credits < minCredit || credits <= 0}
-              className="w-full py-3 bg-[#164e33] text-white text-xs font-bold rounded-xl shadow-lg disabled:opacity-40 flex items-center justify-center gap-2"
+              className="w-full py-3 cursor-pointer bg-[#164e33] text-white text-xs font-bold rounded-xl shadow-lg disabled:opacity-40 flex items-center justify-center gap-2"
             >
               <ArrowUpCircle className="w-4 h-4" />
               Confirm Withdrawal
             </button>
 
-            {/* Limits Info */}
             <div className="flex flex-col gap-1.5 p-3 bg-amber-50/30 border border-amber-100 rounded-xl">
                 <div className="flex items-center gap-1.5">
                     <Info className="w-3 h-3 text-amber-600" />
                     <span className="text-[10px] font-bold text-amber-800 uppercase">Withdrawal Limits</span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                    <div className="text-[10px] text-amber-700">Min: <span className="font-bold">{minCredit} Credits</span></div>
-                    <div className="text-[10px] text-amber-700 text-right">Max: <span className="font-bold">{creditLimit} Credits</span></div>
+                <div className="flex flex-col gap-1 items-start">
+                    <div className="text-[10px] text-amber-700">Minimum Withdrawal: <span className="font-bold">{minCredit} Credits</span></div>
+                    <div className="text-[10px] text-amber-700 text-right">Maximum Withdrawal: <span className="font-bold">{creditLimit} Credits</span></div>
                 </div>
             </div>
           </div>

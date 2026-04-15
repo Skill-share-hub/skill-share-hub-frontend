@@ -24,6 +24,8 @@ export type Transaction = {
 
 
 export type Wallet = {
+  earnedCreditValue : number;
+  earnedCreditBalance : number;
   creditBalance : number;
   creditValue : number;
   transactions : Transaction[];
