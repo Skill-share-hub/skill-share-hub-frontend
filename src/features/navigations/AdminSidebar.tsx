@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -8,6 +8,8 @@ import {
   GraduationCap,
   ShieldAlert,
 } from 'lucide-react';
+import { useAppDispatch } from '../../shared/hooks/redux';
+import { logoutUser } from '../auth/authThunk';
 
 const links = [
   { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
@@ -20,6 +22,15 @@ const links = [
 ];
 
 const AdminSidebar = () => {
+
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleLogoutConfirm = () => {
+      dispatch(logoutUser()).then(() => {
+          navigate('/login');
+      });
+  };
   return (
     <aside className="group fixed top-0 left-0 h-screen w-[60px] hover:w-56 bg-[#0d0f12] border-r border-gray-800 flex flex-col transition-all duration-300 ease-in-out z-50 overflow-hidden">
       {/* Logo */}
@@ -71,8 +82,9 @@ const AdminSidebar = () => {
       {/* Sign Out */}
       <div className="p-3 border-t border-gray-800 shrink-0">
         <button
+          onClick={handleLogoutConfirm}
           title="Sign Out"
-          className="flex items-center gap-3 px-2.5 py-2.5 w-full rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors duration-150"
+          className="flex cursor-pointer items-center gap-3 px-2.5 py-2.5 w-full rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors duration-150"
         >
           <LogOut size={18} className="shrink-0" strokeWidth={1.8} />
           <span className="whitespace-nowrap text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-75">
