@@ -45,7 +45,8 @@ export const submitCourse = createAsyncThunk(
         } catch (err: unknown) {
             const error = err as Error & { response?: { data?: { message?: string } } };
             const errorMsg = error.response?.data?.message || error.message || "Failed to submit course";
-            return rejectWithValue(errorMsg);
+            console.error("Course submit error:", errorMsg);
+            return rejectWithValue("Something went wrong. Please try again.");
         }
     }
 );

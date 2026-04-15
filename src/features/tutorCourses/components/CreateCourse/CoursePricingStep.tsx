@@ -7,8 +7,8 @@ import type { RootState } from "../../../../store/store"
 import { updateFields, nextStep, prevStep } from "../../slice/courseCreationSlice"
 
 const pricingSchema = z.object({
-    price: z.number().min(0, "Price cannot be negative"),
-    creditCost: z.number().min(0, "Credits cannot be negative"),
+    price: z.number().min(1, "Price must be at least $1"),
+    creditCost: z.number().min(100, "Minimum credit cost is 100"),
 })
 
 type PricingFormValues = z.infer<typeof pricingSchema>
@@ -89,9 +89,10 @@ export default function CoursePricingStep() {
                                     <input
                                         type="number"
                                         step="0.01"
-                                        min="0"
+                                        min="1"
                                         disabled={!isPremiumTutor}
                                         {...register("price", { valueAsNumber: true })}
+                                        onInput={(e) => { const input = e.target as HTMLInputElement; if (Number(input.value) < 0) input.value = '0'; }}
                                         className={`w-full border-0 rounded-lg pl-8 pr-4 py-4 font-medium focus:ring-2 focus:ring-green-600 transition-colors ${isPremiumTutor ? "bg-gray-50 text-gray-900 focus:bg-white" : "bg-gray-100 text-gray-400 cursor-not-allowed"
                                             }`}
                                     />
@@ -126,14 +127,20 @@ export default function CoursePricingStep() {
                                         </div>
                                         <input
                                             type="number"
-                                            min="0"
+                                            min="100"
                                             {...register("creditCost", { valueAsNumber: true })}
+                                            onInput={(e) => { const input = e.target as HTMLInputElement; if (Number(input.value) < 0) input.value = '0'; }}
                                             className="w-full border rounded-xl pl-12 pr-4 py-4 text-center font-bold text-xl focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent bg-white border-gray-200 text-gray-900"
-                                            placeholder="Example: 15"
+                                            placeholder="Min: 100"
                                         />
                                     </div>
                                     {errors.creditCost && <p className="mt-1 text-sm text-red-500 text-center">{errors.creditCost.message}</p>}
                                     <p className="mt-3 text-[11px] font-bold tracking-wider uppercase text-center text-green-700">1 CREDIT = $5.00 PLATFORM VALUE EQUIVALENT</p>
+                                    {watch("creditCost") > 0 && (
+                                        <div className="mt-3 bg-white border border-green-200 rounded-lg p-3 text-center">
+                                            <p className="text-sm text-gray-600">Equivalent Value: <span className="font-bold text-green-700 text-lg">${(watch("creditCost") * 5).toFixed(2)}</span></p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}

@@ -23,7 +23,7 @@ export default function CoursePublishStep() {
     const course = useSelector((state: RootState) => state.courseBuilder)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [previewImage, setPreviewImage] = useState<string | null>(course.thumbnailUrl || null)
-    const { formState: { isDirty } } = useForm<PublishFormValues>();
+
     const {
         handleSubmit,
         setValue,
@@ -58,8 +58,10 @@ export default function CoursePublishStep() {
         try {
             setIsPublishing(true)
             dispatch(updateFields({ ...data, status: "pending" }))
-            if (!isDirty&&!selectedFile) {
+            if (!selectedFile && course.id) {
                 toast.success("No changes made")
+                navigate("/my-courses")
+                dispatch(resetCourse())
                 return
             }
             await dispatch(submitCourse({ statusOverride: "pending", thumbnailFile: selectedFile })).unwrap()
@@ -69,7 +71,7 @@ export default function CoursePublishStep() {
             dispatch(resetCourse())
         } catch (error) {
             console.error("Course publish failed", error)
-            toast.error("Course publish failed")
+            toast.error("Failed to publish course. Please try again.")
 
         } finally {
             setIsPublishing(false)
@@ -87,18 +89,20 @@ export default function CoursePublishStep() {
             setIsSavingDraft(true)
             const currentValues = watch()
             dispatch(updateFields({ ...currentValues, status: "draft" }))
-            if (!isDirty&&!selectedFile) {
+            if (!selectedFile && course.id) {
                 toast.success("No changes made")
+                navigate("/my-courses")
+                dispatch(resetCourse())
                 return
             }
             await dispatch(submitCourse({ statusOverride: "draft", thumbnailFile: selectedFile })).unwrap()
 
             toast.success(course.id ? "Course update saved as draft!" : "Course saved as draft!")
-            navigate("/tutor/courses")
+            navigate("/my-courses")
             dispatch(resetCourse())
         } catch (error) {
             console.error("Save draft failed", error)
-            toast.error("Save draft failed")
+            toast.error("Failed to save draft. Please try again.")
         } finally {
             setIsSavingDraft(false)
         }
