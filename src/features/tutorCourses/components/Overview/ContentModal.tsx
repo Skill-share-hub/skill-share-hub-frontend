@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useForm, useFieldArray, type SubmitHandler, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { X, Upload, Film, Clock, Plus, Trash2, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { X, Upload, Film, Plus, Trash2, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import type { ContentModules } from "../../../content/content.types";
