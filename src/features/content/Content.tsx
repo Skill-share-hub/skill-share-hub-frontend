@@ -101,13 +101,13 @@ export default function Content() {
     }, [id]);
 
     useEffect(()=>{
-        socket.emit("join_room",content._id);
+        if (!content._id) return;
+        socket.emit("join_room", content._id);
 
         return () => {
-            socket.off("join_room");
-            socket.emit("leave_room",content._id);
+            socket.emit("leave_room", content._id);
         }
-    },[content])
+    },[content._id])
 
     if (!data) return <FullScreenLoader />
 

@@ -8,32 +8,35 @@ import { toast } from 'react-hot-toast';
 export const useInitializeSocket = () => {
   const dispatch = useDispatch<any>();
   const { user } = useSelector((state: RootState) => state.user);
+  const userId = user?._id || (user as any)?._id;
 
   useEffect(() => {
-    const userId = user?._id || (user as any)?._id;
-    if (userId) {
-      // Connect and join personal room
+    if (!userId) return;
+
+    // Only connect if not already connected
+    if (!socket.connected) {
       socket.connect();
-      socket.emit('join', userId);
-      
-      // Fetch initial notifications
-      dispatch(fetchNotifications({ page: 1, limit: 10 }));
-
-      // Listen for notifications
-      socket.on('notification', (notification) => {
-        dispatch(addNotification(notification));
-        
-        // Show toast
-        toast.success(notification.title || 'New Notification', {
-          description: notification.message,
-          icon: '🔔',
-        } as any);
-      });
-
-      return () => {
-        socket.off('notification');
-        socket.disconnect();
-      };
     }
-  }, [user, dispatch]);
+
+    socket.emit('join', userId);
+
+    // Fetch initial notifications
+    dispatch(fetchNotifications({ page: 1, limit: 10 }));
+
+    // Listen for notifications
+    const handleNotification = (notification: any) => {
+      dispatch(addNotification(notification));
+      toast.success(notification.title || 'New Notification', {
+        description: notification.message,
+        icon: '🔔',
+      } as any);
+    };
+
+    socket.on('notification', handleNotification);
+
+    return () => {
+      socket.off('notification', handleNotification);
+      socket.disconnect();
+    };
+  }, [userId, dispatch]);
 };
