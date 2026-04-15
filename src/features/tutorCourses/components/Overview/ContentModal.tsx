@@ -20,7 +20,6 @@ const quizQuestionSchema = z.object({
 const contentSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(100, "Title is too long"),
   summary: z.string().min(20, "Summary must be at least 20 characters").max(500, "Summary is too long"),
-  duration: z.number().min(1, "Duration must be at least 1 minute"),
   quizData: z.array(quizQuestionSchema),
 });
 
@@ -39,6 +38,7 @@ interface ContentModalProps {
   onSubmit: (formData: FormData) => void;
   initialData?: Partial<ContentModules> | null;
   isSubmitting: boolean;
+  uploadProgress?: number;
 }
 
 // ─── Single Question Card ─────────────────────────────────────────────────────
@@ -190,6 +190,7 @@ export default function ContentModal({
   onSubmit,
   initialData,
   isSubmitting,
+  uploadProgress,
 }: ContentModalProps) {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -197,6 +198,7 @@ export default function ContentModal({
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(
     initialData?.thumbnailUrl || null
   );
+  const [videoDuration, setVideoDuration] = useState<number>(initialData?.duration || 0);
 
   const {
     register,
@@ -209,7 +211,6 @@ export default function ContentModal({
     defaultValues: {
       title: initialData?.title || "",
       summary: initialData?.summary || "",
-      duration: initialData?.duration || 0,
       quizData: [],
     },
   });
@@ -236,16 +237,17 @@ export default function ContentModal({
       reset({
         title: initialData.title || "",
         summary: initialData.summary || "",
-        duration: initialData.duration || 0,
         quizData: existingQuiz,
       });
       setThumbnailPreview(initialData.thumbnailUrl || null);
+      setVideoDuration(initialData.duration || 0);
     } else {
-      reset({ title: "", summary: "", duration: 0, quizData: [] });
+      reset({ title: "", summary: "", quizData: [] });
       setVideoFile(null);
       setThumbnailFile(null);
       setVideoPreview(null);
       setThumbnailPreview(null);
+      setVideoDuration(0);
     }
   }, [initialData, reset, isOpen]);
 
@@ -260,7 +262,7 @@ export default function ContentModal({
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("summary", data.summary);
-    formData.append("duration", String(data.duration));
+    formData.append("duration", String(videoDuration));
 
     if (hasQuiz) {
       const quizPayload = data.quizData.map((q) => ({
@@ -271,7 +273,13 @@ export default function ContentModal({
       formData.append("quizData", JSON.stringify(quizPayload));
     }
 
-    if (videoFile) formData.append("contentUrl", videoFile);
+    if (videoFile) {
+      formData.append("contentUrl", videoFile);
+    } else if (initialData) {
+      const storedUrl = (initialData as any).url || initialData.contentUrl;
+      if (storedUrl) formData.append("contentUrl", storedUrl);
+    }
+
     if (thumbnailFile) formData.append("thumbnailUrl", thumbnailFile);
     onSubmit(formData);
   };
@@ -281,6 +289,15 @@ export default function ContentModal({
     if (file) {
       setVideoFile(file);
       setVideoPreview(file.name);
+
+      const video = document.createElement("video");
+      video.preload = "metadata";
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src);
+        const durationInMinutes = Math.ceil(video.duration / 60);
+        setVideoDuration(durationInMinutes > 0 ? durationInMinutes : 1);
+      };
+      video.src = URL.createObjectURL(file);
     }
   };
 
@@ -339,24 +356,10 @@ export default function ContentModal({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Duration */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <Clock size={16} /> Duration (minutes)
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    {...register("duration", { valueAsNumber: true })}
-                    className={`w-full px-4 py-3 rounded-xl border ${errors.duration ? "border-red-500" : "border-gray-200"} focus:ring-2 focus:ring-[#166534] outline-none transition-all`}
-                  />
-                  {errors.duration && <p className="mt-1 text-xs text-red-500">{errors.duration.message}</p>}
-                </div>
-
                 {/* Video Upload */}
-                <div>
+                <div className="md:col-span-2 lg:col-span-1">
                   <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <Film size={16} /> Video Content
+                    <Film size={16} /> Video Content {videoDuration > 0 && <span className="text-xs font-normal text-gray-400">({videoDuration} min)</span>}
                   </label>
                   <div className="relative group">
                     <input
@@ -463,16 +466,28 @@ export default function ContentModal({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-[2] py-3 px-4 rounded-xl bg-[#166534] text-white text-sm font-bold hover:bg-[#14532D] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-green-900/10"
+                  className="relative overflow-hidden flex-[2] py-3 px-4 rounded-xl bg-[#166534] text-white text-sm font-bold hover:bg-[#14532D] transition-all disabled:opacity-80 flex items-center justify-center gap-2 shadow-lg shadow-green-900/10"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    initialData ? "Update Content" : "Add Content"
+                  {isSubmitting && uploadProgress !== undefined && uploadProgress > 0 && uploadProgress < 100 && (
+                    <div 
+                      className="absolute inset-0 bg-[#064e3b] transition-all duration-300 ease-out" 
+                      style={{ width: `${uploadProgress}%` }} 
+                    />
                   )}
+                  <span className="relative z-10 flex items-center gap-2">
+                    {isSubmitting ? (
+                      <>
+                        {uploadProgress === 100 ? "Processing..." : (uploadProgress && uploadProgress > 0) ? `Uploading ${Math.round(uploadProgress)}%` : (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            Saving...
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      initialData ? "Update Content" : "Add Content"
+                    )}
+                  </span>
                 </button>
               </div>
             </form>

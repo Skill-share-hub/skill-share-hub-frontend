@@ -27,31 +27,44 @@ const CurriculumOverview = ({ course }: CurriculumOverviewProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [editingContent, setEditingContent] = useState<any>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [uploadProgress, setUploadProgress] = useState(0)
     const [isDeleting, setIsDeleting] = useState<string | null>(null)
 
     const handleAddContent = async (formData: FormData) => {
         setIsSubmitting(true)
+        setUploadProgress(0)
         try {
-            await dispatch(addCourseContent({ id: course._id, formData })).unwrap()
+            await dispatch(addCourseContent({ 
+                id: course._id, 
+                formData,
+                onUploadProgress: (e) => setUploadProgress((e.loaded / (e.total || 1)) * 100)
+            })).unwrap()
             setIsModalOpen(false)
         } catch (error: any) {
             toast.error(error || "Failed to add content")
         } finally {
             setIsSubmitting(false)
+            setUploadProgress(0)
         }
     }
 
     const handleUpdateContent = async (formData: FormData) => {
         if (!editingContent) return
         setIsSubmitting(true)
+        setUploadProgress(0)
         try {
-            await dispatch(updateCourseContent({ contentId: editingContent._id, formData })).unwrap()
+            await dispatch(updateCourseContent({ 
+                contentId: editingContent._id, 
+                formData,
+                onUploadProgress: (e) => setUploadProgress((e.loaded / (e.total || 1)) * 100)
+            })).unwrap()
             setIsModalOpen(false)
             setEditingContent(null)
         } catch (error: any) {
             toast.error(error || "Failed to update content")
         } finally {
             setIsSubmitting(false)
+            setUploadProgress(0)
         }
     }
 
@@ -247,6 +260,7 @@ const CurriculumOverview = ({ course }: CurriculumOverviewProps) => {
                 onSubmit={editingContent ? handleUpdateContent : handleAddContent}
                 initialData={editingContent}
                 isSubmitting={isSubmitting}
+                uploadProgress={uploadProgress}
             />
         </div>
     )

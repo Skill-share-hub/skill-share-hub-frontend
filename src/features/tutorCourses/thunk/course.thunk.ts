@@ -101,9 +101,9 @@ export const fetchCourseById = createAsyncThunk(
 
 export const addCourseContent = createAsyncThunk(
     "course/addContent",
-    async ({ id, formData }: { id: string, formData: FormData }, { rejectWithValue }) => {
+    async ({ id, formData, onUploadProgress }: { id: string, formData: FormData, onUploadProgress?: (progressEvent: any) => void }, { rejectWithValue }) => {
         try {
-            const response = await addCourseContentApi(id, formData);
+            const response = await addCourseContentApi(id, formData, onUploadProgress);
             if (response.success) {
                 toast.success("Content added successfully");
                 return response.data;
@@ -118,9 +118,9 @@ export const addCourseContent = createAsyncThunk(
 
 export const updateCourseContent = createAsyncThunk(
     "course/updateContent",
-    async ({ contentId, formData }: { contentId: string, formData: FormData }, { rejectWithValue }) => {
+    async ({ contentId, formData, onUploadProgress }: { contentId: string, formData: FormData, onUploadProgress?: (progressEvent: any) => void }, { rejectWithValue }) => {
         try {
-            const response = await updateCourseContentApi(contentId, formData);
+            const response = await updateCourseContentApi(contentId, formData, onUploadProgress);
             if (response.success) {
                 toast.success("Content updated successfully");
                 return response.data;

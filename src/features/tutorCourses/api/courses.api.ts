@@ -39,20 +39,22 @@ export const getCourseByIdApi = async (id: string) => {
     return response.data
 }
 
-export const addCourseContentApi = async (id: string, contentData: FormData) => {
+export const addCourseContentApi = async (id: string, contentData: FormData, onUploadProgress?: (progressEvent: any) => void) => {
     const response = await api.post(`/courses/${id}/content`, contentData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
+        onUploadProgress
     })
     return response.data
 }
 
-export const updateCourseContentApi = async (contentId: string, contentData: FormData) => {
+export const updateCourseContentApi = async (contentId: string, contentData: FormData, onUploadProgress?: (progressEvent: any) => void) => {
     const response = await api.put(`/courses/content/${contentId}`, contentData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
+        onUploadProgress
     })
     return response.data
 }
