@@ -25,7 +25,6 @@ export const getTutorCoursesApi = async (page?: number, limit?: number, search?:
     if (type) url += `&type=${encodeURIComponent(type)}`;
 
     const response = await api.get(url)
-    console.log(response.data.data)
     return response.data.data
 }
 

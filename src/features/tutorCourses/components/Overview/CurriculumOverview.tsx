@@ -1,8 +1,6 @@
 import { useState } from "react"
 import {
     PlayCircle,
-    Clock,
-    FileText,
     ChevronDown,
     HelpCircle,
     Layers
@@ -13,6 +11,7 @@ import type { Course } from "../../types/course.types"
 import { useAppDispatch } from "../../../../shared/hooks/redux"
 import { addCourseContent, deleteCourseContent, updateCourseContent } from "../../thunk/course.thunk"
 import ContentModal from "./ContentModal"
+import TutorVideoPlayer from "./TutorVideoPlayer"
 import { Plus, Edit2, Trash2 } from "lucide-react"
 import toast from "react-hot-toast"
 
@@ -123,9 +122,8 @@ const CurriculumOverview = ({ course }: CurriculumOverviewProps) => {
                     {moduleCount > 0 ? (
                         course?.contentModules?.map((module, idx) => {
                             const isOpen = expandedModule === idx
-                            const duration = module.duration || 0
-                            const mins = Math.floor(duration / 60)
-                            const secs = duration % 60
+                            const videoUrl = module.contentUrl || module.url
+                            const videoPoster = module.thumbnailUrl || module.thumbnail
 
                             return (
                                 <div key={idx} className={`transition-colors ${isOpen ? "bg-gray-50/50" : "bg-white hover:bg-gray-50/40"}`}>
@@ -146,21 +144,11 @@ const CurriculumOverview = ({ course }: CurriculumOverviewProps) => {
                                             <PlayCircle size={15} strokeWidth={2} />
                                         </div>
 
-                                        {/* Title + meta */}
+                                        {/* Title */}
                                         <div className="flex-1 min-w-0">
                                             <p className="text-[14px] font-bold text-gray-900 truncate">
                                                 {module.title || `Module ${idx + 1}`}
                                             </p>
-                                            <div className="flex items-center gap-3 mt-0.5 text-[11px] text-gray-400 font-medium">
-                                                <span className="flex items-center gap-1">
-                                                    <FileText size={10} strokeWidth={2.5} />
-                                                    0 Lessons
-                                                </span>
-                                                <span className="flex items-center gap-1">
-                                                    <Clock size={10} strokeWidth={2.5} />
-                                                    {mins}m {secs}s
-                                                </span>
-                                            </div>
                                         </div>
 
                                         {/* Chevron */}
@@ -183,20 +171,9 @@ const CurriculumOverview = ({ course }: CurriculumOverviewProps) => {
                                                 className="overflow-hidden"
                                             >
                                                 <div className="px-7 pb-6 pt-1 ml-[3.75rem] flex flex-col gap-4">
-                                                    {module.url && (
-                                                        <div className="relative aspect-video w-full max-w-xl rounded-xl overflow-hidden bg-gray-900 border border-gray-100 shadow-sm group/video mb-2">
-                                                            <video
-                                                                className="w-full h-full object-cover"
-                                                                poster={module.thumbnail}
-                                                                controls
-                                                            >
-                                                                <source src={module.url} type="video/mp4" />
-                                                                Your browser does not support the video tag.
-                                                            </video>
-                                                            <div className="absolute top-3 left-3 px-2 py-1 bg-black/50 backdrop-blur-md rounded-lg text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5 opacity-0 group-hover/video:opacity-100 transition-opacity">
-                                                                <PlayCircle size={12} className="text-emerald-400" />
-                                                                Lesson Video
-                                                            </div>
+                                                    {videoUrl && (
+                                                        <div className="w-full max-w-xl mb-2">
+                                                            <TutorVideoPlayer url={videoUrl} poster={videoPoster} />
                                                         </div>
                                                     )}
                                                     

@@ -89,14 +89,25 @@ const courseSlice = createSlice({
             })
             .addCase(addCourseContent.fulfilled, (state, action) => {
                 if (state.currentCourse) {
-                    // Assuming the payload is the updated course or just the new content item
-                    // If payload is the full course:
-                    state.currentCourse = action.payload;
+                    const newContent = action.payload;
+                    if (!state.currentCourse.contentModules) {
+                        state.currentCourse.contentModules = [];
+                    }
+                    const exists = state.currentCourse.contentModules.some((m) => m._id === newContent._id);
+                    if (!exists) {
+                        state.currentCourse.contentModules.push(newContent);
+                    }
                 }
             })
             .addCase(updateCourseContent.fulfilled, (state, action) => {
                 if (state.currentCourse) {
-                    state.currentCourse = action.payload;
+                    const updatedContent = action.payload;
+                    if (!state.currentCourse.contentModules) {
+                        state.currentCourse.contentModules = [];
+                    }
+                    state.currentCourse.contentModules = state.currentCourse.contentModules.map((m) =>
+                        m._id === updatedContent._id ? { ...m, ...updatedContent } : m
+                    );
                 }
             })
             .addCase(deleteCourseContent.fulfilled, (state, action) => {

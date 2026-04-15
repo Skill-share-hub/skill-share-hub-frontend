@@ -41,9 +41,11 @@ export interface Course {
   contentModules?: {
     _id: string
     title: string
-    url: string
+    url?: string
+    contentUrl?: string
     duration: number
     summary?: string
     thumbnail?: string
+    thumbnailUrl?: string
   }[]
 }

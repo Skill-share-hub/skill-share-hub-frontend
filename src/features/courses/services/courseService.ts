@@ -1,6 +1,13 @@
 import api from '../../../shared/services/axios';
 import type { FetchCoursesParams, PaginatedResponse, Course } from '../types/course.types';
 
+const logCourseApi = (label: string, payload: unknown) => {
+  if (!import.meta.env.DEV) return;
+  console.groupCollapsed(`[Course API] ${label}`);
+  console.log(payload);
+  console.groupEnd();
+};
+
 export const courseService = {
 
   fetchCourses: async (params: FetchCoursesParams): Promise<PaginatedResponse<Course>> => {
@@ -10,6 +17,7 @@ export const courseService = {
     );
 
     const response = await api.get('/courses', { params: cleanParams });
+    logCourseApi('GET /courses response', response.data);
 
     const backend = response.data.data;
 
@@ -27,6 +35,7 @@ export const courseService = {
 
   fetchCourseById: async (id: string): Promise<{ success: boolean; data: Course }> => {
     const response = await api.get(`/courses/${id}`);
+    logCourseApi(`GET /courses/${id} response`, response.data);
     return response.data;
   },
 
