@@ -149,7 +149,7 @@ export default function Login() {
 
                 <button
                   type="submit"
-                  className="mt-2 w-full rounded-lg bg-[#145537] py-3 font-semibold text-white transition hover:bg-[#0d3e27] cursor-pointer active:scale-95"
+                  className="mt-2 w-3/4 mx-auto rounded-lg bg-[#145537] py-3 font-semibold text-white transition hover:bg-[#0d3e27] cursor-pointer active:scale-95"
                 >
                   {loading ? (<ButtonSpinner />) : "Sign in"}
                 </button>
@@ -162,7 +162,9 @@ export default function Login() {
                 </span>
               </div>
 
-              <GoogleLogin shape="pill" onSuccess={onSuccess} onError={() => console.log("Login failed")} />
+              <div className="flex justify-center">
+                <GoogleLogin shape="pill" onSuccess={onSuccess} onError={() => console.log("Login failed")} />
+              </div>
 
               <div className="mt-6 text-sm text-gray-500 flex justify-center items-center gap-1">
                 <div>Don't have an account?</div>
