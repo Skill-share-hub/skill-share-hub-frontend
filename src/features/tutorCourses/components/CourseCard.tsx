@@ -27,12 +27,12 @@ const CourseCard = ({ course }: Props) => {
     setIsPublishing(true)
     try {
       await dispatch(publishCourse(courseId)).unwrap();
-      toast.success("Course published successfully!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Course publishing failed", error);
-      toast.error("Course publishing failed");
+      toast.error(error || "Course publishing failed");
     } finally {
       setIsPublishing(false)
+      setIsConfirmOpen(false)
     }
   };
 

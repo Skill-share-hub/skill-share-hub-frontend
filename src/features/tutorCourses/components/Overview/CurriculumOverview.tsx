@@ -88,6 +88,9 @@ const CurriculumOverview = ({ course }: CurriculumOverviewProps) => {
 
     const moduleCount = course.contentModules?.length || 0
 
+    const getModuleVideoUrl = (module: NonNullable<Course["contentModules"]>[number]) =>
+        module.contentUrl || module.url || ""
+
     return (
         <div className="mb-12">
             {/* Section card — mirrors OverviewHero structure */}
@@ -126,6 +129,8 @@ const CurriculumOverview = ({ course }: CurriculumOverviewProps) => {
                             const duration = module.duration || 0
                             const mins = Math.floor(duration / 60)
                             const secs = duration % 60
+                            const videoUrl = getModuleVideoUrl(module)
+                            const posterUrl = module.thumbnailUrl || module.thumbnail
 
                             return (
                                 <div key={idx} className={`transition-colors ${isOpen ? "bg-gray-50/50" : "bg-white hover:bg-gray-50/40"}`}>
@@ -183,14 +188,14 @@ const CurriculumOverview = ({ course }: CurriculumOverviewProps) => {
                                                 className="overflow-hidden"
                                             >
                                                 <div className="px-7 pb-6 pt-1 ml-[3.75rem] flex flex-col gap-4">
-                                                    {module.url && (
+                                                    {videoUrl && (
                                                         <div className="relative aspect-video w-full max-w-xl rounded-xl overflow-hidden bg-gray-900 border border-gray-100 shadow-sm group/video mb-2">
                                                             <video
                                                                 className="w-full h-full object-cover"
-                                                                poster={module.thumbnail}
+                                                                poster={posterUrl}
                                                                 controls
                                                             >
-                                                                <source src={module.url} type="video/mp4" />
+                                                                <source src={videoUrl} type="video/mp4" />
                                                                 Your browser does not support the video tag.
                                                             </video>
                                                             <div className="absolute top-3 left-3 px-2 py-1 bg-black/50 backdrop-blur-md rounded-lg text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5 opacity-0 group-hover/video:opacity-100 transition-opacity">
@@ -205,6 +210,18 @@ const CurriculumOverview = ({ course }: CurriculumOverviewProps) => {
                                                             {module.summary || "No description provided for this module."}
                                                         </p>
                                                         <div className="flex items-center gap-1.5 shrink-0">
+                                                            {videoUrl && (
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation()
+                                                                        window.open(videoUrl, "_blank", "noopener,noreferrer")
+                                                                    }}
+                                                                    className="p-2 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+                                                                    title="View content"
+                                                                >
+                                                                    <PlayCircle size={14} strokeWidth={2} />
+                                                                </button>
+                                                            )}
                                                             <button
                                                                 onClick={(e) => openEditModal(module, e)}
                                                                 className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"

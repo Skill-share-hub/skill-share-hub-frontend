@@ -35,15 +35,18 @@ export interface Course {
   creditCost?: number
   thumbnailUrl?: string
   ratingsAverage?: number
+  ratingsCount?: number
   totalEnrollments?: number
   createdAt?: string
   updatedAt?: string
   contentModules?: {
     _id: string
     title: string
-    url: string
+    url?: string
+    contentUrl?: string
     duration: number
     summary?: string
     thumbnail?: string
+    thumbnailUrl?: string
   }[]
 }

@@ -103,9 +103,9 @@ const OverviewHero = ({ course }: OverviewHeroProps) => {
                             <h1 className="text-[1.6rem] font-extrabold text-gray-900 leading-tight tracking-tight">
                                 {course.title}
                             </h1>
-                            <div>
-                                <p className={`text-gray-500 text-sm leading-relaxed break-words ${expanded ? "" : "line-clamp-3"}`}>
-                                    {course.description}
+                            <div className="min-w-0 overflow-hidden">
+                                <p className={`max-w-full overflow-hidden text-gray-500 text-sm leading-relaxed break-words [overflow-wrap:anywhere] ${expanded ? "" : "line-clamp-3"}`}>
+                                    {course.description || "No description provided."}
                                 </p>
                                 {course.description?.length > 100 && (
                                     <button

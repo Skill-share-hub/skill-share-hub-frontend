@@ -2,7 +2,7 @@ import {
     Users,
     Star,
     DollarSign,
-    ArrowUpRight
+    Layers
 } from "lucide-react"
 import { motion } from "framer-motion"
 import type { Course } from "../../types/course.types"
@@ -12,34 +12,42 @@ interface OverviewStatsProps {
 }
 
 const OverviewStats = ({ course }: OverviewStatsProps) => {
+    const ratingsCount = course.ratingsCount || 0
+    const ratingsAverage = ratingsCount > 0 ? (course.ratingsAverage || 0).toFixed(1) : "0.0"
+    const moduleCount = course.contentModules?.length || 0
+    const revenueValue = course.courseType === "paid"
+        ? `$${((course.price || 0) * (course.totalEnrollments || 0)).toLocaleString()}`
+        : `${((course.creditCost || 0) * (course.totalEnrollments || 0)).toLocaleString()} credits`
+
     const stats = [
         {
             label: "Enrollments",
             value: course.totalEnrollments?.toLocaleString() || "0",
             icon: Users,
-            trend: "+12% this month",
-            trendUp: true
+            hint: "Total student enrollments"
         },
         {
             label: "Avg. Rating",
-            value: course.ratingsAverage?.toFixed(1) || "0.0",
+            value: ratingsAverage,
             icon: Star,
-            trend: "Based on 842 reviews",
-            trendUp: null
+            hint: ratingsCount > 0 ? `Based on ${ratingsCount} review${ratingsCount === 1 ? "" : "s"}` : "No reviews yet"
         },
         {
-            label: "Revenue",
-            value: course.courseType === 'paid' ?
-                `$${((course.price || 0) * (course.totalEnrollments || 0) * 0.8).toLocaleString()}k` :
-                `${(course.creditCost || 0) * (course.totalEnrollments || 0)}`,
+            label: course.courseType === "paid" ? "Gross Sales" : "Credits Earned",
+            value: revenueValue,
             icon: DollarSign,
-            trend: "+8% growth",
-            trendUp: true
+            hint: course.courseType === "paid" ? "Calculated from price x enrollments" : "Calculated from credit cost x enrollments"
+        },
+        {
+            label: "Modules",
+            value: moduleCount.toLocaleString(),
+            icon: Layers,
+            hint: "Published curriculum items"
         },
     ]
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
             {stats.map((stat, idx) => (
                 <motion.div
                     key={stat.label}
@@ -60,9 +68,8 @@ const OverviewStats = ({ course }: OverviewStatsProps) => {
                     </div>
 
                     <div className="flex items-center gap-1.5 text-xs font-medium">
-                        {stat.trendUp === true && <ArrowUpRight size={14} className="text-green-500" />}
-                        <span className={stat.trendUp === true ? "text-green-600" : "text-gray-400"}>
-                            {stat.trend}
+                        <span className="text-gray-400">
+                            {stat.hint}
                         </span>
                     </div>
                 </motion.div>
