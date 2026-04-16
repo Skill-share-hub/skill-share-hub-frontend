@@ -7,8 +7,20 @@ import type { RootState } from "../../../../store/store"
 import { updateFields, nextStep, prevStep } from "../../slice/courseCreationSlice"
 
 const pricingSchema = z.object({
-    price: z.number().min(1, "Price must be at least $1"),
-    creditCost: z.number().min(100, "Minimum credit cost is 100"),
+  courseType: z.enum(["paid", "credit"]),
+  price: z.number().min(1, "Price must be at least 1").optional(),
+  creditCost: z.number().min(100, "Minimum credit cost is 100").optional(),
+}).refine((data) => {
+  if (data.courseType === "paid") {
+    return data.price !== undefined && !isNaN(data.price)
+  }
+  if (data.courseType === "credit") {
+    return data.creditCost !== undefined && !isNaN(data.creditCost)
+  }
+  return true
+}, {
+  message: "Please provide valid pricing based on course type",
+  path: ["price"], 
 })
 
 type PricingFormValues = z.infer<typeof pricingSchema>
@@ -19,29 +31,37 @@ export default function CoursePricingStep() {
     const user = useSelector((state: RootState) => state.user.user)
     const isPremiumTutor = user?.role === "premiumTutor"
 
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        watch,
-        formState: { errors },
-    } = useForm<PricingFormValues>({
-        resolver: zodResolver(pricingSchema),
-        defaultValues: {
-            price: course.price || 0,
-            creditCost: course.creditCost || 0,
-        },
-    })
+  const {
+  register,
+  handleSubmit,
+  setValue,
+  watch,
+  formState: { errors },
+} = useForm<PricingFormValues>({
+  resolver: zodResolver(pricingSchema),
+  defaultValues: {
+    courseType: course.courseType || "paid",
+    price: course.price ?? undefined,
+    creditCost: course.creditCost ?? undefined,
+  },
+})
 
     // To help debug why the form might not be submitting
     if (Object.keys(errors).length > 0) {
         console.log("Pricing Form Errors:", errors)
     }
 
-    useEffect(() => {
-        setValue("price", course.price || (isPremiumTutor ? 49.99 : 0))
-        setValue("creditCost", course.creditCost || (isPremiumTutor ? 12 : 0))
-    }, [course, setValue, isPremiumTutor])
+   useEffect(() => {
+  setValue("courseType", course.courseType)
+
+  if (course.courseType === "paid") {
+    setValue("price", course.price ?? (isPremiumTutor ? 49.99 : undefined))
+    setValue("creditCost", undefined)
+  } else {
+    setValue("creditCost", course.creditCost ?? (isPremiumTutor ? 12 : undefined))
+    setValue("price", undefined)
+  }
+}, [course, setValue, isPremiumTutor])
 
     const onSubmit = (data: PricingFormValues) => {
         dispatch(updateFields(data))
@@ -57,7 +77,7 @@ export default function CoursePricingStep() {
     const currentPrice = watch("price") || 0
     const platformFee = currentPrice * 0.20
     const earnings = currentPrice - platformFee
-
+    const creditCost = watch("creditCost")
     return (
         <div className="bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 max-w-4xl mx-auto">
             <div className="text-center mb-10">
@@ -87,15 +107,15 @@ export default function CoursePricingStep() {
                                         <span className={`font-medium ${isPremiumTutor ? "text-gray-500" : "text-gray-400"}`}>$</span>
                                     </div>
                                     <input
-                                        type="number"
-                                        step="0.01"
-                                        min="1"
-                                        disabled={!isPremiumTutor}
-                                        {...register("price", { valueAsNumber: true })}
-                                        onInput={(e) => { const input = e.target as HTMLInputElement; if (Number(input.value) < 0) input.value = '0'; }}
-                                        className={`w-full border-0 rounded-lg pl-8 pr-4 py-4 font-medium focus:ring-2 focus:ring-green-600 transition-colors ${isPremiumTutor ? "bg-gray-50 text-gray-900 focus:bg-white" : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                            }`}
-                                    />
+  type="number"
+  step="0.01"
+  min="1"
+  disabled={!isPremiumTutor}
+  {...register("price", {
+    valueAsNumber: true,
+    setValueAs: (v) => (v === "" ? undefined : Number(v)),
+  })}
+/>
                                 </div>
                                 {errors.price && <p className="mt-1 text-sm text-red-500">{errors.price.message}</p>}
                                 {isPremiumTutor && <p className="mt-2 text-xs text-gray-400">Standard market value for similar courses: $39 - $89</p>}
@@ -126,21 +146,26 @@ export default function CoursePricingStep() {
                                             </svg>
                                         </div>
                                         <input
-                                            type="number"
-                                            min="100"
-                                            {...register("creditCost", { valueAsNumber: true })}
-                                            onInput={(e) => { const input = e.target as HTMLInputElement; if (Number(input.value) < 0) input.value = '0'; }}
-                                            className="w-full border rounded-xl pl-12 pr-4 py-4 text-center font-bold text-xl focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent bg-white border-gray-200 text-gray-900"
-                                            placeholder="Min: 100"
-                                        />
+  type="number"
+  min="100"
+  {...register("creditCost", {
+    valueAsNumber: true,
+    setValueAs: (v) => (v === "" ? undefined : Number(v)),
+  })}
+/>
                                     </div>
                                     {errors.creditCost && <p className="mt-1 text-sm text-red-500 text-center">{errors.creditCost.message}</p>}
-                                    <p className="mt-3 text-[11px] font-bold tracking-wider uppercase text-center text-green-700">1 CREDIT = $5.00 PLATFORM VALUE EQUIVALENT</p>
-                                    {watch("creditCost") > 0 && (
-                                        <div className="mt-3 bg-white border border-green-200 rounded-lg p-3 text-center">
-                                            <p className="text-sm text-gray-600">Equivalent Value: <span className="font-bold text-green-700 text-lg">${(watch("creditCost") * 5).toFixed(2)}</span></p>
-                                        </div>
-                                    )}
+                                    <p className="mt-3 text-[11px] font-bold tracking-wider uppercase text-center text-green-700">1 CREDIT = $2.00 PLATFORM VALUE EQUIVALENT</p>
+                                    {creditCost && creditCost > 0 && (
+  <div className="mt-3 bg-white border border-green-200 rounded-lg p-3 text-center">
+    <p className="text-sm text-gray-600">
+      Equivalent Value:{" "}
+      <span className="font-bold text-green-700 text-lg">
+        ${(creditCost * 2).toFixed(2)}
+      </span>
+    </p>
+  </div>
+)}
                                 </div>
                             </div>
                         )}
