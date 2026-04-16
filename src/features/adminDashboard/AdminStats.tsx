@@ -1,4 +1,5 @@
-import { Users, BookOpen, UserCheck, Clock, ArrowUpRight } from 'lucide-react';
+import { Users, BookOpen, UserCheck, Clock, ArrowUpRight, BarChart3, LayoutGrid } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const THEME = {
   "users": {
@@ -40,9 +41,74 @@ export default function AdminStats({ data }: { data: { stats: any[] } }) {
       {stats.map((stat) => (
         <StatCard key={stat.title} stat={stat} />
       ))}
+      <QuickActionsCard />
     </div>
   );
 }
+
+function QuickActionsCard() {
+
+  const navigate = useNavigate();
+  const actions = [
+  { 
+    label: "Manage Users", 
+    icon: Users, 
+    onClick: () => navigate('/admin/Users') 
+  },
+  { 
+    label: "Manage Courses", 
+    icon: BookOpen, 
+    onClick: () => navigate('/admin/courses') 
+  },
+  { 
+    label: "System Reports", 
+    icon: BarChart3, 
+    onClick: () => navigate('/admin/reports') 
+  },
+];
+
+  return (
+    <div className="group relative flex flex-col rounded-xl border border-gray-800 bg-[#13161b] p-5 overflow-hidden transition-all duration-200 hover:border-gray-700">
+      
+      {/* Header: Fixed icon to match the theme size */}
+      <div className="flex items-start justify-between mb-5">
+        <div className="p-2.5 rounded-lg bg-gray-800/50 text-gray-400">
+          <LayoutGrid size={20} strokeWidth={1.8} />
+        </div>
+        <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#164e33]/20 text-[#164e33] text-[10px] font-bold tracking-widest">
+          ACTIONS
+        </div>
+      </div>
+
+      {/* Title */}
+      <div className="mb-5">
+        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-gray-500 mb-1">
+          Quick Management
+        </p>
+      </div>
+
+      {/* Action Buttons: Styled to match the "Detail Bars" height and alignment */}
+      <div className="space-y-2 mt-auto">
+        {actions.map((action, i) => (
+          <button
+            key={i}
+            onClick={action.onClick}
+            className="flex w-full cursor-pointer items-center justify-between rounded-lg bg-gray-800/40 p-3 transition-colors hover:bg-gray-800 group/btn"
+          >
+            <div className="flex items-center gap-3">
+              <action.icon size={14} className="text-gray-500 group-hover/btn:text-white" />
+              <span className="text-xs font-medium text-gray-400 group-hover/btn:text-white">
+                {action.label}
+              </span>
+            </div>
+            <ArrowUpRight size={12} className="text-gray-600" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 
 function StatCard({ stat }: { stat: any }) {
   const config = THEME[stat.title.toLowerCase() as keyof typeof THEME] || THEME["users"];
@@ -53,7 +119,7 @@ function StatCard({ stat }: { stat: any }) {
   };
 
   return (
-    <div className="group relative flex flex-col rounded-xl border border-gray-800 bg-[#13161b] p-5 overflow-hidden transition-all duration-200 hover:border-gray-700">
+    <div className="group cursor-pointer relative flex flex-col rounded-xl border border-gray-800 bg-[#13161b] p-5 overflow-hidden transition-all duration-200 hover:border-gray-700">
 
       {/* Subtle glow on hover */}
       <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-300 ${config.glow}`} />
