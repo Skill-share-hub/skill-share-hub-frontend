@@ -121,10 +121,7 @@ export default function MyActivity() {
               </div>
             </div>
 
-            <button className="self-start sm:self-auto flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors duration-200">
-              <FiAward />
-              View Certificates
-            </button>
+            <div></div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
